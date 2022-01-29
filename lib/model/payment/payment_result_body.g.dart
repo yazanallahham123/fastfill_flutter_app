@@ -1,0 +1,27 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'payment_result_body.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+PaymentResultBody _$PaymentResultBodyFromJson(Map<String, dynamic> json) =>
+    PaymentResultBody(
+      date: json['date'] as String,
+      stationName: json['stationName'] as String,
+      fuelType: json['fuelType'] as String,
+      amount: (json['amount'] as num).toDouble(),
+      value: (json['value'] as num).toDouble(),
+      status: json['status'] as bool,
+    );
+
+Map<String, dynamic> _$PaymentResultBodyToJson(PaymentResultBody instance) =>
+    <String, dynamic>{
+      'date': instance.date,
+      'stationName': instance.stationName,
+      'fuelType': instance.fuelType,
+      'amount': instance.amount,
+      'value': instance.value,
+      'status': instance.status,
+    };

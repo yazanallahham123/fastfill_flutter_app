@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="21.926" height="14.364" viewBox="0 0 21.926 14.364">
+  <g id="tray_1_" data-name="tray (1)" transform="translate(0 -63.62)">
+    <g id="Group_13202" data-name="Group 13202" transform="translate(0 64)">
+      <g id="Group_13201" data-name="Group 13201">
+        <path id="Path_34537" data-name="Path 34537" d="M17.482,74.6a8.093,8.093,0,0,0-6.587-8.1,1.729,1.729,0,0,0,.176-.75,1.748,1.748,0,0,0-3.5,0,1.729,1.729,0,0,0,.176.75,8.088,8.088,0,0,0-6.587,8.1,1.744,1.744,0,0,0,.584,3.389H16.9a1.743,1.743,0,0,0,.584-3.388ZM9.323,65.165a.581.581,0,0,1,.019,1.162H9.3a.581.581,0,0,1,.019-1.162ZM5.667,68.524a7,7,0,0,1,3.625-1.03.266.266,0,0,1,.03,0,.269.269,0,0,0,.03,0,7,7,0,0,1,6.965,7H2.327A6.966,6.966,0,0,1,5.667,68.524Zm11.231,8.3H1.748a.583.583,0,1,1,0-1.165H16.9a.583.583,0,1,1,0,1.165Z" transform="translate(0 -64)" fill="#fafafa"/>
+      </g>
+      <path id="Path_34540" data-name="Path 34540" d="M10812.791,18280.082h4.635" transform="translate(-10796 -18277.645)" fill="none" stroke="#fafafa" stroke-linecap="round" stroke-width="1"/>
+      <path id="Path_34541" data-name="Path 34541" d="M10812.791,18280.082h4.635" transform="translate(18299.189 -10812.671) rotate(90)" fill="none" stroke="#fafafa" stroke-linecap="round" stroke-width="1"/>
+    </g>
+  </g>
+</svg>
