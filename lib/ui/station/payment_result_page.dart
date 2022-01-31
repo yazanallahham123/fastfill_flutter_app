@@ -139,7 +139,7 @@ class PaymentResultPage extends StatelessWidget {
                         title: translate((paymentResultBody.status) ? "buttons.ok" : "buttons.tryAgain"),
                         onTap: () {
                           if (paymentResultBody.status)
-                            Navigator.pushReplacementNamed(context, HomePage.route);
+                            Navigator.pushNamedAndRemoveUntil(context, HomePage.route, (Route<dynamic> route) => false);
                           else
                             Navigator.pop(context);
                         })),

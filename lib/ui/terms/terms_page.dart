@@ -29,7 +29,7 @@ class TermsPage extends StatelessWidget {
                 Align(
                   child: Padding(
                       child: Text(
-                        translate("labels.termsOfService"),
+                        translate("labels.terms"),
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 20,
@@ -42,20 +42,31 @@ class TermsPage extends StatelessWidget {
                   alignment: AlignmentDirectional.topStart,
                 ),
 
-                Padding(child: Align(child: Text(translate("Product Questions")),alignment: AlignmentDirectional.topStart,),
+                Padding(child: Align(child: Text(translate("labels.productQuestions"),
+                style: TextStyle(color: textColor2)
+                ),
+                  alignment: AlignmentDirectional.topStart,),
                   padding: EdgeInsetsDirectional.only(
                       start: SizeConfig().w(25),
                       end: SizeConfig().w(25),
-                      top: SizeConfig().h(30), bottom: SizeConfig().h(35)),
+                      top: SizeConfig().h(30), bottom: SizeConfig().h(10)),
                 ),
 
-                Text(translate("Product Questions")),
-
+                Padding(child: Align(child: Container(child: Row(children: [
+                  Flexible(child:
+                  Text(translate("Product Questions Product Questions Product Questions Product Questions Product Questions Product Questions Product Questions Product Questions Product Questions Product Questions"), style: TextStyle(color: Colors.white)),)
+                ],),),
+    alignment: AlignmentDirectional.topStart,),
+    padding: EdgeInsetsDirectional.only(
+    start: SizeConfig().w(25),
+    end: SizeConfig().w(25),
+    top: SizeConfig().h(10), bottom: SizeConfig().h(10)),
+    ),
                 Padding(
                     padding: EdgeInsetsDirectional.only(
                         start: SizeConfig().w(20),
-                        end: SizeConfig().w(20),
-                        top: SizeConfig().h(30), bottom: SizeConfig().h(35)),
+                        end: SizeConfig().w(10),
+                        top: SizeConfig().h(10), bottom: SizeConfig().h(10)),
                     child: CustomButton(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
@@ -71,7 +82,7 @@ class TermsPage extends StatelessWidget {
                     padding: EdgeInsetsDirectional.only(
                         start: SizeConfig().w(20),
                         end: SizeConfig().w(20),
-                        top: SizeConfig().h(30), bottom: SizeConfig().h(35)),
+                        top: SizeConfig().h(10), bottom: SizeConfig().h(10)),
                     child: CustomButton(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,

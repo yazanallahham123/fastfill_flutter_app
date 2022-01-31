@@ -3,6 +3,8 @@ import 'package:fastfill/helper/size_config.dart';
 import 'package:fastfill/model/user/user.dart';
 import 'package:fastfill/ui/auth/login_page.dart';
 import 'package:fastfill/ui/auth/signup_page.dart';
+import 'package:fastfill/ui/contact_us/contact_us_page.dart';
+import 'package:fastfill/ui/settings/settings_page.dart';
 import 'package:fastfill/ui/terms/terms_page.dart';
 import 'package:fastfill/utils/local_data.dart';
 import 'package:flutter/material.dart';
@@ -31,12 +33,18 @@ class HomeAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                   {
                     User user = User(lastName: null, firstName: null, disabled: null, id: null, mobileNumber: null, roleId: null, username: null);
                     await LocalData().setCurrentUserValue(user);
-                    Navigator.pushReplacementNamed(context, LoginPage.route);
+                    Navigator.pushNamedAndRemoveUntil(context, LoginPage.route,(Route<dynamic> route) => false);
                   }
                 else if (s == TermsPage.route)
                   {
                     Navigator.pushNamed(context, TermsPage.route);
-                  }
+                  } else if (s == ContactUsPage.route)
+                    {
+                      Navigator.pushNamed(context, ContactUsPage.route);
+                    }else if (s == SettingsPage.route)
+                {
+                  Navigator.pushNamed(context, SettingsPage.route);
+                }
               },
               color: backgroundColor1,
                 itemBuilder: (context) =>
@@ -46,7 +54,12 @@ class HomeAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                       child: Text(translate("labels.terms"), style: TextStyle(color: Colors.white),),
                     ),
                     PopupMenuItem(
+                      value: ContactUsPage.route,
                       child: Text(translate("labels.contactUs"), style: TextStyle(color: Colors.white),),
+                    ),
+                    PopupMenuItem(
+                      value: SettingsPage.route,
+                      child: Text(translate("labels.settings"), style: TextStyle(color: Colors.white),),
                     ),
                     PopupMenuItem(
                       value: LoginPage.route,

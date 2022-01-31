@@ -50,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
                 state.loginUser.value!.userDetails!);
             await LocalData().setTokenValue(state.loginUser.value!.token!);
             pushToast(translate("messages.youLoggedSuccessfully"));
-            Navigator.pushReplacementNamed(context, HomePage.route);
+            Navigator.pushNamedAndRemoveUntil(context, HomePage.route, (Route<dynamic> route) => false);
           }
         },
         bloc: bloc,

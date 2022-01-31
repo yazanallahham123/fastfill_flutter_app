@@ -55,7 +55,7 @@ class ResetPassword_PasswordPage extends StatelessWidget {
           else if (state is PasswordResetState) {
             if (state.passwordReset == "Updated successfully.") {
               pushToast(translate("messages.passwordResetIsSuccessful"));
-              Navigator.pushReplacementNamed(context, LoginPage.route);
+              Navigator.pushNamedAndRemoveUntil(context, LoginPage.route,(Route<dynamic> route) => false);
             }
             else
               pushToast(translate("messages.passwordResetIsNotSuccessful"));

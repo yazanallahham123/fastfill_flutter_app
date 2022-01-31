@@ -59,7 +59,7 @@ class _SignupPageState extends State<SignupPage> {
               .setCurrentUserValue(state.signedUpUser.userDetails!);
           await LocalData().setTokenValue(state.signedUpUser.token!);
           pushToast(translate("messages.youSignedupSuccessfully"));
-          Navigator.pushReplacementNamed(context, HomePage.route);
+          Navigator.pushNamedAndRemoveUntil(context, HomePage.route,(Route<dynamic> route) => false);
         }
       },
       child: BlocBuilder(

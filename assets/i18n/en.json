@@ -34,7 +34,15 @@
   "date": "Date",
   "gasStation": "Gas station",
   "successPayment": "Payment successful",
-  "failedPayment": "Payment failed"
+  "failedPayment": "Payment failed",
+  "settings": "Settings",
+  "productQuestions": "Product Questions",
+  "weAreInTouch": "We're in touch",
+  "applicationSettings":"Application Settings",
+  "support":"Support",
+  "notifications": "Notifications",
+  "language": "Language",
+  "selectYourLanguage": "Select your language"
 },
 "buttons" : {
   "signUp": "Sign Up",
@@ -45,7 +53,10 @@
   "resetPassword": "Reset Password",
   "pay": "Pay",
   "ok": "Ok",
-  "tryAgain": "Try again"
+  "tryAgain": "Try again",
+  "declineTerms": "Decline",
+  "agreeTerms": "I've agree with this",
+  "logOut": "Log Out"
 },
 "messages" : {
   "phoneNumberOrPasswordIncorrect": "Phone number or password are incorrect",

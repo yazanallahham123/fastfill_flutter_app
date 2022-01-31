@@ -1,4 +1,5 @@
 import 'package:fastfill/ui/home/home_page.dart';
+import 'package:fastfill/ui/language/language_page.dart';
 import 'package:fastfill/ui/splash_screen/splash_screen.dart';
 import 'package:fastfill/utils/local_data.dart';
 import 'package:fastfill/utils/local_notification_service.dart';
@@ -77,7 +78,7 @@ class _FastFillApp extends State<FastFillApp> {
                 primaryColor: primaryColor1,
                 accentColor: primaryColor2,
                 fontFamily: isArabic() ? 'Markazi' : 'Poppins'),
-            initialRoute: (isSigned) ? HomePage.route : LoginPage.route
+            initialRoute: LanguagePage.route//(isSigned) ? HomePage.route : LoginPage.route
           //initialRoute: SplashScreen.route
         ));
   }

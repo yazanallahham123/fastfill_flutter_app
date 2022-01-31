@@ -6,7 +6,10 @@ import 'package:fastfill/ui/auth/otp_validation_page.dart';
 import 'package:fastfill/ui/auth/reset_password_password_page.dart';
 import 'package:fastfill/ui/auth/reset_password_phone_number_page.dart';
 import 'package:fastfill/ui/auth/signup_page.dart';
+import 'package:fastfill/ui/contact_us/contact_us_page.dart';
 import 'package:fastfill/ui/home/home_page.dart';
+import 'package:fastfill/ui/language/language_page.dart';
+import 'package:fastfill/ui/settings/settings_page.dart';
 import 'package:fastfill/ui/splash_screen/splash_screen.dart';
 import 'package:fastfill/ui/station/payment_result_page.dart';
 import 'package:fastfill/ui/station/purchase_page.dart';
@@ -70,6 +73,47 @@ class AppRouter {
           },
         );
 
+      case ContactUsPage.route:
+        return PageRouteBuilder( pageBuilder: (context, animation, secondaryAnimation) => ContactUsPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(0.0, 1.0);
+            const end = Offset.zero;
+            final tween = Tween(begin: begin, end: end);
+            final offsetAnimation = animation.drive(tween);
+            return SlideTransition(
+              position: offsetAnimation,
+              child: child,
+            );
+          },
+        );
+
+      case SettingsPage.route:
+        return PageRouteBuilder( pageBuilder: (context, animation, secondaryAnimation) => SettingsPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(0.0, 1.0);
+            const end = Offset.zero;
+            final tween = Tween(begin: begin, end: end);
+            final offsetAnimation = animation.drive(tween);
+            return SlideTransition(
+              position: offsetAnimation,
+              child: child,
+            );
+          },
+        );
+
+      case LanguagePage.route:
+        return PageRouteBuilder( pageBuilder: (context, animation, secondaryAnimation) => LanguagePage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(0.0, 1.0);
+            const end = Offset.zero;
+            final tween = Tween(begin: begin, end: end);
+            final offsetAnimation = animation.drive(tween);
+            return SlideTransition(
+              position: offsetAnimation,
+              child: child,
+            );
+          },
+        );
       case TermsPage.route:
         return PageRouteBuilder( pageBuilder: (context, animation, secondaryAnimation) => TermsPage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
