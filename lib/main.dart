@@ -19,6 +19,7 @@ import 'ui/auth/login_page.dart';
 
 final logger = Logger();
 bool isSigned=false;
+String languageCode = "en";
 
 Future<void> backgroundHandler(RemoteMessage message) async {
   if (message.notification != null) {
@@ -46,16 +47,40 @@ void main() async {
           isSigned = true;
   });
 
+
+  LocalData().getLanguage().then((l) {
+    if (l != null) {
+      if (l.isNotEmpty)
+        {
+          languageCode = l;
+        }
+    }
+  });
+
   runApp(LocalizedApp(delegate, FastFillApp()));
 }
 
 class FastFillApp extends StatefulWidget {
   @override
   _FastFillApp createState() => _FastFillApp();
+
+  static _FastFillApp? of(BuildContext context) => context.findAncestorStateOfType<_FastFillApp>();
 }
 
-
 class _FastFillApp extends State<FastFillApp> {
+  Locale _locale = Locale.fromSubtags(languageCode: languageCode);
+
+    void setLocale(Locale value) {
+    if (mounted) {
+      setState(() {
+        _locale = value;
+      });
+    }
+  }
+
+  Locale getLocale() {
+    return _locale;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,13 +98,12 @@ class _FastFillApp extends State<FastFillApp> {
               localizationDelegate
             ],
             supportedLocales: localizationDelegate.supportedLocales,
-            locale: localizationDelegate.currentLocale,
+            locale: _locale,
             theme: ThemeData(
                 primaryColor: primaryColor1,
                 accentColor: primaryColor2,
                 fontFamily: isArabic() ? 'Markazi' : 'Poppins'),
-            initialRoute: LanguagePage.route//(isSigned) ? HomePage.route : LoginPage.route
-          //initialRoute: SplashScreen.route
+            initialRoute: (isSigned) ? HomePage.route : LanguagePage.route,
         ));
   }
 }

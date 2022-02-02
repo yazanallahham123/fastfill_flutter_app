@@ -149,9 +149,10 @@ class _BuildUI extends StatelessWidget {
                           backColor: buttonColor1,
                           titleColor: Colors.white,
                           borderColor: buttonColor1,
-                          title: translate("buttons.next"),
+                          title: translate("buttons.validate"),
                           onTap: () {
-                            Navigator.pop(context, code);
+                            if (code.isNotEmpty)
+                              Navigator.pop(context, code);
                           })),
               ],
             ),

@@ -43,7 +43,7 @@ class ContactUsPage extends StatelessWidget {
                   alignment: AlignmentDirectional.topStart,
                 ),
 
-                Padding(child: Align(child: Text(translate("labels.weAreinTouch"),
+                Padding(child: Align(child: Text(translate("labels.weAreInTouch"),
                     style: TextStyle(color: textColor2)
                 ),
                   alignment: AlignmentDirectional.topStart,),
@@ -55,8 +55,8 @@ class ContactUsPage extends StatelessWidget {
 
                 Align(
                   child: Padding(
-                      child: Image(image: AssetImage(
-                        "assets/fail.png",),
+                      child:  SvgPicture.asset(
+                        "assets/svg/contact_us.svg",
                         width: 100,
                         height: 100,),
                       padding: EdgeInsetsDirectional.only(
@@ -74,7 +74,7 @@ class ContactUsPage extends StatelessWidget {
                   Row(children: [
                     SvgPicture.asset(
                       "assets/svg/founder_icon.svg", width: 20, height: 20,),
-                    Padding(child: Text("Founder", style: TextStyle(fontSize: 10, color: textColor2),), padding: EdgeInsetsDirectional.fromSTEB(13, 0, 0, 0),)
+                    Padding(child: Text(translate("labels.founder"), style: TextStyle(fontSize: 10, color: textColor2),), padding: EdgeInsetsDirectional.fromSTEB(13, 0, 0, 0),)
                   ],),
                   Padding(child: Text("Amr Mohammed Osman", style: TextStyle(color: Colors.white),), padding: EdgeInsetsDirectional.fromSTEB(30, 0, 0, 0),)
                     ,Divider(color: textColor2, thickness: 0.1,)
@@ -88,7 +88,7 @@ class ContactUsPage extends StatelessWidget {
                     Row(children: [
                       SvgPicture.asset(
                         "assets/svg/email_icon.svg", width: 20, height: 20,),
-                      Padding(child: Text("Email", style: TextStyle(fontSize: 10, color: textColor2),), padding: EdgeInsetsDirectional.fromSTEB(13, 0, 0, 0),)
+                      Padding(child: Text(translate("labels.email"), style: TextStyle(fontSize: 10, color: textColor2),), padding: EdgeInsetsDirectional.fromSTEB(13, 0, 0, 0),)
                     ],),
                     Padding(child: Text("Amr Mohammed Osman", style: TextStyle(color: Colors.white),), padding: EdgeInsetsDirectional.fromSTEB(30, 0, 0, 0),)
                     ,Divider(color: textColor2, thickness: 0.1,)
@@ -103,7 +103,7 @@ class ContactUsPage extends StatelessWidget {
                     Row(children: [
                       SvgPicture.asset(
                         "assets/svg/email_icon.svg", width: 20, height: 20,),
-                      Padding(child: Text("Phone", style: TextStyle(fontSize: 10, color: textColor2),), padding: EdgeInsetsDirectional.fromSTEB(13, 0, 0, 0),)
+                      Padding(child: Text(translate("labels.phone"), style: TextStyle(fontSize: 10, color: textColor2),), padding: EdgeInsetsDirectional.fromSTEB(13, 0, 0, 0),)
                     ],),
                     Padding(child: Text("+2 499 122 67 239", style: TextStyle(color: Colors.white),), padding: EdgeInsetsDirectional.fromSTEB(30, 0, 0, 0),)
                     ,Divider(color: textColor2, thickness: 0.1,)
@@ -117,7 +117,7 @@ class ContactUsPage extends StatelessWidget {
                     Row(children: [
                       SvgPicture.asset(
                         "assets/svg/whatsapp_icon.svg", width: 20, height: 20,),
-                      Padding(child: Text("Whatsapp", style: TextStyle(fontSize: 10, color: textColor2),), padding: EdgeInsetsDirectional.fromSTEB(13, 0, 0, 0),)
+                      Padding(child: Text(translate("labels.whatsapp"), style: TextStyle(fontSize: 10, color: textColor2),), padding: EdgeInsetsDirectional.fromSTEB(13, 0, 0, 0),)
                     ],),
                     Padding(child: Text("+1 (515) 708 58 82", style: TextStyle(color: Colors.white),), padding: EdgeInsetsDirectional.fromSTEB(30, 0, 0, 0),)
                     ,Divider(color: textColor2, thickness: 0.1,)

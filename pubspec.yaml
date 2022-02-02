@@ -52,6 +52,7 @@ dependencies:
   flutter_translate: ^3.0.1
   otp_text_field: ^1.1.1
   firebase_auth: ^3.3.5
+  image_picker: ^0.8.4+5
 
 dev_dependencies:
   flutter_test:

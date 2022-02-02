@@ -1,6 +1,8 @@
-import 'package:intl/intl.dart';
+import 'package:fastfill/main.dart';
+import 'package:flutter/cupertino.dart';
+
 
 bool isArabic() =>
-    Intl.defaultLocale == 'ar';
+    languageCode == "ar";
 
 

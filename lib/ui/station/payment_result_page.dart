@@ -114,7 +114,7 @@ class PaymentResultPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(translate("labels.fastfill")+":", style: TextStyle(color: Colors.white, fontSize: 14),),
-                    Text(paymentResultBody.value.toString()+" SDG", style: TextStyle(color: Colors.white, fontSize: 14),),
+                    Text(paymentResultBody.value.toString()+" "+translate("labels.sdg"), style: TextStyle(color: Colors.white, fontSize: 14),),
                   ],)
                   ,padding: EdgeInsetsDirectional.fromSTEB(SizeConfig().w(20), SizeConfig().h(0), SizeConfig().w(24), SizeConfig().w(30)),),
 

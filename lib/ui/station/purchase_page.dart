@@ -16,6 +16,7 @@ import 'package:fastfill/helper/app_colors.dart';
 import 'package:fastfill/helper/const_sizes.dart';
 import 'package:fastfill/helper/const_styles.dart';
 import 'package:fastfill/helper/font_styles.dart';
+import 'package:fastfill/helper/methods.dart';
 import 'package:fastfill/helper/size_config.dart';
 import 'package:fastfill/helper/toast.dart';
 import 'package:fastfill/model/login/login_body.dart';
@@ -135,7 +136,7 @@ class _BuildUI extends State<BuildUI> {
                 ),
 
                 Stack(children: [
-                  (Platform.localeName.substring(0, 2) == "ar") ? Transform(
+                  (isArabic()) ? Transform(
                       alignment: Alignment.center,
                       transform: Matrix4.rotationY(pi),
                       child: Image(
@@ -306,7 +307,7 @@ class _BuildUI extends State<BuildUI> {
 
                       )),
 
-                  Padding(child: Text(translate("10.0")+" SDG",
+                  Padding(child: Text(translate("10.0")+" "+translate("labels.sdg"),
                     style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),),
                       padding: EdgeInsetsDirectional.only(bottom: SizeConfig().h(10),
 

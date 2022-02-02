@@ -12,6 +12,7 @@ class LocalData {
   final _tokenKey = "Token";
   final _firebaseTokenKey = "FToken";
   final _user = "User";
+  final _languageKey = "Language";
 
   Future<SharedPreferences?> get _getSharedPref async {
     if (_preferences != null)
@@ -21,6 +22,11 @@ class LocalData {
 
       return _preferences;
     }
+  }
+
+  setLanguageValue(String language) async {
+    await _getSharedPref;
+    await _preferences!.setString(_languageKey, language);
   }
 
   setCurrentUserValue(User user) async {
@@ -63,6 +69,11 @@ class LocalData {
   Future<String> getTokenValue() async {
     await _getSharedPref;
     return _preferences!.getString(_tokenKey) ?? "";
+  }
+
+  Future<String> getLanguage() async {
+    await _getSharedPref;
+    return _preferences!.getString(_languageKey) ?? "en";
   }
 
   Future<String?> getBearerTokenValue() async {

@@ -80,7 +80,7 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "androidx.browser:browser:1.2.0"
+    //implementation "androidx.browser:browser:1.2.0"
     // Import the BoM for the Firebase platform
     implementation platform('com.google.firebase:firebase-bom:29.0.4')
     // Declare the dependency for the Firebase Authentication library

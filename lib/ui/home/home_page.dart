@@ -60,8 +60,8 @@ class _HomePageState extends State<HomePage> {
               },
               child: Container(
                 //alignment: Alignment.topLeft,
-                  height: SizeConfig().h(25),
-                  width: SizeConfig().h(25),
+                  height: SizeConfig().h(60),
+                  width: SizeConfig().w(25),
                   child: SvgPicture.asset(
                     'assets/svg/homebutton.svg',
                     width: SizeConfig().w(25),
@@ -77,8 +77,8 @@ class _HomePageState extends State<HomePage> {
               },
               child: Container(
                 //alignment: Alignment.topLeft,
-                  height: SizeConfig().h(25),
-                  width: SizeConfig().h(25),
+                  height: SizeConfig().h(60),
+                  width: SizeConfig().w(25),
                   child: SvgPicture.asset(
                     'assets/svg/transactionsbutton.svg',
                     width: SizeConfig().w(25),
@@ -94,8 +94,8 @@ class _HomePageState extends State<HomePage> {
               },
               child: Container(
                 //alignment: Alignment.topLeft,
-                  height: SizeConfig().h(25),
-                  width: SizeConfig().h(25),
+                  height: SizeConfig().h(60),
+                  width: SizeConfig().w(25),
                   child: SvgPicture.asset(
                     'assets/svg/notificationsbutton.svg',
                     width: SizeConfig().w(25),
@@ -111,8 +111,8 @@ class _HomePageState extends State<HomePage> {
               },
               child: Container(
                 //alignment: Alignment.topLeft,
-                  height: SizeConfig().h(25),
-                  width: SizeConfig().h(25),
+                  height: SizeConfig().h(60),
+                  width: SizeConfig().w(25),
                   child: SvgPicture.asset(
                     'assets/svg/favoritesbutton.svg',
                     width: SizeConfig().w(25),

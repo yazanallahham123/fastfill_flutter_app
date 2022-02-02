@@ -7,10 +7,12 @@ import 'package:fastfill/common_widgets/app_widgets/custom_loading.dart';
 import 'package:fastfill/common_widgets/buttons/custom_button.dart';
 import 'package:fastfill/common_widgets/custom_text_field_widgets/custom_textfield_widget.dart';
 import 'package:fastfill/helper/app_colors.dart';
+import 'package:fastfill/helper/methods.dart';
 import 'package:fastfill/helper/size_config.dart';
 import 'package:fastfill/helper/toast.dart';
 import 'package:fastfill/model/station/station_branch.dart';
 import 'package:fastfill/model/user/user.dart';
+import 'package:fastfill/ui/search/search_page.dart';
 import 'package:fastfill/ui/station/purchase_page.dart';
 import 'package:fastfill/utils/local_data.dart';
 import 'package:flutter/material.dart';
@@ -105,7 +107,7 @@ class _BuildUI extends StatelessWidget {
             ),
             Stack(
               children: [
-                (Platform.localeName.substring(0, 2) == "ar")
+                (isArabic())
                     ? Transform(
                         alignment: Alignment.center,
                         transform: Matrix4.rotationY(pi),
@@ -193,7 +195,8 @@ class _BuildUI extends StatelessWidget {
                           child: CustomTextFieldWidget(
                               icon: Icon(Icons.search),
                               onFieldSubmitted: (_) {
-                                print("ddddd");
+                                Navigator.pushNamed(
+                                    context, SearchPage.route, arguments: searchController.text);
                               },
                               controller: searchController,
                               hintText: translate("labels.stationNumber"),
@@ -229,8 +232,7 @@ class _BuildUI extends StatelessWidget {
                                   child:
                               Stack(
                                     children: [
-                                      (Platform.localeName.substring(0, 2) ==
-                                              "ar")
+                                      (isArabic())
                                           ? Transform(
                                               alignment: Alignment.center,
                                               transform: Matrix4.rotationY(pi),
@@ -298,8 +300,7 @@ class _BuildUI extends StatelessWidget {
                           children: strings
                               .map((i) => Stack(
                                     children: [
-                                      (Platform.localeName.substring(0, 2) ==
-                                              "ar")
+                                      (isArabic())
                                           ? Transform(
                                               alignment: Alignment.center,
                                               transform: Matrix4.rotationY(pi),

@@ -6,6 +6,28 @@ bool validateMobile(String? value) {
   return true;
 }
 
+bool validateMobile2(String? value) {
+  if (value != null) {
+    if ((value.length == 9) || (value.length == 10)) {
+      if ((value.length == 10) && (value.substring(0, 1) == "0"))
+        {
+          return true;
+        }
+      else {
+        if (value.length == 9) {
+          return true;
+        }
+        else
+          return false;
+      }
+    }
+    else
+      return false;
+  }
+  else
+    return false;
+}
+
 bool validateName(String? value) {
   if (value==null|| value.length == 0)
     return false;

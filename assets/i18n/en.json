@@ -42,7 +42,22 @@
   "support":"Support",
   "notifications": "Notifications",
   "language": "Language",
-  "selectYourLanguage": "Select your language"
+  "selectYourLanguage": "Select your language",
+  "transactions": "Transactions",
+  "languages": "Languages",
+  "founder": "Founder",
+  "email": "Email",
+  "phone": "Phone",
+  "whatsapp": "Whatsapp",
+  "l": "L.",
+  "fuelRefueling":"Fuel refueling",
+  "purchaseOfFuel":"Purchase of fuel",
+  "noTransactions": "You have no transactions",
+  "noNotifications": "You have no notifications",
+  "searchResults": "Search results",
+  "youBought": "You bought",
+  "litersOf": "liters of",
+  "youRefueledWith": "You refueled with"
 },
 "buttons" : {
   "signUp": "Sign Up",
@@ -56,7 +71,11 @@
   "tryAgain": "Try again",
   "declineTerms": "Decline",
   "agreeTerms": "I've agree with this",
-  "logOut": "Log Out"
+  "logOut": "Log Out",
+  "apply": "Apply",
+  "clear": "Clear",
+  "save": "Save",
+  "validate": "Validate"
 },
 "messages" : {
   "phoneNumberOrPasswordIncorrect": "Phone number or password are incorrect",
@@ -76,7 +95,8 @@
   "youAreNotSignedIn": "You are not signed in!",
   "otpCodeNotSent": "Ops! Could not send OTP Code, Please try again in few minutes",
   "passwordResetIsNotSuccessful": "Could not reset your password!",
-  "passwordResetIsSuccessful": "Password was successfully reset"
+  "passwordResetIsSuccessful": "Password was successfully reset",
+  "emptyCode": "OTP Code is empty!"
 },
   "titles" : {
     "welcome": "Welcome"

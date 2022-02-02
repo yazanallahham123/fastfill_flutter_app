@@ -4,6 +4,7 @@ import 'package:fastfill/model/user/user.dart';
 import 'package:fastfill/ui/auth/login_page.dart';
 import 'package:fastfill/ui/auth/signup_page.dart';
 import 'package:fastfill/ui/contact_us/contact_us_page.dart';
+import 'package:fastfill/ui/profile/profile_page.dart';
 import 'package:fastfill/ui/settings/settings_page.dart';
 import 'package:fastfill/ui/terms/terms_page.dart';
 import 'package:fastfill/utils/local_data.dart';
@@ -33,7 +34,7 @@ class HomeAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                   {
                     User user = User(lastName: null, firstName: null, disabled: null, id: null, mobileNumber: null, roleId: null, username: null);
                     await LocalData().setCurrentUserValue(user);
-                    Navigator.pushNamedAndRemoveUntil(context, LoginPage.route,(Route<dynamic> route) => false);
+                    Navigator.pushNamedAndRemoveUntil(context, LoginPage.route, (Route<dynamic> route) => false);
                   }
                 else if (s == TermsPage.route)
                   {
@@ -79,7 +80,9 @@ class HomeAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                 ))),
           //),
           InkWell(
-            onTap: () => Navigator.pop(context),
+            onTap: () {
+              Navigator.pushNamed(context, ProfilePage.route);
+            },
             child: Container(
                 alignment: Alignment.topRight,
                 height: SizeConfig().h(50),

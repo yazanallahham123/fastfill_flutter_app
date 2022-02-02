@@ -5,16 +5,20 @@ import 'package:fastfill/common_widgets/app_widgets/back_button_widget.dart';
 import 'package:fastfill/common_widgets/buttons/custom_button.dart';
 import 'package:fastfill/helper/app_colors.dart';
 import 'package:fastfill/helper/const_styles.dart';
+import 'package:fastfill/helper/methods.dart';
 import 'package:fastfill/helper/size_config.dart';
 import 'package:fastfill/model/user/user.dart';
 import 'package:fastfill/ui/auth/login_page.dart';
 import 'package:fastfill/ui/contact_us/contact_us_page.dart';
+import 'package:fastfill/ui/language/language_page.dart';
 import 'package:fastfill/ui/terms/terms_page.dart';
 import 'package:fastfill/utils/local_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+
+import '../../main.dart';
 
 
 class SettingsPage extends StatefulWidget {
@@ -111,6 +115,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
                   Divider(color: Colors.black, thickness: 0.1,),
 
+                  InkWell(child:
                   Padding(child:
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -118,10 +123,10 @@ class _SettingsPageState extends State<SettingsPage> {
                       Text(translate("labels.language"), style: TextStyle(color: Colors.white),),
 
                       Row(children: [
-                        Text("English", style: TextStyle(color: Colors.white),),
+                        Text((isArabic() ? "عربي" : "English"), style: TextStyle(color: Colors.white),),
                         Padding(child:
 
-                        (Platform.localeName.substring(0, 2) == "ar") ? Transform(
+                        (isArabic()) ? Transform(
                             alignment: Alignment.center,
                             transform: Matrix4.rotationY(pi),
                             child:
@@ -133,7 +138,19 @@ class _SettingsPageState extends State<SettingsPage> {
                           ,padding: EdgeInsetsDirectional.fromSTEB(10, 0, 5, 0),)
 
                       ],)
-                    ],),padding: EdgeInsetsDirectional.fromSTEB(0, 10, 0, 25),)
+                    ],),padding: EdgeInsetsDirectional.fromSTEB(0, 10, 0, 25),),onTap: () async {
+
+                    String? l = await Navigator.pushNamed(
+                        context, LanguagePage.route, arguments: true) as String?;
+
+                    if (l != null) {
+                      if (mounted) {
+                        setState(() {
+                          languageCode = l;
+                        });
+                      }
+                    }
+                  },)
 
                 ],),
                 ),
@@ -161,7 +178,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         Text(translate("labels.terms"), style: TextStyle(color: Colors.white),),
 
                         Padding(child:
-                        (Platform.localeName.substring(0, 2) == "ar") ? Transform(
+                        (isArabic()) ? Transform(
                             alignment: Alignment.center,
                             transform: Matrix4.rotationY(pi),
                             child:
@@ -187,7 +204,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         Text(translate("labels.contactUs"), style: TextStyle(color: Colors.white),),
 
                         Padding(child:
-    (Platform.localeName.substring(0, 2) == "ar") ? Transform(
+    (isArabic()) ? Transform(
     alignment: Alignment.center,
     transform: Matrix4.rotationY(pi),
                         child:

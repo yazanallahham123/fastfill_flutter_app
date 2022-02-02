@@ -9,6 +9,8 @@ import 'package:fastfill/ui/auth/signup_page.dart';
 import 'package:fastfill/ui/contact_us/contact_us_page.dart';
 import 'package:fastfill/ui/home/home_page.dart';
 import 'package:fastfill/ui/language/language_page.dart';
+import 'package:fastfill/ui/profile/profile_page.dart';
+import 'package:fastfill/ui/search/search_page.dart';
 import 'package:fastfill/ui/settings/settings_page.dart';
 import 'package:fastfill/ui/splash_screen/splash_screen.dart';
 import 'package:fastfill/ui/station/payment_result_page.dart';
@@ -33,6 +35,34 @@ class AppRouter {
             );
           }
         );
+      case ProfilePage.route:
+        return PageRouteBuilder( pageBuilder: (context, animation, secondaryAnimation) => ProfilePage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(0.0, 1.0);
+            const end = Offset.zero;
+            final tween = Tween(begin: begin, end: end);
+            final offsetAnimation = animation.drive(tween);
+            return SlideTransition(
+              position: offsetAnimation,
+              child: child,
+            );
+          },
+        );
+
+      case SearchPage.route:
+        return PageRouteBuilder( pageBuilder: (context, animation, secondaryAnimation) => SearchPage(searchText: settings.arguments as String,),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(0.0, 1.0);
+            const end = Offset.zero;
+            final tween = Tween(begin: begin, end: end);
+            final offsetAnimation = animation.drive(tween);
+            return SlideTransition(
+              position: offsetAnimation,
+              child: child,
+            );
+          },
+        );
+
       case LoginPage.route:
         return PageRouteBuilder( pageBuilder: (context, animation, secondaryAnimation) => LoginPage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -102,7 +132,7 @@ class AppRouter {
         );
 
       case LanguagePage.route:
-        return PageRouteBuilder( pageBuilder: (context, animation, secondaryAnimation) => LanguagePage(),
+        return PageRouteBuilder( pageBuilder: (context, animation, secondaryAnimation) => LanguagePage(forSettings: (settings.arguments != null) ? settings.arguments as bool : false,),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             const begin = Offset(0.0, 1.0);
             const end = Offset.zero;
@@ -114,6 +144,7 @@ class AppRouter {
             );
           },
         );
+
       case TermsPage.route:
         return PageRouteBuilder( pageBuilder: (context, animation, secondaryAnimation) => TermsPage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {

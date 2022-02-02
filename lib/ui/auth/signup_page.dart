@@ -197,7 +197,7 @@ class _BuildUIState extends State<_BuildUI> {
         passController.text.isNotEmpty &&
         firstNameController.text.isNotEmpty &&
         confirmPassController.text.isNotEmpty) {
-      if (!validateMobile(phoneController.text))
+      if (!validateMobile2(phoneController.text))
         FocusScope.of(context).requestFocus(phoneNode);
       else if (!isStrongPassword(passController.text))
         FocusScope.of(context).requestFocus(passNode);
@@ -208,14 +208,49 @@ class _BuildUIState extends State<_BuildUI> {
       else if (confirmPassController.text != passController.text)
         FocusScope.of(context).requestFocus(confirmPassNode);
       else {
+        String pn = "";
+        if (phoneController.text != null) {
+          if ((phoneController.text.length == 9) || (phoneController.text.length == 10)) {
+            if ((phoneController.text.length == 10) && (phoneController.text.substring(0, 1) == "0"))
+            {
+              pn = phoneController.text.substring(1,phoneController.text.length-1);
+            }
+            else {
+              if (phoneController.text.length == 9) {
+                pn = phoneController.text;
+              }
+            }
+          }
+        }
+
         widget.userBloc.add(CallOTPScreenEvent());
         await auth.verifyPhoneNumber(
-            phoneNumber: phoneController.text,
-            verificationCompleted: await (PhoneAuthCredential credential) {
+            phoneNumber: "+249"+pn,
+            timeout: const Duration(seconds: 5),
+            verificationCompleted: await (PhoneAuthCredential credential) async {
+              auth.signInWithCredential(credential).then((value) {
+                widget.userBloc.add(SuccessfulUserOTPVerificationEvent(
+                    SignupBody(
+                        firstName: firstNameController.text,
+                        lastName: firstNameController.text,
+                        username: phoneController.text,
+                        mobileNumber: phoneController.text,
+                        password: passController.text), null
+
+                ));
+              }).catchError((e) {
+                widget.userBloc.add(ErrorUserOTPVerificationEvent(
+                    (e.message != null) ? e.message! : e.code));
+              });
             },
-            verificationFailed: await (FirebaseAuthException e) {
+            verificationFailed: await (FirebaseAuthException e) async {
+              widget.userBloc.add(ErrorUserOTPVerificationEvent(
+                  (e.message != null) ? e.message! : e.code));
             },
             codeSent : await (String verificationId, int? resendToken) async {
+            },
+            codeAutoRetrievalTimeout: await (String verificationId) async {
+
               String smsCode = await Navigator.pushNamed(context, OTPValidationPage.route, arguments: verificationId) as String;
               if (smsCode.isNotEmpty) {
                 PhoneAuthCredential credential = PhoneAuthProvider.credential(
@@ -235,8 +270,11 @@ class _BuildUIState extends State<_BuildUI> {
                       (e.message != null) ? e.message! : e.code));
                 });
               }
-            },
-            codeAutoRetrievalTimeout: await (String verificationId) {
+              else
+                {
+                  widget.userBloc.add(ErrorUserOTPVerificationEvent(translate("messages.emptyCode")));
+                }
+
             });
       }
     } else
