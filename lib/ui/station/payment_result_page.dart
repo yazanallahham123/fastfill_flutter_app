@@ -33,88 +33,104 @@ class PaymentResultPage extends StatelessWidget {
               children: [
             Padding(padding: EdgeInsetsDirectional.fromSTEB(0, SizeConfig().h(150), 0, 0),child:
               Column(children: [
-                Align(
-                  child: Padding(
-                      child: Image(image: AssetImage(
-                          (paymentResultBody.status) ? "assets/success.png" : "assets/fail.png",),
-                      width: 100,
-                      height: 100,),
-                      padding: EdgeInsetsDirectional.only(
-                        start: SizeConfig().w(25),
-                        end: SizeConfig().w(25),
-                        bottom: SizeConfig().h(25)
-                      )),
-                  alignment: AlignmentDirectional.topCenter,
-                ),
+                Stack(children: [
 
-                Align(
-                  child: Padding(
-                      child: Text(
-                        (paymentResultBody.status) ?
-                        translate("labels.successPayment") : translate("labels.failedPayment"),
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            color: buttonColor1),
-                      ),
-                      padding: EdgeInsetsDirectional.only(
-                        start: SizeConfig().w(25),
-                        end: SizeConfig().w(25),
-                      )),
-                  alignment: AlignmentDirectional.topCenter,
-                ),
+
+                  Container(
+                    decoration:
+                    BoxDecoration(color: Colors.white, borderRadius: radiusAll20),
+                    margin: EdgeInsetsDirectional.fromSTEB(25, 50, 25, 0),
+                    child: Column(children: [
+                    Align(
+                      child: Padding(
+                          child: Text(
+                            (paymentResultBody.status) ?
+                            translate("labels.successPayment") : translate("labels.failedPayment"),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                color: buttonColor1),
+                          ),
+                          padding: EdgeInsetsDirectional.only(
+                            top: SizeConfig().h(75),
+                            start: SizeConfig().w(25),
+                            end: SizeConfig().w(25),
+                          )),
+                      alignment: AlignmentDirectional.topCenter,
+                    ),
+
+                      Padding(child:
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(translate("labels.gasStation")+":", style: TextStyle(color: textColor2, fontSize: 14),),
+                          Text(paymentResultBody.stationName, style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),),
+                        ],)
+                        ,padding: EdgeInsetsDirectional.fromSTEB(SizeConfig().w(20), SizeConfig().h(30), SizeConfig().w(24), SizeConfig().h(10)),),
+
+                      Padding(child:
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(translate("labels.date")+":", style: TextStyle(color: textColor2, fontSize: 14),),
+                          Text(paymentResultBody.date, style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),),
+                        ],)
+                        ,padding: EdgeInsetsDirectional.fromSTEB(SizeConfig().w(20), SizeConfig().h(0), SizeConfig().w(24), SizeConfig().h(30)),),
+
+                    ],),)
+                  ,
+                  Align(
+                    child: Padding(
+                        child: Image(image: AssetImage(
+                          (paymentResultBody.status) ? "assets/success.png" : "assets/fail.png",),
+                          width: 100,
+                          height: 100,),
+                        padding: EdgeInsetsDirectional.only(
+                            start: SizeConfig().w(25),
+                            end: SizeConfig().w(25),
+                            bottom: SizeConfig().h(25)
+                        )),
+                    alignment: AlignmentDirectional.topCenter,
+                  ),
+                ],),
+
+
+
             Container(
                 width: MediaQuery.of(context).size.width,
-            margin: EdgeInsetsDirectional. only(top: SizeConfig().h(20), start: SizeConfig().w(20), end: SizeConfig().w(20)),
-            padding: EdgeInsets.symmetric(horizontal: SizeConfig().w(24)),
+            margin: EdgeInsetsDirectional. only(top: SizeConfig().h(25), start: SizeConfig().w(25), end: SizeConfig().w(25)),
+
             decoration:
-            BoxDecoration(color: backgroundColor3, borderRadius: radiusAll20),
+            BoxDecoration(color: Colors.white, borderRadius: radiusAll20),
             child: Column(
 
               children: [
-                Padding(child:
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                  Text(translate("labels.date")+":", style: TextStyle(color: Colors.white, fontSize: 14),),
-                    Text(paymentResultBody.date, style: TextStyle(color: Colors.white, fontSize: 14),),
-                ],)
-                  ,padding: EdgeInsetsDirectional.fromSTEB(SizeConfig().w(20), SizeConfig().h(30), SizeConfig().w(24), SizeConfig().w(10)),),
 
                 Padding(child:
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(translate("labels.gasStation")+":", style: TextStyle(color: Colors.white, fontSize: 14),),
-                    Text(paymentResultBody.stationName, style: TextStyle(color: Colors.white, fontSize: 14),),
+                    Text(translate("labels.choose")+":", style: TextStyle(color: textColor2, fontSize: 14),),
+                    Text(paymentResultBody.fuelType, style: TextStyle(color: Colors.black, fontSize: 14),),
                   ],)
-                  ,padding: EdgeInsetsDirectional.fromSTEB(SizeConfig().w(20), SizeConfig().h(0), SizeConfig().w(24), SizeConfig().w(10)),),
+                  ,padding: EdgeInsetsDirectional.fromSTEB(SizeConfig().w(20), SizeConfig().h(35), SizeConfig().w(24), SizeConfig().h(10)),),
+
 
                 Padding(child:
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(translate("labels.choose")+":", style: TextStyle(color: Colors.white, fontSize: 14),),
-                    Text(paymentResultBody.fuelType, style: TextStyle(color: Colors.white, fontSize: 14),),
+                    Text(translate("labels.amount")+":", style: TextStyle(color: textColor2, fontSize: 14),),
+                    Text(paymentResultBody.amount.toString(), style: TextStyle(color: Colors.black, fontSize: 14),),
                   ],)
-                  ,padding: EdgeInsetsDirectional.fromSTEB(SizeConfig().w(20), SizeConfig().h(0), SizeConfig().w(24), SizeConfig().w(10)),),
-
-
-                Padding(child:
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(translate("labels.amount")+":", style: TextStyle(color: Colors.white, fontSize: 14),),
-                    Text(paymentResultBody.amount.toString(), style: TextStyle(color: Colors.white, fontSize: 14),),
-                  ],)
-                  ,padding: EdgeInsetsDirectional.fromSTEB(SizeConfig().w(20), SizeConfig().h(0), SizeConfig().w(24), SizeConfig().w(10)),),
+                  ,padding: EdgeInsetsDirectional.fromSTEB(SizeConfig().w(20), SizeConfig().h(0), SizeConfig().w(24), SizeConfig().h(10)),),
 
                 Padding(child:
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(translate("labels.fastfill")+":", style: TextStyle(color: Colors.white, fontSize: 14),),
-                    Text(paymentResultBody.value.toString()+" "+translate("labels.sdg"), style: TextStyle(color: Colors.white, fontSize: 14),),
+                    Text(translate("labels.fastfill")+":", style: TextStyle(color: textColor2, fontSize: 14),),
+                    Text(paymentResultBody.value.toString()+" "+translate("labels.sdg"), style: TextStyle(color: Colors.black, fontSize: 14),),
                   ],)
                   ,padding: EdgeInsetsDirectional.fromSTEB(SizeConfig().w(20), SizeConfig().h(0), SizeConfig().w(24), SizeConfig().w(30)),),
 
@@ -126,8 +142,8 @@ class PaymentResultPage extends StatelessWidget {
 
                 Padding(
                     padding: EdgeInsetsDirectional.only(
-                        start: SizeConfig().w(20),
-                        end: SizeConfig().w(20),
+                        start: SizeConfig().w(25),
+                        end: SizeConfig().w(25),
                         top: SizeConfig().h(30), bottom: SizeConfig().h(35)),
                     child: CustomButton(
                         fontSize: 12,

@@ -165,7 +165,7 @@ class _BuildUI extends StatelessWidget {
 
                               ],), padding: EdgeInsetsDirectional.fromSTEB(20, 0, 10, 0)),),
                         ],)
-                    ],)],)), padding: EdgeInsetsDirectional.fromSTEB(30, 10, 20, 10),)
+                    ],)],)), padding: EdgeInsetsDirectional.fromSTEB(20, 0, 20, 10),)
                 ).toList(),),padding: EdgeInsetsDirectional.fromSTEB(0, 20, 0, 0),) :
 
                     Container(

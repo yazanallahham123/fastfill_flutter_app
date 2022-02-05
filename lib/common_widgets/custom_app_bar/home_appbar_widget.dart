@@ -22,7 +22,7 @@ class HomeAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
         elevation: 0,
         backgroundColor: backgroundColor1,
         title:
-      Row(
+      Padding(child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           //InkWell(
@@ -95,7 +95,7 @@ class HomeAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                   width: SizeConfig().w(50),
                 )),
           )
-      ],)
+      ],), padding: EdgeInsetsDirectional.fromSTEB(0, 22, 0, 0),)
       ,
     );
   }

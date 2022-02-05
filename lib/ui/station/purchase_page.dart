@@ -8,6 +8,7 @@ import 'package:fastfill/bloc/station/bloc.dart';
 import 'package:fastfill/bloc/station/state.dart';
 import 'package:fastfill/common_widgets/app_widgets/back_button_widget.dart';
 import 'package:fastfill/common_widgets/app_widgets/custom_loading.dart';
+import 'package:fastfill/common_widgets/app_widgets/favorite_button.dart';
 import 'package:fastfill/common_widgets/buttons/custom_button.dart';
 import 'package:fastfill/common_widgets/custom_text_field_widgets/custom_textfield_widget.dart';
 import 'package:fastfill/common_widgets/custom_text_field_widgets/methods.dart';
@@ -338,7 +339,9 @@ class _BuildUI extends State<BuildUI> {
 
               ],),),
 
-            BackButtonWidget(context)
+                BackButtonWidget(context),
+                Align(child: FavoriteButtonWidget(context), alignment: AlignmentDirectional.topEnd),
+
               ],)
             ),
         );

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:fastfill/bloc/user/bloc.dart';
@@ -36,41 +37,37 @@ class SignupPage extends StatefulWidget {
 class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
-    return
-      BlocProvider<UserBloc>(
-          create: (BuildContext context) => UserBloc()..add(UserInitEvent()),
-          child: Builder(builder: (context) => _buildPage(context)));
+    return BlocProvider<UserBloc>(
+        create: (BuildContext context) => UserBloc()..add(UserInitEvent()),
+        child: Builder(builder: (context) => _buildPage(context)));
   }
 
   Widget _buildPage(BuildContext context) {
     final userBloc = BlocProvider.of<UserBloc>(context);
 
     return BlocListener<UserBloc, UserState>(
-      listener: (context, state) async {
-        if (state is ErrorUserState)
-          pushToast(state.error);
-        else if (state is SuccessfulUserOTPVerificationState)
-          {
+        listener: (context, state) async {
+          if (state is ErrorUserState)
+            pushToast(state.error);
+          else if (state is SuccessfulUserOTPVerificationState) {
             pushToast(translate(translate("messages.otpCodeIsVerified")));
             userBloc.add(SignupEvent(state.signupBody));
+          } else if (state is SignedUpState) {
+            await LocalData()
+                .setCurrentUserValue(state.signedUpUser.userDetails!);
+            await LocalData().setTokenValue(state.signedUpUser.token!);
+            pushToast(translate("messages.youSignedupSuccessfully"));
+            Navigator.pushNamedAndRemoveUntil(
+                context, HomePage.route, (Route<dynamic> route) => false);
           }
-        else if (state is SignedUpState) {
-          await LocalData()
-              .setCurrentUserValue(state.signedUpUser.userDetails!);
-          await LocalData().setTokenValue(state.signedUpUser.token!);
-          pushToast(translate("messages.youSignedupSuccessfully"));
-          Navigator.pushNamedAndRemoveUntil(context, HomePage.route,(Route<dynamic> route) => false);
-        }
-      },
-      child: BlocBuilder(
-          bloc: userBloc,
-          builder: (context, UserState userState) {
-            return _BuildUI(userBloc: userBloc, userState: userState);
-          })
-    );
+        },
+        child: BlocBuilder(
+            bloc: userBloc,
+            builder: (context, UserState userState) {
+              return _BuildUI(userBloc: userBloc, userState: userState);
+            }));
   }
 }
-
 
 class _BuildUI extends StatefulWidget {
   final UserBloc userBloc;
@@ -104,73 +101,76 @@ class _BuildUIState extends State<_BuildUI> {
         backgroundColor: backgroundColor1,
         body: SingleChildScrollView(
             child: Stack(children: [
-              Container(
-                margin: EdgeInsetsDirectional.only(
-                    top: SizeConfig().h(175),
-                    start: SizeConfig().w(20),
-                    end: SizeConfig().w(20)),
-                padding: EdgeInsets.symmetric(horizontal: SizeConfig().w(24)),
-                decoration:
+          Container(
+            margin: EdgeInsetsDirectional.only(
+                top: SizeConfig().h(175),
+                start: SizeConfig().w(20),
+                end: SizeConfig().w(20)),
+            padding: EdgeInsets.symmetric(horizontal: SizeConfig().w(24)),
+            decoration:
                 BoxDecoration(color: Colors.white, borderRadius: radiusAll20),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsetsDirectional.only(top: SizeConfig().h(40)),
-                      child: CustomTextFieldWidget(
-                          controller: firstNameController,
-                          focusNode: firstNameNode,
-                          validator: validateName,
-                          hintText: translate("labels.name"),
-                          textInputType: TextInputType.text,
-                          textInputAction: TextInputAction.next,
-                          onFieldSubmitted: (_) =>
-                              FocusScope.of(context).requestFocus(phoneNode)),
-                    ),
-                    CustomTextFieldWidget(
-                        controller: phoneController,
-                        focusNode: phoneNode,
-                        validator: validateMobile,
-                        hintText: translate("labels.phoneNumber"),
-                        textInputType: TextInputType.phone,
-                        textInputAction: TextInputAction.next,
-                        onFieldSubmitted: (_) =>
-                            FocusScope.of(context).requestFocus(passNode)),
-                    TextFieldPasswordWidget(
-                        controller: passController,
-                        focusNode: passNode,
-                        hintText: translate("labels.password"),
-                        textInputAction: TextInputAction.next,
-                        onFieldSubmitted: (_) =>
-                            FocusScope.of(context).requestFocus(confirmPassNode)),
-                    TextFieldPasswordWidget(
-                        controller: confirmPassController,
-                        textInputAction: TextInputAction.send,
-                        focusNode: confirmPassNode,
-                        hintText: translate("labels.confirmPassword"),
-                        onFieldSubmitted: (_) {
-                          _signUp(context);
-                        }),
-                      if (widget.userState is LoadingUserState)
-                        Padding(child: const CustomLoading(),
-                          padding: EdgeInsetsDirectional.only(top: SizeConfig().h(20), bottom:SizeConfig().h(50)),)
-                    else
-                    Padding(
-                          padding: EdgeInsetsDirectional.only(
-                              top: SizeConfig().h(10), bottom: SizeConfig().h(35)),
-                          child: CustomButton(
-                              backColor: buttonColor1,
-                              titleColor: Colors.white,
-                              borderColor: buttonColor1,
-                              title: translate("buttons.signUp"),
-                              onTap: () {
-                                _signUp(context);
-                                //Navigator.pushNamed(context, OTPValidationPage.route);
-                              })),
-                  ],
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsetsDirectional.only(top: SizeConfig().h(40)),
+                  child: CustomTextFieldWidget(
+                      controller: firstNameController,
+                      focusNode: firstNameNode,
+                      validator: validateName,
+                      hintText: translate("labels.name"),
+                      textInputType: TextInputType.text,
+                      textInputAction: TextInputAction.next,
+                      onFieldSubmitted: (_) =>
+                          FocusScope.of(context).requestFocus(phoneNode)),
                 ),
-              ),
-              // Back Button
-              /*InkWell(
+                CustomTextFieldWidget(
+                    controller: phoneController,
+                    focusNode: phoneNode,
+                    validator: validateMobile,
+                    hintText: translate("labels.phoneNumber"),
+                    textInputType: TextInputType.phone,
+                    textInputAction: TextInputAction.next,
+                    onFieldSubmitted: (_) =>
+                        FocusScope.of(context).requestFocus(passNode)),
+                TextFieldPasswordWidget(
+                    controller: passController,
+                    focusNode: passNode,
+                    hintText: translate("labels.password"),
+                    textInputAction: TextInputAction.next,
+                    onFieldSubmitted: (_) =>
+                        FocusScope.of(context).requestFocus(confirmPassNode)),
+                TextFieldPasswordWidget(
+                    controller: confirmPassController,
+                    textInputAction: TextInputAction.send,
+                    focusNode: confirmPassNode,
+                    hintText: translate("labels.confirmPassword"),
+                    onFieldSubmitted: (_) {
+                      _signUp(context);
+                    }),
+                if (widget.userState is LoadingUserState)
+                  Padding(
+                    child: const CustomLoading(),
+                    padding: EdgeInsetsDirectional.only(
+                        top: SizeConfig().h(20), bottom: SizeConfig().h(50)),
+                  )
+                else
+                  Padding(
+                      padding: EdgeInsetsDirectional.only(
+                          top: SizeConfig().h(10), bottom: SizeConfig().h(35)),
+                      child: CustomButton(
+                          backColor: buttonColor1,
+                          titleColor: Colors.white,
+                          borderColor: buttonColor1,
+                          title: translate("buttons.signUp"),
+                          onTap: () {
+                            _signUp(context);
+                            //Navigator.pushNamed(context, OTPValidationPage.route);
+                          })),
+              ],
+            ),
+          ),
+          // Back Button
+          /*InkWell(
                 onTap: () => Navigator.pop(context),
                 child: Container(
                     alignment: Alignment.topLeft,
@@ -187,12 +187,11 @@ class _BuildUIState extends State<_BuildUI> {
                           width: SizeConfig().w(50),
                         ))),
               )*/
-              BackButtonWidget(context)
-            ])));
+          BackButtonWidget(context)
+        ])));
   }
 
   void _signUp(BuildContext context) async {
-
     if (phoneController.text.isNotEmpty &&
         passController.text.isNotEmpty &&
         firstNameController.text.isNotEmpty &&
@@ -210,12 +209,13 @@ class _BuildUIState extends State<_BuildUI> {
       else {
         String pn = "";
         if (phoneController.text != null) {
-          if ((phoneController.text.length == 9) || (phoneController.text.length == 10)) {
-            if ((phoneController.text.length == 10) && (phoneController.text.substring(0, 1) == "0"))
-            {
-              pn = phoneController.text.substring(1,phoneController.text.length-1);
-            }
-            else {
+          if ((phoneController.text.length == 9) ||
+              (phoneController.text.length == 10)) {
+            if ((phoneController.text.length == 10) &&
+                (phoneController.text.substring(0, 1) == "0")) {
+              pn = phoneController.text
+                  .substring(1, phoneController.text.length);
+            } else {
               if (phoneController.text.length == 9) {
                 pn = phoneController.text;
               }
@@ -225,9 +225,10 @@ class _BuildUIState extends State<_BuildUI> {
 
         widget.userBloc.add(CallOTPScreenEvent());
         await auth.verifyPhoneNumber(
-            phoneNumber: "+249"+pn,
+            phoneNumber: "+963" + pn,
             timeout: const Duration(seconds: 5),
-            verificationCompleted: await (PhoneAuthCredential credential) async {
+            verificationCompleted:
+                await (PhoneAuthCredential credential) async {
               auth.signInWithCredential(credential).then((value) {
                 widget.userBloc.add(SuccessfulUserOTPVerificationEvent(
                     SignupBody(
@@ -235,9 +236,8 @@ class _BuildUIState extends State<_BuildUI> {
                         lastName: firstNameController.text,
                         username: phoneController.text,
                         mobileNumber: phoneController.text,
-                        password: passController.text), null
-
-                ));
+                        password: passController.text),
+                    null));
               }).catchError((e) {
                 widget.userBloc.add(ErrorUserOTPVerificationEvent(
                     (e.message != null) ? e.message! : e.code));
@@ -245,13 +245,42 @@ class _BuildUIState extends State<_BuildUI> {
             },
             verificationFailed: await (FirebaseAuthException e) async {
               widget.userBloc.add(ErrorUserOTPVerificationEvent(
-                  (e.message != null) ? e.message! : e.code));
+                  (e.message != null)
+                      ? e.message! + " " + e.code + "+963" + pn
+                      : e.code));
             },
-            codeSent : await (String verificationId, int? resendToken) async {
+            codeSent: await (String verificationId, int? resendToken) async {
+              if (Platform.isIOS)
+                {
+                  String smsCode = await Navigator.pushNamed(
+                      context, OTPValidationPage.route,
+                      arguments: verificationId) as String;
+                  if (smsCode.isNotEmpty) {
+                    PhoneAuthCredential credential = PhoneAuthProvider.credential(
+                        verificationId: verificationId, smsCode: smsCode);
+                    auth.signInWithCredential(credential).then((value) {
+                      widget.userBloc.add(SuccessfulUserOTPVerificationEvent(
+                          SignupBody(
+                              firstName: firstNameController.text,
+                              lastName: firstNameController.text,
+                              username: phoneController.text,
+                              mobileNumber: phoneController.text,
+                              password: passController.text),
+                          null));
+                    }).catchError((e) {
+                      widget.userBloc.add(ErrorUserOTPVerificationEvent(
+                          (e.message != null) ? e.message! : e.code));
+                    });
+                  } else {
+                    widget.userBloc.add(ErrorUserOTPVerificationEvent(
+                        translate("messages.emptyCode")));
+                  }
+                }
             },
             codeAutoRetrievalTimeout: await (String verificationId) async {
-
-              String smsCode = await Navigator.pushNamed(context, OTPValidationPage.route, arguments: verificationId) as String;
+              String smsCode = await Navigator.pushNamed(
+                  context, OTPValidationPage.route,
+                  arguments: verificationId) as String;
               if (smsCode.isNotEmpty) {
                 PhoneAuthCredential credential = PhoneAuthProvider.credential(
                     verificationId: verificationId, smsCode: smsCode);
@@ -262,19 +291,16 @@ class _BuildUIState extends State<_BuildUI> {
                           lastName: firstNameController.text,
                           username: phoneController.text,
                           mobileNumber: phoneController.text,
-                          password: passController.text), null
-
-                  ));
+                          password: passController.text),
+                      null));
                 }).catchError((e) {
                   widget.userBloc.add(ErrorUserOTPVerificationEvent(
                       (e.message != null) ? e.message! : e.code));
                 });
+              } else {
+                widget.userBloc.add(ErrorUserOTPVerificationEvent(
+                    translate("messages.emptyCode")));
               }
-              else
-                {
-                  widget.userBloc.add(ErrorUserOTPVerificationEvent(translate("messages.emptyCode")));
-                }
-
             });
       }
     } else
@@ -295,4 +321,3 @@ class _BuildUIState extends State<_BuildUI> {
     phoneNode.dispose();
   }
 }
-

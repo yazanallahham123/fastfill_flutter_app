@@ -16,7 +16,7 @@ class BackButtonWidget extends StatelessWidget{
       child: Container(
           alignment: Alignment.topLeft,
           height: SizeConfig().h(50),
-          width: SizeConfig().h(50),
+          width: SizeConfig().w(50),
           margin: EdgeInsets.symmetric(
               horizontal: SizeConfig().w(12),
               vertical: SizeConfig().h(55)),

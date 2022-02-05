@@ -26,6 +26,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:get/get.dart';
 
 class LanguagePage extends StatefulWidget {
   static const route = "/language_page";
@@ -124,13 +125,17 @@ class _BuildUIState extends State<_BuildUI> {
                       if (currentLanguage == "English") {
                         await LocalData().setLanguageValue("en");
                         languageCode = "en";
-                        FastFillApp.of(context)!.setLocale(Locale.fromSubtags(languageCode: "en"));
+                        FastFillApp.setLocale(context, Locale.fromSubtags(languageCode: "en"));
+                        changeLocale(context, "en");
+                        Get.updateLocale(Locale.fromSubtags(languageCode: "en"));
                       }
                       else
                         if (currentLanguage == "عربي") {
                           await LocalData().setLanguageValue("ar");
                           languageCode = "ar";
-                          FastFillApp.of(context)!.setLocale(Locale.fromSubtags(languageCode: "ar"));
+                          FastFillApp.setLocale(context, Locale.fromSubtags(languageCode: "ar"));
+                          changeLocale(context, "ar");
+                          Get.updateLocale(Locale.fromSubtags(languageCode: "ar"));
                         }
                   },
                   currentValue: currentLanguage,

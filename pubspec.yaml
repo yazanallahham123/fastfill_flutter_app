@@ -53,6 +53,7 @@ dependencies:
   otp_text_field: ^1.1.1
   firebase_auth: ^3.3.5
   image_picker: ^0.8.4+5
+  get: ^4.6.1
 
 dev_dependencies:
   flutter_test:

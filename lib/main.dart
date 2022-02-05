@@ -10,11 +10,13 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:logger/logger.dart';
 
 import 'helper/app_colors.dart';
 import 'helper/methods.dart';
 import 'ui/auth/login_page.dart';
+import 'firebase_options.dart';
 
 
 final logger = Logger();
@@ -33,7 +35,9 @@ Future<void> backgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   LocalNotificationService.initialize();
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
 
@@ -64,13 +68,23 @@ class FastFillApp extends StatefulWidget {
   @override
   _FastFillApp createState() => _FastFillApp();
 
-  static _FastFillApp? of(BuildContext context) => context.findAncestorStateOfType<_FastFillApp>();
+  static void setLocale(BuildContext context, Locale newLocale) async {
+    _FastFillApp? state = context.findAncestorStateOfType<_FastFillApp>();
+    state?.changeLanguage(newLocale);
+  }
+
+  static Locale? getLocale(BuildContext context) {
+    _FastFillApp? state = context.findAncestorStateOfType<_FastFillApp>();
+    return state?.getLanguage();
+  }
+
+  //static _FastFillApp? of(BuildContext context) => context.findAncestorStateOfType<_FastFillApp>();
 }
 
 class _FastFillApp extends State<FastFillApp> {
   Locale _locale = Locale.fromSubtags(languageCode: languageCode);
 
-    void setLocale(Locale value) {
+  changeLanguage(Locale value) {
     if (mounted) {
       setState(() {
         _locale = value;
@@ -78,24 +92,24 @@ class _FastFillApp extends State<FastFillApp> {
     }
   }
 
-  Locale getLocale() {
+  Locale getLanguage()
+  {
     return _locale;
   }
 
   @override
   Widget build(BuildContext context) {
     var localizationDelegate = LocalizedApp.of(context).delegate;
-
     return LocalizationProvider(
         state: LocalizationProvider.of(context).state,
-        child: MaterialApp(
+        child: GetMaterialApp(
             title: 'FastFill',
             onGenerateRoute: AppRouter.generateRoute,
             debugShowCheckedModeBanner: false,
             localizationsDelegates: [
+              localizationDelegate,
               GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              localizationDelegate
+              GlobalWidgetsLocalizations.delegate
             ],
             supportedLocales: localizationDelegate.supportedLocales,
             locale: _locale,

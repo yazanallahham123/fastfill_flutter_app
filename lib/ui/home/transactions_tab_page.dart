@@ -104,7 +104,7 @@ class _BuildUI extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                     Container(
-                      width: MediaQuery.of(context).size.width - 110,
+                      width: MediaQuery.of(context).size.width - 100,
                       child:
                     Padding(child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -113,10 +113,10 @@ class _BuildUI extends StatelessWidget {
                       Text(translate("labels.fuelRefueling"), style: TextStyle(color: Colors.white),),),
 
                       Text('10 '+translate("labels.l"), style: TextStyle(color: Colors.white),),
-                    ],), padding: EdgeInsetsDirectional.fromSTEB(20, 0, 10, 0)),),
+                    ],), padding: EdgeInsetsDirectional.fromSTEB(20, 0, 0, 0)),),
 
                       Container(
-                        width: MediaQuery.of(context).size.width - 110,
+                        width: MediaQuery.of(context).size.width - 100,
                         child:
                         Padding(child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -125,7 +125,7 @@ class _BuildUI extends StatelessWidget {
                             Text('Jun 25, 2021 / 12:00', style: TextStyle(color: textColor2),),),
 
                             Text('30 '+translate("labels.sdg"), style: TextStyle(color: textColor2),),
-                          ],), padding: EdgeInsetsDirectional.fromSTEB(20, 0, 10, 0)),),
+                          ],), padding: EdgeInsetsDirectional.fromSTEB(20, 0, 0, 0)),),
 
                       Container(
                         width: MediaQuery.of(context).size.width - 110,
@@ -138,7 +138,7 @@ class _BuildUI extends StatelessWidget {
 
                           ],), padding: EdgeInsetsDirectional.fromSTEB(20, 0, 10, 0)),),
                   ],)
-                ],), padding: EdgeInsetsDirectional.fromSTEB(30, 10, 20, 30),)
+                ],), padding: EdgeInsetsDirectional.fromSTEB(20, 0, 20, 15),)
                 ).toList(),)
                   : Text(translate("labels.noTransactions"), style: TextStyle(color: Colors.white),)
                   ,padding: EdgeInsetsDirectional.fromSTEB(0, 20, 0, 0),)

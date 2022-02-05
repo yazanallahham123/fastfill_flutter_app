@@ -200,8 +200,8 @@ class _BuildUI extends StatelessWidget {
                               },
                               controller: searchController,
                               hintText: translate("labels.stationNumber"),
-                              textInputType: TextInputType.number,
-                              textInputAction: TextInputAction.done),
+                              textInputType: TextInputType.name,
+                              textInputAction: TextInputAction.search),
                           padding: EdgeInsetsDirectional.only(
                               start: SizeConfig().w(30),
                               end: SizeConfig().w(30),
