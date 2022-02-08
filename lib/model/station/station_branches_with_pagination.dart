@@ -7,11 +7,11 @@ part 'station_branches_with_pagination.g.dart';
 
 @JsonSerializable()
 class StationBranchesWithPagination extends Equatable {
-  final List<StationBranch>? stationBranches;
+  final List<StationBranch>? companiesBranches;
   final PaginationInfo? paginationInfo;
 
   const StationBranchesWithPagination(
-      {this.stationBranches, this.paginationInfo});
+      {this.companiesBranches, this.paginationInfo});
 
   factory StationBranchesWithPagination.fromJson(Map<String, dynamic> json) => _$StationBranchesWithPaginationFromJson(json);
 
@@ -19,6 +19,6 @@ class StationBranchesWithPagination extends Equatable {
 
   @override
   List<Object?> get props =>
-      [this.stationBranches, this.paginationInfo];
+      [this.companiesBranches, this.paginationInfo];
 
 }

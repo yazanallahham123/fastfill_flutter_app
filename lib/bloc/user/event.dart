@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fastfill/model/login/login_body.dart';
 import 'package:fastfill/model/user/reset_password_body.dart';
 import 'package:fastfill/model/user/signup_body.dart';
+import 'package:fastfill/model/user/update_profile_body.dart';
 
 abstract class UserEvent extends Equatable{
 
@@ -53,4 +54,13 @@ class ResetPasswordEvent extends UserEvent{
 
   @override
   List<Object?> get props => [this.resetPasswordBody];
+}
+
+class UpdateProfileEvent extends UserEvent{
+  final UpdateProfileBody updateProfileBody;
+
+  const UpdateProfileEvent(this.updateProfileBody);
+
+  @override
+  List<Object?> get props => [this.updateProfileBody];
 }

@@ -70,59 +70,6 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<StationBranchesWithPagination> getFrequentlyVisitedStationsBranches(
-      token) async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{r'Authorization': token};
-    _headers.removeWhere((k, v) => v == null);
-    final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<StationBranchesWithPagination>(
-            Options(method: 'GET', headers: _headers, extra: _extra)
-                .compose(_dio.options, 'station/frequentlyVisited',
-                    queryParameters: queryParameters, data: _data)
-                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = StationBranchesWithPagination.fromJson(_result.data!);
-    return value;
-  }
-
-  @override
-  Future<StationBranchesWithPagination> getFavoritesStationsBranches(
-      token) async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{r'Authorization': token};
-    _headers.removeWhere((k, v) => v == null);
-    final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<StationBranchesWithPagination>(
-            Options(method: 'GET', headers: _headers, extra: _extra)
-                .compose(_dio.options, 'station/favorites',
-                    queryParameters: queryParameters, data: _data)
-                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = StationBranchesWithPagination.fromJson(_result.data!);
-    return value;
-  }
-
-  @override
-  Future<StationBranch> getStationByNumber(token, number) async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{r'Authorization': token};
-    _headers.removeWhere((k, v) => v == null);
-    final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<StationBranch>(
-            Options(method: 'GET', headers: _headers, extra: _extra)
-                .compose(_dio.options, 'station/getByNumber/${number}',
-                    queryParameters: queryParameters, data: _data)
-                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = StationBranch.fromJson(_result.data!);
-    return value;
-  }
-
-  @override
   Future<OTPSendResponseBody> otpSendCode(
       mobile, senderId, message, expiry) async {
     const _extra = <String, dynamic>{};
@@ -199,6 +146,112 @@ class _ApiClient implements ApiClient {
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = OTPVerifyResponseBody.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<StationBranchesWithPagination> getFrequentlyVisitedStationsBranches(
+      token) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'Authorization': token};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<StationBranchesWithPagination>(
+            Options(method: 'GET', headers: _headers, extra: _extra)
+                .compose(
+                    _dio.options, 'Company/FrequentlyVisitedCompaniesBranches',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = StationBranchesWithPagination.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<StationBranchesWithPagination> getFavoritesStationsBranches(
+      token) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'Authorization': token};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<StationBranchesWithPagination>(
+            Options(method: 'GET', headers: _headers, extra: _extra)
+                .compose(_dio.options, 'Company/FavoriteCompaniesBranches',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = StationBranchesWithPagination.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<StationBranch> getStationByCode(token, code) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'Authorization': token};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<StationBranch>(
+            Options(method: 'GET', headers: _headers, extra: _extra)
+                .compose(_dio.options, 'Company/CompanyBranchByCode/${code}',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = StationBranch.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<bool> addStationToFavorite(token, addRemoveStationFavoriteBody) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'Authorization': token};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    _data.addAll(addRemoveStationFavoriteBody.toJson());
+    final _result = await _dio.fetch<bool>(_setStreamType<bool>(
+        Options(method: 'PUT', headers: _headers, extra: _extra)
+            .compose(_dio.options, 'Company/AddToFavorite',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data!;
+    return value;
+  }
+
+  @override
+  Future<bool> removeStationFromFavorite(
+      token, addRemoveStationFavoriteBody) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'Authorization': token};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    _data.addAll(addRemoveStationFavoriteBody.toJson());
+    final _result = await _dio.fetch<bool>(_setStreamType<bool>(
+        Options(method: 'PUT', headers: _headers, extra: _extra)
+            .compose(_dio.options, 'Company/RemoveFromFavorite',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data!;
+    return value;
+  }
+
+  @override
+  Future<String> updateUserProfile(token, updateProfileBody) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'Authorization': token};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    _data.addAll(updateProfileBody.toJson());
+    final _result = await _dio.fetch<String>(_setStreamType<String>(
+        Options(method: 'PUT', headers: _headers, extra: _extra)
+            .compose(_dio.options, 'User/UpdateUserProfile',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data!;
     return value;
   }
 

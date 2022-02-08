@@ -4,8 +4,12 @@ import 'dart:math';
 import 'package:fastfill/bloc/login/bloc.dart';
 import 'package:fastfill/bloc/login/event.dart';
 import 'package:fastfill/bloc/login/state.dart';
+import 'package:fastfill/bloc/station/bloc.dart';
+import 'package:fastfill/bloc/station/event.dart';
+import 'package:fastfill/bloc/station/state.dart';
 import 'package:fastfill/common_widgets/app_widgets/back_button_widget.dart';
 import 'package:fastfill/common_widgets/app_widgets/custom_loading.dart';
+import 'package:fastfill/common_widgets/app_widgets/keyboard_done_widget.dart';
 import 'package:fastfill/common_widgets/buttons/custom_button.dart';
 import 'package:fastfill/common_widgets/custom_text_field_widgets/custom_textfield_widget.dart';
 import 'package:fastfill/common_widgets/custom_text_field_widgets/methods.dart';
@@ -42,34 +46,39 @@ class SearchPage extends StatefulWidget {
   State<SearchPage> createState() => _SearchPageState();
 }
 
+List<StationBranch> listOfStations = [];
+
 class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<LoginBloc>(
-        create: (BuildContext context) => LoginBloc(), //.add(InitEvent()),
+    return BlocProvider<StationBloc>(
+        create: (BuildContext context) => StationBloc()..add(InitStationEvent()), //.add(InitEvent()),
         child: Builder(builder: (context) => _buildPage(context)));
   }
 
-  Widget _buildPage(BuildContext context) {
-    final bloc = BlocProvider.of<LoginBloc>(context);
 
-    return BlocListener<LoginBloc, LoginState>(
+
+  Widget _buildPage(BuildContext context) {
+    final bloc = BlocProvider.of<StationBloc>(context);
+
+    return BlocListener<StationBloc, StationState>(
         listener: (context, state) async {
-          if (state is ErrorLoginState)
+          if (state is ErrorStationState) {
             pushToast(state.error);
-          else if (state is SuccessLoginState) {
-            await LocalData()
-                .setCurrentUserValue(state.loginUser.value!.userDetails!);
-            await LocalData().setTokenValue(state.loginUser.value!.token!);
-            pushToast(translate("messages.youLoggedSuccessfully"));
-            Navigator.pushNamedAndRemoveUntil(
-                context, HomePage.route, (Route<dynamic> route) => false);
+            listOfStations.clear();
           }
+          else if (state is InitStationState) {
+            bloc.add(StationByCodeEvent(widget.searchText));
+          } else if (state is GotStationByCodeState)
+            {
+              listOfStations.clear();
+              listOfStations.add(state.stationBranch);
+            }
         },
         bloc: bloc,
-        child: BlocBuilder<LoginBloc, LoginState>(
+        child: BlocBuilder<StationBloc, StationState>(
             bloc: bloc,
-            builder: (context, LoginState state) {
+            builder: (context, StationState state) {
               return _BuildUI(
                   bloc: bloc, state: state, searchText: widget.searchText);
             }));
@@ -77,8 +86,8 @@ class _SearchPageState extends State<SearchPage> {
 }
 
 class _BuildUI extends StatefulWidget {
-  final LoginBloc bloc;
-  final LoginState state;
+  final StationBloc bloc;
+  final StationState state;
   final String searchText;
 
   _BuildUI({required this.bloc, required this.state, required this.searchText});
@@ -87,28 +96,27 @@ class _BuildUI extends StatefulWidget {
   State<_BuildUI> createState() => _BuildUIState();
 }
 
+
+
 class _BuildUIState extends State<_BuildUI> {
   final searchController = TextEditingController();
-
-  final List<String> strings = [
-    "abc",
-    "def",
-    "ghi",
-    "klm",
-    "abc",
-    "def",
-    "ghi",
-    "klm",
-    "abc",
-    "def",
-    "ghi",
-    "klm"
-  ];
+  final searchFocusNode = FocusNode();
+  OverlayEntry? overlayEntry;
 
   @override
   void initState() {
     super.initState();
     searchController.text = widget.searchText;
+
+    searchFocusNode.addListener(() {
+
+      bool hasFocus = searchFocusNode.hasFocus;
+      if (hasFocus)
+        showOverlay(context);
+      else
+        removeOverlay();
+    });
+
   }
 
   @override
@@ -143,34 +151,33 @@ class _BuildUIState extends State<_BuildUI> {
                   child: Padding(
                       child: CustomTextFieldWidget(
                           icon: Icon(Icons.search),
-                          onFieldSubmitted: (_) {},
+                          onFieldSubmitted: (_) {
+
+                            widget.bloc.add(StationByCodeEvent(searchController.text));
+
+                          },
                           controller: searchController,
+                          focusNode: searchFocusNode,
                           hintText: translate("labels.stationNumber"),
                           textInputType: TextInputType.number,
-                          textInputAction: TextInputAction.done),
+                          textInputAction: TextInputAction.search),
                       padding: EdgeInsetsDirectional.only(
                           start: SizeConfig().w(25),
                           end: SizeConfig().w(25),
                           top: SizeConfig().h(25))),
                   alignment: AlignmentDirectional.topCenter,
                 ),
-                Expanded(
+                (widget.state is LoadingStationState) ? CustomLoading() : (listOfStations.isEmpty) ?
+                    Image(image: AssetImage("assets/fail.png"))
+                    : Expanded(
                     child: SingleChildScrollView(
                         child: Column(
-                            children: strings
+                            children: listOfStations
                                 .map((i) => InkWell(
                                     onTap: () {
                                       Navigator.pushNamed(
                                           context, PurchasePage.route,
-                                          arguments: StationBranch(
-                                              id: 1,
-                                              address: "this is the address",
-                                              companyId: 1,
-                                              companyName: "Company Name",
-                                              longitude: 10.232154,
-                                              latitude: 10.25454,
-                                              name: "Station 1",
-                                              number: "1545"));
+                                          arguments: i);
                                     },
                                     child: Stack(
                                       children: [
@@ -186,14 +193,15 @@ class _BuildUIState extends State<_BuildUI> {
                                                 image: AssetImage(
                                                     "assets/station_row.png")),
                                         Column(
+                                          mainAxisAlignment: MainAxisAlignment.start,
                                           children: [
                                             Padding(
-                                              child: Text(
-                                                i,
+                                              child: Align(child: Text(
+                                                (isArabic()) ? i.arabicName! : i.englishName!,
                                                 style: TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 18),
-                                              ),
+                                              ), alignment: AlignmentDirectional.topStart,),
                                               padding:
                                                   EdgeInsetsDirectional.only(
                                                       start: SizeConfig().w(40),
@@ -201,10 +209,10 @@ class _BuildUIState extends State<_BuildUI> {
                                                       top: SizeConfig().w(20)),
                                             ),
                                             Padding(
-                                              child: Text(
-                                                i,
+                                              child: Align(child: Text(
+                                                i.code!,
                                                 style: TextStyle(fontSize: 16),
-                                              ),
+                                              ), alignment: AlignmentDirectional.topStart,),
                                               padding:
                                                   EdgeInsetsDirectional.only(
                                                 start: SizeConfig().w(40),
@@ -212,10 +220,10 @@ class _BuildUIState extends State<_BuildUI> {
                                               ),
                                             ),
                                             Padding(
-                                              child: Text(
-                                                i,
+                                              child: Align(child: Text(
+                                                (isArabic()) ? i.arabicAddress! : i.englishAddress!,
                                                 style: TextStyle(fontSize: 16),
-                                              ),
+                                              ), alignment: AlignmentDirectional.topStart,),
                                               padding:
                                                   EdgeInsetsDirectional.only(
                                                 start: SizeConfig().w(40),
@@ -247,5 +255,33 @@ class _BuildUIState extends State<_BuildUI> {
   void dispose() {
     super.dispose();
     searchController.dispose();
+  }
+
+  showOverlay(BuildContext context) {
+    if (overlayEntry != null) return;
+    OverlayState overlayState = Overlay.of(context)!;
+    overlayEntry = OverlayEntry(builder: (context) {
+      return Positioned(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          right: 0.0,
+          left: 0.0,
+          child: InputDoneView(title: translate("buttons.search"), onPressed: ()
+          {
+          widget.bloc.add(StationByCodeEvent(searchController.text));
+          },));
+    });
+
+    overlayState.insert(overlayEntry!);
+  }
+
+  search(){
+    widget.bloc.add(StationByCodeEvent(searchController.text));
+  }
+
+  removeOverlay() {
+    if (overlayEntry != null) {
+      overlayEntry!.remove();
+      overlayEntry = null;
+    }
   }
 }

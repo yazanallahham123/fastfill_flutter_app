@@ -59,3 +59,13 @@ class PasswordResetState extends UserState{
   @override
   List<Object?> get props => [this.passwordReset];
 }
+
+class UserProfileUpdated extends UserState{
+  final String profileUpdated;
+
+  const UserProfileUpdated(this.profileUpdated);
+
+  @override
+  List<Object?> get props => [this.profileUpdated];
+
+}

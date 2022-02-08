@@ -60,6 +60,7 @@
   "youRefueledWith": "قمت بتعبة"
 },
   "buttons" : {
+    "search": "بحث",
     "signUp": "إنشاء حساب",
     "donotHaveAccount": "ليس لديك حساب؟",
     "signIn" : "تسجيل دخول",

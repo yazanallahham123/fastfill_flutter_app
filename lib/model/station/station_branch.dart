@@ -7,22 +7,26 @@ part 'station_branch.g.dart';
 class StationBranch extends Equatable {
   final int? id;
   final int? companyId;
-  final String? companyName;
-  final String? name;
-  final String? number;
-  final String? address;
+  final String? arabicName;
+  final String? englishName;
+  final String? code;
+  final String? arabicAddress;
+  final String? englishAddress;
   final double? longitude;
   final double? latitude;
+  final bool? isFavorite;
 
   const StationBranch(
       {this.id,
         this.companyId,
-        this.companyName,
-        this.name,
-        this.number,
-        this.address,
+        this.arabicName,
+        this.englishName,
+        this.code,
+        this.arabicAddress,
+        this.englishAddress,
         this.longitude,
-        this.latitude});
+        this.latitude,
+        this.isFavorite});
 
   factory StationBranch.fromJson(Map<String, dynamic> json) => _$StationBranchFromJson(json);
 
@@ -32,11 +36,13 @@ class StationBranch extends Equatable {
   List<Object?> get props => [
     this.id,
     this.companyId,
-    this.companyName,
-    this.name,
-    this.number,
-    this.address,
+    this.arabicName,
+    this.englishName,
+    this.code,
+    this.arabicAddress,
+    this.englishAddress,
     this.longitude,
-    this.latitude
+    this.latitude,
+    this.isFavorite
   ];
 }

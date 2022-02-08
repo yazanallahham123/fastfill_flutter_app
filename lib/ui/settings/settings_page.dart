@@ -33,6 +33,16 @@ class _SettingsPageState extends State<SettingsPage> {
   bool receiveNotifications = false;
 
   @override
+  void initState() {
+    super.initState();
+    LocalData().getReceiveNotifications().then((v){
+      setState(() {
+        receiveNotifications = v;
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
         statusBarColor: Colors.transparent,
@@ -107,6 +117,8 @@ class _SettingsPageState extends State<SettingsPage> {
                             });
                           }
                         }
+
+                        LocalData().setReceiveNotifications(receiveNotifications);
                       }
 
                       , value: receiveNotifications,)

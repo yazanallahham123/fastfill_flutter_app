@@ -13,6 +13,7 @@ class LocalData {
   final _firebaseTokenKey = "FToken";
   final _user = "User";
   final _languageKey = "Language";
+  final _receiveNotifications = "ReceiveNotifications";
 
   Future<SharedPreferences?> get _getSharedPref async {
     if (_preferences != null)
@@ -32,6 +33,11 @@ class LocalData {
   setCurrentUserValue(User user) async {
     await _getSharedPref;
     await _preferences!.setString(_user, json.encode(user));
+  }
+
+  setReceiveNotifications(bool receiveNotifications) async {
+    await _getSharedPref;
+    await _preferences!.setBool(_receiveNotifications, receiveNotifications);
   }
 
   Future<User> getCurrentUserValue() async {
@@ -59,6 +65,11 @@ class LocalData {
   Future<String> getFTokenValue() async {
     await _getSharedPref;
     return _preferences!.getString(_firebaseTokenKey) ?? "";
+  }
+
+  Future<bool> getReceiveNotifications() async {
+    await _getSharedPref;
+    return _preferences!.getBool(_receiveNotifications) ?? true;
   }
 
   setTokenValue(String newValue) async {

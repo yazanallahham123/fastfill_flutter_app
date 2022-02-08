@@ -3,6 +3,9 @@ import 'dart:io';
 import 'package:fastfill/bloc/login/bloc.dart';
 import 'package:fastfill/bloc/login/event.dart';
 import 'package:fastfill/bloc/login/state.dart';
+import 'package:fastfill/bloc/user/bloc.dart';
+import 'package:fastfill/bloc/user/event.dart';
+import 'package:fastfill/bloc/user/state.dart';
 import 'package:fastfill/common_widgets/app_widgets/back_button_widget.dart';
 import 'package:fastfill/common_widgets/app_widgets/custom_loading.dart';
 import 'package:fastfill/common_widgets/buttons/custom_button.dart';
@@ -12,14 +15,21 @@ import 'package:fastfill/common_widgets/custom_text_field_widgets/textfield_pass
 import 'package:fastfill/helper/app_colors.dart';
 import 'package:fastfill/helper/const_sizes.dart';
 import 'package:fastfill/helper/const_styles.dart';
+import 'package:fastfill/helper/firebase_helper.dart';
 import 'package:fastfill/helper/font_styles.dart';
 import 'package:fastfill/helper/size_config.dart';
 import 'package:fastfill/helper/toast.dart';
 import 'package:fastfill/model/login/login_body.dart';
+import 'package:fastfill/model/user/update_profile_body.dart';
+import 'package:fastfill/model/user/user.dart' as UserModel;
+import 'package:fastfill/ui/auth/login_page.dart';
+import 'package:fastfill/ui/auth/otp_validation_page.dart';
 import 'package:fastfill/ui/auth/reset_password_phone_number_page.dart';
 import 'package:fastfill/ui/auth/signup_page.dart';
 import 'package:fastfill/ui/home/home_page.dart';
 import 'package:fastfill/utils/local_data.dart';
+import 'package:fastfill/utils/misc.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,38 +48,37 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<LoginBloc>(
-        create: (BuildContext context) => LoginBloc(),//.add(InitEvent()),
+    return BlocProvider<UserBloc>(
+        create: (BuildContext context) => UserBloc(),//.add(InitEvent()),
         child: Builder(builder: (context) => _buildPage(context)));
   }
 
   Widget _buildPage(BuildContext context) {
-    final bloc = BlocProvider.of<LoginBloc>(context);
+    final bloc = BlocProvider.of<UserBloc>(context);
 
-    return BlocListener<LoginBloc, LoginState>(
+    return BlocListener<UserBloc, UserState>(
         listener: (context, state) async {
-          if (state is ErrorLoginState)
+          if (state is ErrorUserState)
             pushToast(state.error);
-          else if (state is SuccessLoginState) {
-            await LocalData().setCurrentUserValue(
-                state.loginUser.value!.userDetails!);
-            await LocalData().setTokenValue(state.loginUser.value!.token!);
-            pushToast(translate("messages.youLoggedSuccessfully"));
-            Navigator.pushNamedAndRemoveUntil(context, HomePage.route, (Route<dynamic> route) => false);
+          else if (state is UserProfileUpdated) {
+            UserModel.User user = UserModel.User(lastName: null, firstName: null, disabled: null, id: null, mobileNumber: null, roleId: null, username: null);
+            await LocalData().setCurrentUserValue(user);
+            Navigator.pushNamedAndRemoveUntil(
+                context, LoginPage.route, (Route<dynamic> route) => false);
           }
         },
         bloc: bloc,
-        child: BlocBuilder<LoginBloc, LoginState>(
+        child: BlocBuilder<UserBloc, UserState>(
             bloc: bloc,
-            builder: (context, LoginState state) {
+            builder: (context, UserState state) {
               return _BuildUI(bloc: bloc, state: state);
             }));
   }
 }
 
 class _BuildUI extends StatefulWidget {
-  final LoginBloc bloc;
-  final LoginState state;
+  final UserBloc bloc;
+  final UserState state;
 
   _BuildUI({required this.bloc, required this.state});
 
@@ -149,7 +158,7 @@ class _BuildUIState extends State<_BuildUI> {
                 ),
                 ),
 
-                if (widget.state is LoadingLoginState)
+                if (widget.state is LoadingUserState)
                   Padding(child: const CustomLoading(),
                     padding: EdgeInsetsDirectional.only(top: SizeConfig().h(72), bottom:SizeConfig().h(92)),)
                 else
@@ -161,6 +170,7 @@ class _BuildUIState extends State<_BuildUI> {
                             borderColor: buttonColor1,
                             title: translate("buttons.save"),
                             onTap: () {
+                              _updateProfile();
 
                             })),
 
@@ -172,6 +182,66 @@ class _BuildUIState extends State<_BuildUI> {
         ));
   }
 
+  _updateProfile() async {
+    if ((phoneController.text.isNotEmpty) && (nameController.text.isNotEmpty)){
+      if (!validateMobile(phoneController.text))
+        FocusScope.of(context).requestFocus(phoneNode);
+      if (!validateName(nameController.text))
+        FocusScope.of(context).requestFocus(nameNode);
+
+      UserModel.User u = await LocalData().getCurrentUserValue();
+      if (u != null) {
+        if (u.id != null) {
+          if (u.mobileNumber != phoneController.text)
+            {
+              widget.bloc.add(CallOTPScreenEvent());
+              await auth.verifyPhoneNumber(
+                  phoneNumber: countryCode + u.mobileNumber!,
+                  timeout: const Duration(seconds: 5),
+                  verificationCompleted: await (PhoneAuthCredential credential) {
+                    print("OTP is valid");
+                  },
+                  verificationFailed: await (FirebaseAuthException e) {},
+                  codeSent: await (String verificationId, int? resendToken) async {
+                    if (Platform.isIOS) {
+                      String smsCode = await Navigator.pushNamed(
+                          context, OTPValidationPage.route,
+                          arguments: verificationId) as String;
+
+                      if (smsCode.isNotEmpty) {
+                        PhoneAuthCredential credential = PhoneAuthProvider.credential(
+                            verificationId: verificationId, smsCode: smsCode);
+                        auth.signInWithCredential(credential).then((value) {
+                          widget.bloc.add(UpdateProfileEvent(UpdateProfileBody(name: nameController.text, mobileNumber: phoneController.text)));
+                        }).catchError((e) {
+                          widget.bloc.add(ErrorUserOTPVerificationEvent(
+                              (e.message != null) ? e.message! : e.code));
+                        });
+                      }
+                    }
+                  },
+                  codeAutoRetrievalTimeout: await (String verificationId) async {
+                    String smsCode = await Navigator.pushNamed(
+                        context, OTPValidationPage.route,
+                        arguments: verificationId) as String;
+                    if (smsCode.isNotEmpty) {
+                      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+                          verificationId: verificationId, smsCode: smsCode);
+                      auth.signInWithCredential(credential).then((value) {
+                        widget.bloc.add(UpdateProfileEvent(UpdateProfileBody(name: nameController.text, mobileNumber: phoneController.text)));
+                      }).catchError((e) {
+                        widget.bloc.add(ErrorUserOTPVerificationEvent(
+                            (e.message != null) ? e.message! : e.code));
+                      });
+                    }
+                  });
+            }
+        }
+      }
+
+    }
+    else {}
+  }
 
   void hideKeyboard(BuildContext context) {
     FocusScopeNode currentFocus = FocusScope.of(context);

@@ -60,6 +60,7 @@
   "youRefueledWith": "You refueled with"
 },
 "buttons" : {
+  "search": "Search",
   "signUp": "Sign Up",
   "donotHaveAccount": "Don't have account?",
   "signIn" : "Sign In",

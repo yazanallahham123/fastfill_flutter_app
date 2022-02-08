@@ -4,6 +4,7 @@ import 'package:fastfill/helper/size_config.dart';
 import 'package:fastfill/ui/home/transactions_tab_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'favorites_tab_page.dart';
@@ -50,15 +51,20 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            InkWell(
+            Expanded(child: InkWell(
               onTap: () {
                 setState(() {
                   pageIndex = 0;
                 });
               },
               child: Container(
+                  decoration: BoxDecoration(
+                      border: BorderDirectional(end: BorderSide(color: Colors.white, width: 0.05, style: BorderStyle.solid))
+
+                  ),
+                  padding: EdgeInsetsDirectional.fromSTEB(25, 10, 10, 10),
                 //alignment: Alignment.topLeft,
                   height: SizeConfig().h(60),
                   width: SizeConfig().w(25),
@@ -67,9 +73,9 @@ class _HomePageState extends State<HomePage> {
                     width: SizeConfig().w(25),
                     color: (pageIndex == 0) ? activeTabColor : notActiveTabColor,
                   )),
-            ),
+            ), flex: 1,),
 
-            InkWell(
+            Expanded(child: InkWell(
               onTap: () {
                 setState(() {
                   pageIndex = 1;
@@ -77,6 +83,12 @@ class _HomePageState extends State<HomePage> {
               },
               child: Container(
                 //alignment: Alignment.topLeft,
+                  decoration: BoxDecoration(
+                      border: BorderDirectional(end: BorderSide(color: Colors.white, width: 0.05, style: BorderStyle.solid))
+
+                  ),
+
+                  padding: EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
                   height: SizeConfig().h(60),
                   width: SizeConfig().w(25),
                   child: SvgPicture.asset(
@@ -84,16 +96,22 @@ class _HomePageState extends State<HomePage> {
                     width: SizeConfig().w(25),
                     color: (pageIndex == 1) ? activeTabColor : notActiveTabColor,
                   )),
-            ),
+            ),flex: 1,),
 
-            InkWell(
+            Expanded(child: InkWell(
               onTap: () {
                 setState(() {
                   pageIndex = 2;
                 });
               },
               child: Container(
+                  padding: EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
                 //alignment: Alignment.topLeft,
+                  decoration: BoxDecoration(
+                      border: BorderDirectional(end: BorderSide(color: Colors.white, width: 0.05, style: BorderStyle.solid))
+
+                  ),
+
                   height: SizeConfig().h(60),
                   width: SizeConfig().w(25),
                   child: SvgPicture.asset(
@@ -101,15 +119,16 @@ class _HomePageState extends State<HomePage> {
                     width: SizeConfig().w(25),
                     color: (pageIndex == 2) ? activeTabColor : notActiveTabColor,
                   )),
-            ),
+            ),flex: 1,),
 
-            InkWell(
+            Expanded(child: InkWell(
               onTap: () {
                 setState(() {
                   pageIndex = 3;
                 });
               },
               child: Container(
+                  padding: EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
                 //alignment: Alignment.topLeft,
                   height: SizeConfig().h(60),
                   width: SizeConfig().w(25),
@@ -118,7 +137,7 @@ class _HomePageState extends State<HomePage> {
                     width: SizeConfig().w(25),
                     color: (pageIndex == 3) ? activeTabColor : notActiveTabColor,
                   )),
-            )
+            ),flex: 1,)
           ],
         ),
       ),

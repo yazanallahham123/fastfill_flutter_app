@@ -45,11 +45,29 @@ class GotFavoriteStationsState extends StationState{
   List<Object?> get props => [this.favoriteStations];
 }
 
-class GotStationByNumberState extends StationState{
+class GotStationByCodeState extends StationState{
   final StationBranch stationBranch;
 
-  const GotStationByNumberState(this.stationBranch);
+  const GotStationByCodeState(this.stationBranch);
 
   @override
   List<Object?> get props => [this.stationBranch];
+}
+
+class AddedStationToFavorite extends StationState{
+  final bool result;
+
+  const AddedStationToFavorite(this.result);
+
+  @override
+  List<Object?> get props => [this.result];
+}
+
+class RemovedStationFromFavorite extends StationState{
+  final bool result;
+
+  const RemovedStationFromFavorite(this.result);
+
+  @override
+  List<Object?> get props => [this.result];
 }

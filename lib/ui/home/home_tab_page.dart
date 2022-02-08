@@ -1,9 +1,9 @@
-import 'dart:io';
 import 'dart:math';
-
-import 'package:fastfill/bloc/otp/bloc.dart';
-import 'package:fastfill/bloc/otp/state.dart';
+import 'package:fastfill/bloc/station/bloc.dart';
+import 'package:fastfill/bloc/station/event.dart';
+import 'package:fastfill/bloc/station/state.dart';
 import 'package:fastfill/common_widgets/app_widgets/custom_loading.dart';
+import 'package:fastfill/common_widgets/app_widgets/keyboard_done_widget.dart';
 import 'package:fastfill/common_widgets/buttons/custom_button.dart';
 import 'package:fastfill/common_widgets/custom_text_field_widgets/custom_textfield_widget.dart';
 import 'package:fastfill/helper/app_colors.dart';
@@ -12,6 +12,7 @@ import 'package:fastfill/helper/size_config.dart';
 import 'package:fastfill/helper/toast.dart';
 import 'package:fastfill/model/station/station_branch.dart';
 import 'package:fastfill/model/user/user.dart';
+import 'package:fastfill/streams/add_remove_favorite_stream.dart';
 import 'package:fastfill/ui/search/search_page.dart';
 import 'package:fastfill/ui/station/purchase_page.dart';
 import 'package:fastfill/utils/local_data.dart';
@@ -20,29 +21,56 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 
-class HomeTabPage extends StatelessWidget {
+class HomeTabPage extends StatefulWidget {
   const HomeTabPage({Key? key}) : super(key: key);
 
   @override
+  State<HomeTabPage> createState() => _HomeTabPageState();
+}
+
+List<StationBranch> favoriteStations = [];
+List<StationBranch> frequentlyVistedStations = [];
+
+
+class _HomeTabPageState extends State<HomeTabPage> {
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider<OTPBloc>(
-        create: (BuildContext context) => OTPBloc(), //.add(InitEvent()),
+    return BlocProvider<StationBloc>(
+        create: (BuildContext context) => StationBloc()..add(InitStationEvent()),
         child: Builder(builder: (context) => _buildPage(context)));
   }
 
   Widget _buildPage(BuildContext context) {
-    final bloc = BlocProvider.of<OTPBloc>(context);
+    final bloc = BlocProvider.of<StationBloc>(context);
 
-    return BlocListener<OTPBloc, OTPState>(
+    return BlocListener<StationBloc, StationState>(
         listener: (context, state) async {
-          if (state is ErrorOTPState)
+          if (state is InitStationState)
+            {
+              bloc.add(FavoriteStationsEvent());
+              bloc.add(FrequentlyVisitedStationsEvent());
+            }
+          else if (state is ErrorStationState)
             pushToast(state.error);
-          else if (state is SuccessOTPCodeVerifiedState) {}
+          else if (state is GotFavoriteStationsState)
+            {
+              if (state.favoriteStations.companiesBranches != null)
+               favoriteStations = state.favoriteStations.companiesBranches!;
+              else
+                favoriteStations = [];
+            }
+          else if (state is GotFrequentlyVisitedStationsState)
+            {
+              if (state.frequentlyVisitedStations.companiesBranches != null)
+                frequentlyVistedStations = state.frequentlyVisitedStations.companiesBranches!;
+              else
+                frequentlyVistedStations = [];
+            }
         },
         bloc: bloc,
         child: BlocBuilder(
             bloc: bloc,
-            builder: (context, OTPState state) {
+            builder: (context, StationState state) {
               return _BuildUI(bloc: bloc, state: state);
             }));
   }
@@ -54,29 +82,58 @@ User _buildUserInstance(AsyncSnapshot<User> snapshot) {
   return User();
 }
 
-class _BuildUI extends StatelessWidget {
-  final OTPBloc bloc;
-  final OTPState state;
-
-  final List<String> strings = [
-    "abc",
-    "def",
-    "ghi",
-    "klm",
-    "abc",
-    "def",
-    "ghi",
-    "klm",
-    "abc",
-    "def",
-    "ghi",
-    "klm"
-  ];
+class _BuildUI extends StatefulWidget {
+  final StationBloc bloc;
+  final StationState state;
 
   _BuildUI({required this.bloc, required this.state});
 
-  final otpCodeController = TextEditingController();
+  @override
+  State<_BuildUI> createState() => _BuildUIState();
+}
+
+class _BuildUIState extends State<_BuildUI> {
+  OverlayEntry? overlayEntry;
+
   final searchController = TextEditingController();
+  final searchFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    searchFocusNode.addListener(() {
+      bool hasFocus = searchFocusNode.hasFocus;
+      if (hasFocus)
+        showOverlay(context);
+      else
+        removeOverlay();
+    });
+
+    addRemoveFavoriteStreamController.stream.listen((event) {
+      if (mounted) {
+        setState(() {
+          if (event.isFavorite != null) {
+            if (!event.isFavorite!)
+              favoriteStations.removeWhere((fs) => fs.id == event.id);
+            else
+              favoriteStations.add(event);
+          }
+          else
+            favoriteStations.removeWhere((fs) => fs.id == event.id);
+
+          if (frequentlyVistedStations
+              .firstWhere((frs) => frs.id == event.id,
+              orElse: () => StationBranch())
+              .id != null) {
+            int idx = frequentlyVistedStations.indexWhere((frs) =>
+            frs.id == event.id);
+            frequentlyVistedStations[idx] = event;
+          }
+        });
+      };
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
@@ -179,7 +236,7 @@ class _BuildUI extends StatelessWidget {
                     })
               ],
             ),
-            Container(
+            (widget.state is LoadingStationState) ? CustomLoading() : Container(
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: const BorderRadius.only(
@@ -194,13 +251,10 @@ class _BuildUI extends StatelessWidget {
                       Padding(
                           child: CustomTextFieldWidget(
                               icon: Icon(Icons.search),
-                              onFieldSubmitted: (_) {
-                                Navigator.pushNamed(
-                                    context, SearchPage.route, arguments: searchController.text);
-                              },
+                              focusNode: searchFocusNode,
                               controller: searchController,
                               hintText: translate("labels.stationNumber"),
-                              textInputType: TextInputType.name,
+                              textInputType: TextInputType.number,
                               textInputAction: TextInputAction.search),
                           padding: EdgeInsetsDirectional.only(
                               start: SizeConfig().w(30),
@@ -221,13 +275,13 @@ class _BuildUI extends StatelessWidget {
                         alignment: AlignmentDirectional.topStart,
                       ),
                       Column(
-                          children: strings
+                          children: favoriteStations
                               .map((i) =>
                               InkWell(
                                   onTap: () {
                                     Navigator.pushNamed(
                                         context, PurchasePage.route,
-                                        arguments: StationBranch(id: 1, address: "this is the address", companyId: 1, companyName: "Company Name", longitude: 10.232154, latitude: 10.25454, name: "Station 1", number: "1545"));
+                                        arguments: i);
                                   },
                                   child:
                               Stack(
@@ -244,9 +298,9 @@ class _BuildUI extends StatelessWidget {
                                                   "assets/station_row.png")),
                                       Column(
                                         children: [
-                                          Padding(
+                                          Align(child: Padding(
                                             child: Text(
-                                              i,
+                                             (isArabic()) ? i.arabicName! : i.englishName!,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 18),
@@ -255,27 +309,27 @@ class _BuildUI extends StatelessWidget {
                                                 start: SizeConfig().w(40),
                                                 end: SizeConfig().w(40),
                                                 top: SizeConfig().w(20)),
-                                          ),
-                                          Padding(
+                                          ), alignment: AlignmentDirectional.topStart,),
+                                          Align(child: Padding(
                                             child: Text(
-                                              i,
+                                              i.code!,
                                               style: TextStyle(fontSize: 16),
                                             ),
                                             padding: EdgeInsetsDirectional.only(
                                               start: SizeConfig().w(40),
                                               end: SizeConfig().w(40),
                                             ),
-                                          ),
-                                          Padding(
+                                          ), alignment: AlignmentDirectional.topStart,),
+                                          Align(child: Padding(
                                             child: Text(
-                                              i,
+                                            (isArabic()) ? i.arabicAddress! : i.englishAddress!,
                                               style: TextStyle(fontSize: 16),
                                             ),
                                             padding: EdgeInsetsDirectional.only(
                                               start: SizeConfig().w(40),
                                               end: SizeConfig().w(40),
                                             ),
-                                          ),
+                                          ), alignment: AlignmentDirectional.topStart,),
                                         ],
                                       )
                                     ],
@@ -297,8 +351,11 @@ class _BuildUI extends StatelessWidget {
                         alignment: AlignmentDirectional.topStart,
                       ),
                       Column(
-                          children: strings
-                              .map((i) => Stack(
+                          children: frequentlyVistedStations
+                              .map((i) =>
+                              InkWell(child:
+
+                              Stack(
                                     children: [
                                       (isArabic())
                                           ? Transform(
@@ -312,9 +369,9 @@ class _BuildUI extends StatelessWidget {
                                                   "assets/station.png")),
                                       Column(
                                         children: [
-                                          Padding(
+                                          Align(child: Padding(
                                             child: Text(
-                                              i,
+                                              (isArabic()) ? i.arabicName! : i.englishName!,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 18),
@@ -323,31 +380,35 @@ class _BuildUI extends StatelessWidget {
                                                 start: SizeConfig().w(40),
                                                 end: SizeConfig().w(40),
                                                 top: SizeConfig().w(20)),
-                                          ),
-                                          Padding(
+                                          ),alignment: AlignmentDirectional.topStart,),
+                                          Align(child: Padding(
                                             child: Text(
-                                              i,
+                                              i.code!,
                                               style: TextStyle(fontSize: 16),
                                             ),
                                             padding: EdgeInsetsDirectional.only(
                                               start: SizeConfig().w(40),
                                               end: SizeConfig().w(40),
                                             ),
-                                          ),
-                                          Padding(
+                                          ),alignment: AlignmentDirectional.topStart,),
+                                          Align(child: Padding(
                                             child: Text(
-                                              i,
+                                              (isArabic()) ? i.arabicAddress! : i.englishAddress!,
                                               style: TextStyle(fontSize: 16),
                                             ),
                                             padding: EdgeInsetsDirectional.only(
                                               start: SizeConfig().w(40),
                                               end: SizeConfig().w(40),
                                             ),
-                                          ),
+                                          ),alignment: AlignmentDirectional.topStart,)
                                         ],
                                       )
                                     ],
-                                  ))
+                                  ), onTap: () {
+                                Navigator.pushNamed(
+                                    context, PurchasePage.route,
+                                    arguments: i);
+                              },))
                               .toList()),
                     ],
                   ),
@@ -356,5 +417,36 @@ class _BuildUI extends StatelessWidget {
             )
           ],
         )));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    searchController.dispose();
+  }
+
+  showOverlay(BuildContext context) {
+    if (overlayEntry != null) return;
+    OverlayState overlayState = Overlay.of(context)!;
+    overlayEntry = OverlayEntry(builder: (context) {
+      return Positioned(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          right: 0.0,
+          left: 0.0,
+          child: InputDoneView(title: translate("buttons.search"), onPressed: ()
+          {
+            Navigator.pushNamed(
+                context, SearchPage.route, arguments: searchController.text);
+          },));
+    });
+
+    overlayState.insert(overlayEntry!);
+  }
+
+  removeOverlay() {
+    if (overlayEntry != null) {
+      overlayEntry!.remove();
+      overlayEntry = null;
+    }
   }
 }

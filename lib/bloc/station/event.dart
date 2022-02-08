@@ -9,8 +9,8 @@ abstract class StationEvent extends Equatable{
   List<Object?> get props => [];
 }
 
-class InitEvent extends StationEvent {
-  const InitEvent();
+class InitStationEvent extends StationEvent {
+  const InitStationEvent();
 }
 
 class FrequentlyVisitedStationsEvent extends StationEvent{
@@ -21,10 +21,27 @@ class FavoriteStationsEvent extends StationEvent{
   const FavoriteStationsEvent();
 }
 
-class StationByNumberEvent extends StationEvent{
-  final int number;
-  const StationByNumberEvent(this.number);
+class StationByCodeEvent extends StationEvent{
+  final String code;
+  const StationByCodeEvent(this.code);
 
   @override
-  List<Object?> get props => [this.number];
+  List<Object?> get props => [this.code];
 }
+
+class AddStationToFavoriteEvent extends StationEvent{
+  final int stationId;
+  const AddStationToFavoriteEvent(this.stationId);
+
+  @override
+  List<Object?> get props => [this.stationId];
+}
+
+class RemoveStationFromFavoriteEvent extends StationEvent{
+  final int stationId;
+  const RemoveStationFromFavoriteEvent(this.stationId);
+
+  @override
+  List<Object?> get props => [this.stationId];
+}
+

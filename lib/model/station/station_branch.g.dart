@@ -10,22 +10,26 @@ StationBranch _$StationBranchFromJson(Map<String, dynamic> json) =>
     StationBranch(
       id: json['id'] as int?,
       companyId: json['companyId'] as int?,
-      companyName: json['companyName'] as String?,
-      name: json['name'] as String?,
-      number: json['number'] as String?,
-      address: json['address'] as String?,
+      arabicName: json['arabicName'] as String?,
+      englishName: json['englishName'] as String?,
+      code: json['code'] as String?,
+      arabicAddress: json['arabicAddress'] as String?,
+      englishAddress: json['englishAddress'] as String?,
       longitude: (json['longitude'] as num?)?.toDouble(),
       latitude: (json['latitude'] as num?)?.toDouble(),
+      isFavorite: json['isFavorite'] as bool?,
     );
 
 Map<String, dynamic> _$StationBranchToJson(StationBranch instance) =>
     <String, dynamic>{
       'id': instance.id,
       'companyId': instance.companyId,
-      'companyName': instance.companyName,
-      'name': instance.name,
-      'number': instance.number,
-      'address': instance.address,
+      'arabicName': instance.arabicName,
+      'englishName': instance.englishName,
+      'code': instance.code,
+      'arabicAddress': instance.arabicAddress,
+      'englishAddress': instance.englishAddress,
       'longitude': instance.longitude,
       'latitude': instance.latitude,
+      'isFavorite': instance.isFavorite,
     };

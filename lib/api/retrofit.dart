@@ -5,11 +5,13 @@ import 'package:fastfill/model/otp/otp_resend_response_body.dart';
 import 'package:fastfill/model/otp/otp_send_response_body.dart';
 import 'package:fastfill/model/otp/otp_validation_body.dart';
 import 'package:fastfill/model/otp/otp_verify_response_body.dart';
+import 'package:fastfill/model/station/add_remove_station_favorite_body.dart';
 import 'package:fastfill/model/station/station_branch.dart';
 import 'package:fastfill/model/station/station_branches_with_pagination.dart';
 import 'package:fastfill/model/user/reset_password_body.dart';
 import 'package:fastfill/model/user/signedup_user.dart';
 import 'package:fastfill/model/user/signup_body.dart';
+import 'package:fastfill/model/user/update_profile_body.dart';
 import 'package:fastfill/model/user/user.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart' hide Headers;
@@ -32,16 +34,6 @@ abstract class ApiClient {
   @PUT(Apis.user+"/resetPassword")
   Future<String> resetPassword(@Body() ResetPasswordBody? resetPasswordBody);
 
-  @GET(Apis.station+"/frequentlyVisited")
-  Future<StationBranchesWithPagination> getFrequentlyVisitedStationsBranches(@Header("Authorization") String token);
-
-  @GET(Apis.station+"/favorites")
-  Future<StationBranchesWithPagination> getFavoritesStationsBranches(@Header("Authorization") String token);
-
-  @GET(Apis.station+"/getByNumber/{Number}")
-  Future<StationBranch> getStationByNumber(@Header("Authorization") String token,
-      @Path("Number") int number);
-
   //SMS
 
   @POST(Apis.otpSendCode)
@@ -58,5 +50,30 @@ abstract class ApiClient {
   @MultiPart()
   @Headers(<String, dynamic>{"Content-Type": "multi-part/form-data", "accept":"*/*", "Authorization":"Token ba7758237f501dcc97cf77292607640a4afd32bb"})
   Future<OTPVerifyResponseBody> otpVerifyCode(@Part(name: "otp_id") String otp_id, @Part(name: "code") String code);
+
+  //Station
+
+  @GET(Apis.frequentlyVisitedCompaniesBranches)
+  Future<StationBranchesWithPagination> getFrequentlyVisitedStationsBranches(@Header("Authorization") String token);
+
+  @GET(Apis.favoriteCompaniesBranches)
+  Future<StationBranchesWithPagination> getFavoritesStationsBranches(@Header("Authorization") String token);
+
+  @GET(Apis.companyBranchByCode+"/{code}")
+  Future<StationBranch> getStationByCode(@Header("Authorization") String token,
+      @Path("code") String code);
+
+  @PUT(Apis.addCompanyToFavorite)
+  Future<bool> addStationToFavorite(@Header("Authorization") String token,
+      @Body() AddRemoveStationFavoriteBody addRemoveStationFavoriteBody);
+
+  @PUT(Apis.removeCompanyFromFavorite)
+  Future<bool> removeStationFromFavorite(@Header("Authorization") String token,
+      @Body() AddRemoveStationFavoriteBody addRemoveStationFavoriteBody);
+
+
+  //User
+  @PUT(Apis.updateUserProfile)
+  Future<String> updateUserProfile(@Header("Authorization") String token, @Body() UpdateProfileBody updateProfileBody);
 
 }

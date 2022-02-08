@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:fastfill/bloc/user/bloc.dart';
@@ -21,6 +22,7 @@ import 'package:fastfill/model/user/signup_body.dart';
 import 'package:fastfill/ui/auth/reset_password_password_page.dart';
 import 'package:fastfill/ui/home/home_page.dart';
 import 'package:fastfill/utils/local_data.dart';
+import 'package:fastfill/utils/misc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -139,14 +141,37 @@ class _BuildUI extends StatelessWidget {
       else {
         userBloc.add(CallOTPScreenEvent());
         await auth.verifyPhoneNumber(
-            phoneNumber: phoneController.text,
+            phoneNumber: countryCode + phoneController.text,
+            timeout: const Duration(seconds: 5),
             verificationCompleted: await (PhoneAuthCredential credential) {},
             verificationFailed: await (FirebaseAuthException e) {},
             codeSent: await (String verificationId, int? resendToken) async {
+              if (Platform.isIOS) {
+                String smsCode = await Navigator.pushNamed(
+                    context, OTPValidationPage.route,
+                    arguments: verificationId) as String;
+
+                if (smsCode.isNotEmpty) {
+                  PhoneAuthCredential credential = PhoneAuthProvider.credential(
+                      verificationId: verificationId, smsCode: smsCode);
+                  auth.signInWithCredential(credential).then((value) {
+                    userBloc.add(SuccessfulUserOTPVerificationEvent(
+                        null,
+                        ResetPasswordBody(
+                            verificationId: verificationId,
+                            newPassword: "",
+                            mobileNumber: phoneController.text)));
+                  }).catchError((e) {
+                    userBloc.add(ErrorUserOTPVerificationEvent(
+                        (e.message != null) ? e.message! : e.code));
+                  });
+                }
+              }
+            },
+            codeAutoRetrievalTimeout: await (String verificationId) async {
               String smsCode = await Navigator.pushNamed(
                   context, OTPValidationPage.route,
                   arguments: verificationId) as String;
-
               if (smsCode.isNotEmpty) {
                 PhoneAuthCredential credential = PhoneAuthProvider.credential(
                     verificationId: verificationId, smsCode: smsCode);
@@ -162,8 +187,7 @@ class _BuildUI extends StatelessWidget {
                       (e.message != null) ? e.message! : e.code));
                 });
               }
-            },
-            codeAutoRetrievalTimeout: await (String verificationId) {});
+            });
       }
     } else
       pushToast(translate("messages.theseFieldsMustBeFilledIn"));

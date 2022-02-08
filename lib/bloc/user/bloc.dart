@@ -4,6 +4,7 @@ import 'package:fastfill/api/methods.dart';
 import 'package:fastfill/api/retrofit.dart';
 import 'package:fastfill/model/user/signedup_user.dart';
 import 'package:fastfill/model/user/user.dart';
+import 'package:fastfill/utils/local_data.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:fastfill/model/login/login_user.dart' as LoginModel;
 import 'event.dart';
@@ -29,6 +30,30 @@ class UserBloc extends Bloc<UserEvent, UserState> {
      on<CallOTPScreenEvent>((event, emit) async {
        emit(LoadingUserState());
      });
+
+    on<UpdateProfileEvent>((event, emit) async {
+      try {
+        emit(LoadingUserState());
+        var token = await LocalData().getBearerTokenValue();
+        if (token != null) {
+          await mClient.updateUserProfile(token, event.updateProfileBody).then((v) {
+            emit(UserProfileUpdated(v));
+          });
+        }
+      } on DioError catch (e) {
+        if (e.response != null) {
+          if (e.response!.statusCode == 400 || e.response!.statusCode == 404)
+            emit(ErrorUserState(
+                translate("messages.phoneNumberOrPasswordIncorrect")));
+          else {
+            print("Error" + e.toString());
+            emit(ErrorUserState(dioErrorMessageAdapter(e)));
+          }
+        }
+        else
+          emit(ErrorUserState(dioErrorMessageAdapter(e)));
+      }
+    });
 
      on<SignupEvent>((event, emit) async {
        try {

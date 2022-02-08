@@ -9,7 +9,7 @@ part of 'station_branches_with_pagination.dart';
 StationBranchesWithPagination _$StationBranchesWithPaginationFromJson(
         Map<String, dynamic> json) =>
     StationBranchesWithPagination(
-      stationBranches: (json['stationBranches'] as List<dynamic>?)
+      companiesBranches: (json['companiesBranches'] as List<dynamic>?)
           ?.map((e) => StationBranch.fromJson(e as Map<String, dynamic>))
           .toList(),
       paginationInfo: json['paginationInfo'] == null
@@ -21,6 +21,6 @@ StationBranchesWithPagination _$StationBranchesWithPaginationFromJson(
 Map<String, dynamic> _$StationBranchesWithPaginationToJson(
         StationBranchesWithPagination instance) =>
     <String, dynamic>{
-      'stationBranches': instance.stationBranches,
+      'companiesBranches': instance.companiesBranches,
       'paginationInfo': instance.paginationInfo,
     };

@@ -5,6 +5,7 @@ import 'package:fastfill/bloc/login/bloc.dart';
 import 'package:fastfill/bloc/login/event.dart';
 import 'package:fastfill/bloc/login/state.dart';
 import 'package:fastfill/bloc/station/bloc.dart';
+import 'package:fastfill/bloc/station/event.dart';
 import 'package:fastfill/bloc/station/state.dart';
 import 'package:fastfill/common_widgets/app_widgets/back_button_widget.dart';
 import 'package:fastfill/common_widgets/app_widgets/custom_loading.dart';
@@ -21,7 +22,9 @@ import 'package:fastfill/helper/methods.dart';
 import 'package:fastfill/helper/size_config.dart';
 import 'package:fastfill/helper/toast.dart';
 import 'package:fastfill/model/login/login_body.dart';
+import 'package:fastfill/model/station/add_remove_station_favorite_body.dart';
 import 'package:fastfill/model/station/station_branch.dart';
+import 'package:fastfill/streams/add_remove_favorite_stream.dart';
 import 'package:fastfill/ui/auth/reset_password_phone_number_page.dart';
 import 'package:fastfill/ui/auth/signup_page.dart';
 import 'package:fastfill/ui/home/home_page.dart';
@@ -47,10 +50,14 @@ class PurchasePage extends StatefulWidget {
   State<PurchasePage> createState() => _PurchasePage(this.stationBranch);
 }
 
+bool isAddedToFavorite = false;
+
 class _PurchasePage extends State<PurchasePage> {
 
   final StationBranch stationBranch;
-  _PurchasePage(this.stationBranch);
+  _PurchasePage(this.stationBranch){
+    isAddedToFavorite = this.stationBranch.isFavorite ?? false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +73,54 @@ class _PurchasePage extends State<PurchasePage> {
         listener: (context, state) async {
           if (state is ErrorStationState)
             pushToast(state.error);
-        },
+          else if (state is AddedStationToFavorite)
+            {
+              if (mounted) {
+                setState(() {
+                  isAddedToFavorite = true;
+                  StationBranch sb = StationBranch(id: stationBranch.id,
+                  arabicName: stationBranch.arabicName,
+                    englishName:  stationBranch.englishName,
+                    arabicAddress: stationBranch.arabicAddress,
+                    englishAddress: stationBranch.englishAddress,
+                    code: stationBranch.code,
+                    companyId: stationBranch.companyId,
+                    longitude: stationBranch.longitude,
+                    latitude: stationBranch.latitude,
+                      isFavorite: isAddedToFavorite
+                  );
+
+                  addRemoveFavoriteStreamController.sink.add(sb);
+
+                });
+              }
+
+            }
+          else if (state is RemovedStationFromFavorite)
+            {
+              if (mounted) {
+                setState(() {
+                  isAddedToFavorite = false;
+                  StationBranch sb = StationBranch(id: stationBranch.id,
+                      arabicName: stationBranch.arabicName,
+                      englishName:  stationBranch.englishName,
+                      arabicAddress: stationBranch.arabicAddress,
+                      englishAddress: stationBranch.englishAddress,
+                      code: stationBranch.code,
+                      companyId: stationBranch.companyId,
+                      longitude: stationBranch.longitude,
+                      latitude: stationBranch.latitude,
+                      isFavorite: isAddedToFavorite
+                  );
+
+                  addRemoveFavoriteStreamController.sink.add(sb);
+                });
+              }
+
+            }
+        }
+
+        ,
         bloc: bloc,
         child: BlocBuilder<StationBloc, StationState>(
             bloc: bloc,
@@ -146,19 +200,19 @@ class _BuildUI extends State<BuildUI> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                    Padding(child: Text(stationBranch.name!, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),), padding:
+                    Padding(child: Text((isArabic()) ? stationBranch.arabicName! : stationBranch.englishName!, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),), padding:
                     EdgeInsetsDirectional.only(
                         start: SizeConfig().w(40),
                         end: SizeConfig().w(40),
                         top: SizeConfig().w(20))
                       ,),
-                    Padding(child: Text(stationBranch.address!, style: TextStyle(fontSize: 16),), padding:
+                    Padding(child: Text(stationBranch.code!, style: TextStyle(fontSize: 16),), padding:
                     EdgeInsetsDirectional.only(
                       start: SizeConfig().w(40),
                       end: SizeConfig().w(40),
                     )
                       ,),
-                    Padding(child: Text(stationBranch.number!, style: TextStyle(fontSize: 16),), padding:
+                    Padding(child: Text((isArabic()) ? stationBranch.arabicAddress! : stationBranch.englishAddress!, style: TextStyle(fontSize: 16),), padding:
                     EdgeInsetsDirectional.only(
                       start: SizeConfig().w(40),
                       end: SizeConfig().w(40),
@@ -340,7 +394,13 @@ class _BuildUI extends State<BuildUI> {
               ],),),
 
                 BackButtonWidget(context),
-                Align(child: FavoriteButtonWidget(context), alignment: AlignmentDirectional.topEnd),
+                Align(child: FavoriteButtonWidget(isAddedToFavorite:isAddedToFavorite, onTap: () {
+                  if (isAddedToFavorite)
+                    bloc.add(RemoveStationFromFavoriteEvent(widget.stationBranch.companyId!));
+                  else
+                    bloc.add(AddStationToFavoriteEvent(widget.stationBranch.companyId!));
+                },),
+                    alignment: AlignmentDirectional.topEnd),
 
               ],)
             ),
