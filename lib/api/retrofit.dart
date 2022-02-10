@@ -1,6 +1,7 @@
 
 import 'package:fastfill/model/login/login_body.dart';
 import 'package:fastfill/model/login/login_user.dart';
+import 'package:fastfill/model/notification/notification_body.dart';
 import 'package:fastfill/model/otp/otp_resend_response_body.dart';
 import 'package:fastfill/model/otp/otp_send_response_body.dart';
 import 'package:fastfill/model/otp/otp_validation_body.dart';
@@ -11,6 +12,7 @@ import 'package:fastfill/model/station/station_branches_with_pagination.dart';
 import 'package:fastfill/model/user/reset_password_body.dart';
 import 'package:fastfill/model/user/signedup_user.dart';
 import 'package:fastfill/model/user/signup_body.dart';
+import 'package:fastfill/model/user/update_firebase_token_body.dart';
 import 'package:fastfill/model/user/update_profile_body.dart';
 import 'package:fastfill/model/user/user.dart';
 import 'package:retrofit/retrofit.dart';
@@ -75,5 +77,13 @@ abstract class ApiClient {
   //User
   @PUT(Apis.updateUserProfile)
   Future<String> updateUserProfile(@Header("Authorization") String token, @Body() UpdateProfileBody updateProfileBody);
+
+  //User
+  @PUT(Apis.updateFirebaseToken)
+  Future<String> updateFirebaseToken(@Header("Authorization") String token, @Body() UpdateFirebaseTokenBody updateFirebaseTokenBody);
+
+  //User
+  @POST(Apis.addNotification)
+  Future<bool> addNotification(@Header("Authorization") String token, @Body() NotificationBody notificationBody);
 
 }
