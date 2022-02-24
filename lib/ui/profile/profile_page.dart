@@ -239,13 +239,12 @@ class _BuildUIState extends State<_BuildUI> {
                   verificationFailed: await (FirebaseAuthException e) {},
                   codeSent: await (String verificationId, int? resendToken) async {
                     if (Platform.isIOS) {
-                      String smsCode = await Navigator.pushNamed(
+                      String? smsCode = await Navigator.pushNamed(
                           context, OTPValidationPage.route,
-                          arguments: verificationId) as String;
-
+                          arguments: verificationId) as String?;
+                      if (smsCode == null)
+                        smsCode = "";
                       if (smsCode.isNotEmpty) {
-
-
                         PhoneAuthCredential credential = PhoneAuthProvider.credential(
                             verificationId: verificationId, smsCode: smsCode);
                         auth.signInWithCredential(credential).then((value) {
@@ -258,9 +257,11 @@ class _BuildUIState extends State<_BuildUI> {
                     }
                   },
                   codeAutoRetrievalTimeout: await (String verificationId) async {
-                    String smsCode = await Navigator.pushNamed(
+                    String? smsCode = await Navigator.pushNamed(
                         context, OTPValidationPage.route,
-                        arguments: verificationId) as String;
+                        arguments: verificationId) as String?;
+                    if (smsCode == null)
+                      smsCode = "";
                     if (smsCode.isNotEmpty) {
 
                       PhoneAuthCredential credential = PhoneAuthProvider.credential(

@@ -212,10 +212,12 @@ class _BuildUIState extends State<_BuildUI> {
                     currentFocus.focusedChild != null) {
                   FocusManager.instance.primaryFocus?.unfocus();
                 }
-                String smsCode = await Navigator.pushNamed(
-                    context, OTPValidationPage.route,
-                    arguments: verificationId) as String;
 
+                String? smsCode = await Navigator.pushNamed(
+                    context, OTPValidationPage.route,
+                    arguments: verificationId) as String?;
+                if (smsCode == null)
+                  smsCode = "";
                 if (smsCode.isNotEmpty) {
                   PhoneAuthCredential credential = PhoneAuthProvider.credential(
                       verificationId: verificationId, smsCode: smsCode);
@@ -241,9 +243,11 @@ class _BuildUIState extends State<_BuildUI> {
                   currentFocus.focusedChild != null) {
                 FocusManager.instance.primaryFocus?.unfocus();
               }
-              String smsCode = await Navigator.pushNamed(
+              String? smsCode = await Navigator.pushNamed(
                   context, OTPValidationPage.route,
-                  arguments: verificationId) as String;
+                  arguments: verificationId) as String?;
+              if (smsCode == null)
+                smsCode = "";
               if (smsCode.isNotEmpty) {
                 PhoneAuthCredential credential = PhoneAuthProvider.credential(
                     verificationId: verificationId, smsCode: smsCode);
