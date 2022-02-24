@@ -80,7 +80,7 @@ class HomeAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                 child: SvgPicture.asset(
                   'assets/svg/menu.svg',
                   width: SizeConfig().w(50),
-                ))), padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 30),),
+                ))), padding: EdgeInsetsDirectional.fromSTEB(0, 25, 0, 30),),
           //),
           Padding(child: InkWell(
             onTap: () {
@@ -97,7 +97,7 @@ class HomeAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                   'assets/svg/profile.svg',
                   width: SizeConfig().w(50),
                 )),
-          ), padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 30),)
+          ), padding: EdgeInsetsDirectional.fromSTEB(0, 25, 0, 30),)
       ],), padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 20),)),
 
     );

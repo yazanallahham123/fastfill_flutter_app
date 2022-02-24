@@ -4,6 +4,7 @@ import 'package:fastfill/api/retrofit.dart';
 import 'package:fastfill/model/notification/notification_body.dart';
 import 'package:fastfill/model/user/update_firebase_token_body.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import '../model/user/user.dart';
 import 'local_data.dart';
 
 StreamController<NotificationBody> notificationsController = StreamController<NotificationBody>.broadcast();
@@ -40,7 +41,6 @@ class Notifications {
       }
 
     FirebaseMessaging.onBackgroundMessage((message) async {
-      var token = await LocalData().getBearerTokenValue();
       var user = await LocalData().getCurrentUserValue();
 
       print("notification background message: ${message.data}");
@@ -59,13 +59,19 @@ class Notifications {
           userId: (user.id != null) ? user.id : 0
       );
 
-      if (token != null)
-        await mClient.addNotification(token, notificationBody);
+      if (user != null) {
+        if (user.id != null) {
+          if (user.id! > 0) {
+            var token = await LocalData().getBearerTokenValue();
+            if (token != null)
+              await mClient.addNotification(token, notificationBody);
+          }
+        }
+      }
 
     });
 
     FirebaseMessaging.onMessage.listen((message) async {
-      var token = await LocalData().getBearerTokenValue();
       var user = await LocalData().getCurrentUserValue();
 
       print("notification message: ${message.data}");
@@ -84,8 +90,15 @@ class Notifications {
       userId: (user.id != null) ? user.id : 0
       );
 
-      if (token != null)
-        await mClient.addNotification(token, notificationBody);
+      if (user != null) {
+        if (user.id != null) {
+          if (user.id! > 0) {
+            var token = await LocalData().getBearerTokenValue();
+            if (token != null)
+              await mClient.addNotification(token, notificationBody);
+          }
+        }
+      }
 
       notificationStreamController.sink.add(notificationBody);
     });
@@ -94,9 +107,17 @@ class Notifications {
       if (firebaseToken != null) {
         print("firebase token: "+firebaseToken);
         await LocalData().setFTokenValue(firebaseToken);
-        var token = await LocalData().getBearerTokenValue();
-        if (token != null)
-          print(await mClient.updateFirebaseToken(token, UpdateFirebaseTokenBody(firebaseToken: firebaseToken)));
+        User user = await LocalData().getCurrentUserValue();
+        if (user != null) {
+          if (user.id != null) {
+            if (user.id! > 0) {
+              var token = await LocalData().getBearerTokenValue();
+              if (token != null)
+                print(await mClient.updateFirebaseToken(token, UpdateFirebaseTokenBody(firebaseToken: firebaseToken)));
+
+            }
+          }
+        }
       }
     });
 
@@ -104,9 +125,17 @@ class Notifications {
       if (firebaseToken != null) {
         print("firebase token: "+firebaseToken);
         await LocalData().setFTokenValue(firebaseToken);
-        var token = await LocalData().getBearerTokenValue();
-        if (token != null)
-          print(await mClient.updateFirebaseToken(token, UpdateFirebaseTokenBody(firebaseToken: firebaseToken)));
+        User user = await LocalData().getCurrentUserValue();
+        if (user != null) {
+            if (user.id != null) {
+              if (user.id! > 0) {
+                  var token = await LocalData().getBearerTokenValue();
+                  if (token != null)
+                    print(await mClient.updateFirebaseToken(token, UpdateFirebaseTokenBody(firebaseToken: firebaseToken)));
+
+              }
+            }
+          }
       }
     });
 

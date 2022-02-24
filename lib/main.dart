@@ -111,7 +111,9 @@ class _FastFillApp extends State<FastFillApp> {
             localizationsDelegates: [
               localizationDelegate,
               GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+              DefaultWidgetsLocalizations.delegate,
             ],
             supportedLocales: localizationDelegate.supportedLocales,
             locale: _locale,

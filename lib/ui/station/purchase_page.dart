@@ -382,7 +382,7 @@ class _BuildUI extends State<BuildUI> {
                         end: SizeConfig().w(20),
                         top: SizeConfig().h(10), bottom: SizeConfig().h(35)),
                     child: CustomButton(
-                      fontSize: 12,
+                      fontSize: 15,
                       fontWeight: FontWeight.bold,
                       height: SizeConfig().h(60),
                         backColor: buttonColor1,
@@ -400,13 +400,6 @@ class _BuildUI extends State<BuildUI> {
               ],),),
 
                 BackButtonWidget(context),
-                Align(child: FavoriteButtonWidget(isAddedToFavorite:isAddedToFavorite, onTap: () {
-                  if (isAddedToFavorite)
-                    bloc.add(RemoveStationFromFavoriteEvent(widget.stationBranch.companyId!));
-                  else
-                    bloc.add(AddStationToFavoriteEvent(widget.stationBranch.companyId!));
-                },),
-                    alignment: AlignmentDirectional.topEnd),
 
               ],)
             ),

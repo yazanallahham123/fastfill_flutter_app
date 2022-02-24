@@ -63,6 +63,7 @@ class _LoginPageState extends State<LoginPage> {
                 currentFocus.focusedChild != null) {
               FocusManager.instance.primaryFocus?.unfocus();
             }
+
             Navigator.pushNamedAndRemoveUntil(
                 context, HomePage.route, (Route<dynamic> route) => false);
           }

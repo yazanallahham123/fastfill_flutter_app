@@ -61,7 +61,6 @@ class _HomeTabPageState extends State<HomeTabPage> {
                 searchResult = [];
               });
             }
-
           } else if (state is ErrorStationState)
             pushToast(state.error);
           else if (state is GotFavoriteStationsBranchesState) {
@@ -97,6 +96,8 @@ class _HomeTabPageState extends State<HomeTabPage> {
                     searchResult = [];
                 } else
                   searchResult = [];
+
+                searchResetted = false;
               });
             }
           } else if (state is AddedStationBranchToFavorite) {
@@ -150,7 +151,6 @@ class _BuildUIState extends State<_BuildUI> {
   final searchController = TextEditingController();
   final searchFocusNode = FocusNode();
 
-
   @override
   void initState() {
     super.initState();
@@ -162,16 +162,16 @@ class _BuildUIState extends State<_BuildUI> {
         });
       }
 
-      if (searchController.text.trim() == "")
-        {
-          if (mounted) {
-            setState(() {
-              searchResult.clear();
-            });
-          }
+      if (searchController.text.trim() == "") {
+        if (mounted) {
+          setState(() {
+            searchResetted = true;
+            searchResult.clear();
+          });
         }
+      }
     });
-    
+
     addRemoveFavoriteStreamController.stream.listen((event) {
       if (mounted) {
         setState(() {
@@ -368,7 +368,8 @@ class _BuildUIState extends State<_BuildUI> {
                                         start: SizeConfig().w(30),
                                         end: SizeConfig().w(30),
                                         top: SizeConfig().h(30))),
-                                ((searchText.trim() != "") && (widget.state == GotStationBranchByCodeState))
+                                (!searchResetted) ?
+                                ((searchText.trim() != ""))
                                     ? Align(
                                         child: Padding(
                                           child: Text(
@@ -385,33 +386,45 @@ class _BuildUIState extends State<_BuildUI> {
                                         alignment:
                                             AlignmentDirectional.topStart,
                                       )
-                                    : Container(),
-                                (searchText.trim() != "")
-                                    ? (widget.state is GotStationBranchByCodeState) ?
-                                (searchResult.length > 0) ?
-                                      Column(
-                                        children: searchResult
-                                            .map((i) => StationBranchWidget(
-                                                stationBranch: i,
-                                                stationBloc: widget.bloc,
-                                                stationState: widget.state))
-                                            .toList()) :
-    Align(
-    child: Padding(
-    child: Text(
-    translate("labels.noSearchResult"),
-    style: TextStyle(fontSize: 12),
-    ),
-    padding: EdgeInsetsDirectional.only(
-    top: SizeConfig().w(15),
-    start: SizeConfig().w(30),
-    end: SizeConfig().w(30),
-    bottom: SizeConfig().w(15)),
-    ),
-    alignment:
-    AlignmentDirectional.topCenter,
-    )
                                     : Container() : Container(),
+                                (!searchResetted) ?
+                                (searchText.trim() != "")
+
+                                        ? (searchResult.length > 0)
+                                            ? Column(
+                                                children: searchResult
+                                                    .map((i) =>
+                                                        StationBranchWidget(
+                                                            stationBranch: i,
+                                                            stationBloc:
+                                                                widget.bloc,
+                                                            stationState:
+                                                                widget.state))
+                                                    .toList())
+                                            : Align(
+                                                child: Padding(
+                                                  child: Text(
+                                                    translate(
+                                                        "labels.noSearchResult"),
+                                                    style:
+                                                        TextStyle(fontSize: 12),
+                                                  ),
+                                                  padding: EdgeInsetsDirectional
+                                                      .only(
+                                                          top: SizeConfig()
+                                                              .w(15),
+                                                          start: SizeConfig()
+                                                              .w(30),
+                                                          end: SizeConfig()
+                                                              .w(30),
+                                                          bottom: SizeConfig()
+                                                              .w(15)),
+                                                ),
+                                                alignment: AlignmentDirectional
+                                                    .topCenter,
+                                              )
+                                        : Container()
+                                    : Container(),
                                 Align(
                                   child: Padding(
                                     child: Text(

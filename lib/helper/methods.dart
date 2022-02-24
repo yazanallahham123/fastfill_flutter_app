@@ -5,4 +5,6 @@ import 'package:flutter/cupertino.dart';
 bool isArabic() =>
     languageCode == "ar";
 
+bool searchResetted = true;
+
 

@@ -2,8 +2,10 @@ import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:fastfill/api/methods.dart';
 import 'package:fastfill/api/retrofit.dart';
+import 'package:fastfill/utils/local_data.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:fastfill/model/login/login_user.dart' as LoginModel;
+import '../../model/user/update_firebase_token_body.dart';
 import 'event.dart';
 import 'state.dart';
 
@@ -21,9 +23,14 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
          emit(LoadingLoginState());
 
-         await mClient.loginUser(event.loginBody).then((v) {
-           if (v.statusCode == 200)
+         await mClient.loginUser(event.loginBody).then((v) async {
+           if (v.statusCode == 200) {
+             String firebaseTokenText = await LocalData().getFTokenValue();
+
+             await mClient.updateFirebaseToken("Bearer "+v.value!.token!, UpdateFirebaseTokenBody(firebaseToken: firebaseTokenText));
+
              emit(SuccessLoginState(v));
+           }
          });
        } on DioError catch (e) {
          if (e.response != null) {
