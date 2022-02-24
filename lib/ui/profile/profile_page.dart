@@ -201,6 +201,12 @@ class _BuildUIState extends State<_BuildUI> {
       if (!validateName(nameController.text))
         FocusScope.of(context).requestFocus(nameNode);
 
+      FocusScopeNode currentFocus = FocusScope.of(context);
+      if (!currentFocus.hasPrimaryFocus &&
+          currentFocus.focusedChild != null) {
+        FocusManager.instance.primaryFocus?.unfocus();
+      }
+
       UserModel.User u = await LocalData().getCurrentUserValue();
       if (u != null) {
         if (u.id != null) {
@@ -243,7 +249,7 @@ class _BuildUIState extends State<_BuildUI> {
                         PhoneAuthCredential credential = PhoneAuthProvider.credential(
                             verificationId: verificationId, smsCode: smsCode);
                         auth.signInWithCredential(credential).then((value) {
-                          widget.bloc.add(UpdateProfileEvent(UpdateProfileBody(name: nameController.text, mobileNumber: phoneController.text)));
+                          widget.bloc.add(UpdateProfileEvent(UpdateProfileBody(name: nameController.text, mobileNumber: pn)));
                         }).catchError((e) {
                           widget.bloc.add(ErrorUserOTPVerificationEvent(
                               (e.message != null) ? e.message! : e.code));
@@ -260,7 +266,7 @@ class _BuildUIState extends State<_BuildUI> {
                       PhoneAuthCredential credential = PhoneAuthProvider.credential(
                           verificationId: verificationId, smsCode: smsCode);
                       auth.signInWithCredential(credential).then((value) {
-                        widget.bloc.add(UpdateProfileEvent(UpdateProfileBody(name: nameController.text, mobileNumber: phoneController.text)));
+                        widget.bloc.add(UpdateProfileEvent(UpdateProfileBody(name: nameController.text, mobileNumber: pn)));
                       }).catchError((e) {
                         widget.bloc.add(ErrorUserOTPVerificationEvent(
                             (e.message != null) ? e.message! : e.code));
