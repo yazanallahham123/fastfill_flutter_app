@@ -34,6 +34,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:intl/intl.dart';
+
+import '../../model/payment/payment_result_body.dart';
+import '../../utils/misc.dart';
 
 
 enum FuelType {Benzine, Gasoline}
@@ -320,10 +324,11 @@ class _BuildUI extends State<BuildUI> {
                     EdgeInsetsDirectional.only(
                         start: SizeConfig().w(20), end: SizeConfig().w(20)),
                     child: CustomTextFieldWidget(
+                        textFormatter: ThousandsSeparatorInputFormatter(),
                         color: backgroundColor3,
                         controller: amountController,
                         focusNode: amountNode,
-                        validator: validateMobile,
+                        validator: validateAmount,
                         hintText: translate("labels.amount"),
                         textInputType: TextInputType.number,
                         textInputAction: TextInputAction.next,
@@ -341,10 +346,11 @@ class _BuildUI extends State<BuildUI> {
                     padding:
                     EdgeInsetsDirectional.only(start: SizeConfig().w(20), end: SizeConfig().w(20)),
                     child: CustomTextFieldWidget(
+                        textFormatter: ThousandsSeparatorInputFormatter(),
                         color: backgroundColor3,
                         controller: confirmAmountController,
                         focusNode: confirmAmountNode,
-                        validator: validateMobile,
+                        validator: validateAmount,
                         hintText: translate("labels.confirmAmount"),
                         textInputType: TextInputType.number,
                         textInputAction: TextInputAction.go,
@@ -362,7 +368,7 @@ class _BuildUI extends State<BuildUI> {
 
                       )),
 
-                  Padding(child: Text(translate("10.0")+" "+translate("labels.sdg"),
+                  Padding(child: Text(formatter.format(100.0)+" "+translate("labels.sdg"),
                     style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),),
                       padding: EdgeInsetsDirectional.only(bottom: SizeConfig().h(10),
 
@@ -409,6 +415,39 @@ class _BuildUI extends State<BuildUI> {
 
   pay()
   {
-    Navigator.pushNamed(context, PaymentResultPage.route);
+    if (amountController.text == confirmAmountController.text) {
+      if (double.tryParse(amountController.text.replaceAll(",", "")) != null) {
+        if (double.parse(amountController.text.replaceAll(",", "")) > 0.0) {
+          PaymentResultBody prb = PaymentResultBody(
+              date: DateFormat('yyyy-MM-dd - hh:mm a').format(DateTime.now()),
+              stationName: (isArabic())
+                  ? widget.stationBranch.arabicName!
+                  : widget
+                  .stationBranch.englishName!,
+              status: true,
+              fuelType: (_fuelTypeValue == FuelType.Gasoline) ? translate(
+                  "labels.gasoline") : translate("labels.benzine"),
+              amount: double.tryParse(amountController.text.replaceAll(",", "")) ?? 0.0,
+              value: 100.0
+          );
+
+          FocusScopeNode currentFocus = FocusScope.of(context);
+          if (!currentFocus.hasPrimaryFocus &&
+              currentFocus.focusedChild != null) {
+            FocusManager.instance.primaryFocus?.unfocus();
+          }
+
+          Navigator.pushNamed(context, PaymentResultPage.route, arguments: prb);
+        }
+        else
+          {
+            pushToast(translate("messages.amountMustBeMoreThanZero"));
+          }
+      }
+      else
+        pushToast(translate("messages.amountMustBeMoreThanZero"));
+    }
+    else
+      pushToast(translate("messages.confirmAmountPlease"));
   }
 }

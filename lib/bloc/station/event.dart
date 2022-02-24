@@ -13,6 +13,14 @@ class InitStationEvent extends StationEvent {
   const InitStationEvent();
 }
 
+class FrequentlyVisitedStationsBranchesEvent extends StationEvent{
+  const FrequentlyVisitedStationsBranchesEvent();
+}
+
+class FavoriteStationsBranchesEvent extends StationEvent{
+  const FavoriteStationsBranchesEvent();
+}
+
 class FrequentlyVisitedStationsEvent extends StationEvent{
   const FrequentlyVisitedStationsEvent();
 }
@@ -29,6 +37,15 @@ class StationByCodeEvent extends StationEvent{
   List<Object?> get props => [this.code];
 }
 
+class StationBranchByCodeEvent extends StationEvent{
+  final String code;
+  const StationBranchByCodeEvent(this.code);
+
+  @override
+  List<Object?> get props => [this.code];
+}
+
+
 class AddStationToFavoriteEvent extends StationEvent{
   final int stationId;
   const AddStationToFavoriteEvent(this.stationId);
@@ -44,4 +61,25 @@ class RemoveStationFromFavoriteEvent extends StationEvent{
   @override
   List<Object?> get props => [this.stationId];
 }
+
+class AddStationBranchToFavoriteEvent extends StationEvent{
+  final int stationBranchId;
+  const AddStationBranchToFavoriteEvent(this.stationBranchId);
+
+  @override
+  List<Object?> get props => [this.stationBranchId];
+}
+
+class RemoveStationBranchFromFavoriteEvent extends StationEvent{
+  final int stationBranchId;
+  const RemoveStationBranchFromFavoriteEvent(this.stationBranchId);
+
+  @override
+  List<Object?> get props => [this.stationBranchId];
+}
+
+class AllStationsBranchesEvent extends StationEvent{
+  const AllStationsBranchesEvent();
+}
+
 

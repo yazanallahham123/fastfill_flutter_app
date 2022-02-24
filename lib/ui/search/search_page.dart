@@ -49,8 +49,16 @@ class SearchPage extends StatefulWidget {
 List<StationBranch> listOfStations = [];
 
 class _SearchPageState extends State<SearchPage> {
+
+
   @override
   Widget build(BuildContext context) {
+
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.light));
+
     return BlocProvider<StationBloc>(
         create: (BuildContext context) => StationBloc()..add(InitStationEvent()), //.add(InitEvent()),
         child: Builder(builder: (context) => _buildPage(context)));
@@ -265,7 +273,7 @@ class _BuildUIState extends State<_BuildUI> {
           bottom: MediaQuery.of(context).viewInsets.bottom,
           right: 0.0,
           left: 0.0,
-          child: InputDoneView(title: translate("buttons.search"), onPressed: ()
+          child: InputDoneView(title: translate("buttons.search"), title2: translate("buttons.cancel"), onPressed: ()
           {
           widget.bloc.add(StationByCodeEvent(searchController.text));
           },));

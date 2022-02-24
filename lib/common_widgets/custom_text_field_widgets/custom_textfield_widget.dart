@@ -3,6 +3,7 @@ import 'package:fastfill/helper/const_styles.dart';
 import 'package:fastfill/helper/font_styles.dart';
 import 'package:fastfill/helper/size_config.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 
 
@@ -15,6 +16,7 @@ class CustomTextFieldWidget extends StatelessWidget {
   final TextInputType? textInputType;
   final Widget? icon;
   final Color? color;
+  final TextInputFormatter? textFormatter;
 
   final bool Function(String? value)? validator;
 
@@ -28,7 +30,8 @@ class CustomTextFieldWidget extends StatelessWidget {
       this.onFieldSubmitted,
       this.textInputType,
       this.icon,
-      this.color})
+      this.color,
+      this.textFormatter})
       : super(key: key);
 
   @override
@@ -49,6 +52,8 @@ class CustomTextFieldWidget extends StatelessWidget {
                             borderRadius: radiusAll10,
                             color: (color??Colors.white)),
                         child: TextFormField(
+
+                            inputFormatters: (textFormatter != null ) ? [textFormatter!] : [],
                             controller: controller,
                             cursorColor: Colors.black,
                             focusNode: focusNode,

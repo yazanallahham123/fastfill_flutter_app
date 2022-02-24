@@ -187,6 +187,28 @@ class _ApiClient implements ApiClient {
   }
 
   @override
+  Future<StationBranchesWithPagination> getStationBranchByCode(
+      token, text, page, pageSize) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'page': page,
+      r'pageSize': pageSize
+    };
+    final _headers = <String, dynamic>{r'Authorization': token};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<StationBranchesWithPagination>(
+            Options(method: 'GET', headers: _headers, extra: _extra)
+                .compose(
+                    _dio.options, 'Company/CompaniesBranchesByText/${text}',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = StationBranchesWithPagination.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
   Future<StationBranch> getStationByCode(token, code) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -196,7 +218,7 @@ class _ApiClient implements ApiClient {
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<StationBranch>(
             Options(method: 'GET', headers: _headers, extra: _extra)
-                .compose(_dio.options, 'Company/CompanyBranchByCode/${code}',
+                .compose(_dio.options, 'Company/CompanyByCode/${code}',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = StationBranch.fromJson(_result.data!);
@@ -235,6 +257,59 @@ class _ApiClient implements ApiClient {
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
+    return value;
+  }
+
+  @override
+  Future<bool> addStationBranchToFavorite(
+      token, addRemoveStationBranchFavoriteBody) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'Authorization': token};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    _data.addAll(addRemoveStationBranchFavoriteBody.toJson());
+    final _result = await _dio.fetch<bool>(_setStreamType<bool>(
+        Options(method: 'PUT', headers: _headers, extra: _extra)
+            .compose(_dio.options, 'Company/AddBranchToFavorite',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data!;
+    return value;
+  }
+
+  @override
+  Future<bool> removeStationBranchFromFavorite(
+      token, addRemoveStationBranchFavoriteBody) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'Authorization': token};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    _data.addAll(addRemoveStationBranchFavoriteBody.toJson());
+    final _result = await _dio.fetch<bool>(_setStreamType<bool>(
+        Options(method: 'PUT', headers: _headers, extra: _extra)
+            .compose(_dio.options, 'Company/RemoveBranchFromFavorite',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data!;
+    return value;
+  }
+
+  @override
+  Future<StationBranchesWithPagination> getAllStationsBranches(token) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'Authorization': token};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<StationBranchesWithPagination>(
+            Options(method: 'GET', headers: _headers, extra: _extra)
+                .compose(_dio.options, 'Company/AllCompaniesBranches',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = StationBranchesWithPagination.fromJson(_result.data!);
     return value;
   }
 
@@ -286,6 +361,27 @@ class _ApiClient implements ApiClient {
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
+    return value;
+  }
+
+  @override
+  Future<NotificationsWithPagination> getNotifications(
+      token, page, pageSize) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'page': page,
+      r'pageSize': pageSize
+    };
+    final _headers = <String, dynamic>{r'Authorization': token};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<NotificationsWithPagination>(
+            Options(method: 'GET', headers: _headers, extra: _extra)
+                .compose(_dio.options, 'User/GetNotifications',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = NotificationsWithPagination.fromJson(_result.data!);
     return value;
   }
 

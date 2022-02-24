@@ -16,18 +16,21 @@ class HomeAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
+    return
+      AppBar(
+        toolbarHeight: 250,
         automaticallyImplyLeading: false,
         brightness: Brightness.dark,
         elevation: 0,
         backgroundColor: backgroundColor1,
-        title:
+        title: SafeArea(child:
       Padding(child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           //InkWell(
             //onTap: () {
             //},
+          Padding(child:
             PopupMenuButton(
               onSelected: (s) async {
                 if (s == LoginPage.route)
@@ -77,9 +80,9 @@ class HomeAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                 child: SvgPicture.asset(
                   'assets/svg/menu.svg',
                   width: SizeConfig().w(50),
-                ))),
+                ))), padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 30),),
           //),
-          InkWell(
+          Padding(child: InkWell(
             onTap: () {
               Navigator.pushNamed(context, ProfilePage.route);
             },
@@ -94,9 +97,9 @@ class HomeAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                   'assets/svg/profile.svg',
                   width: SizeConfig().w(50),
                 )),
-          )
-      ],), padding: EdgeInsetsDirectional.fromSTEB(0, 22, 0, 0),)
-      ,
+          ), padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 30),)
+      ],), padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 20),)),
+
     );
   }
 

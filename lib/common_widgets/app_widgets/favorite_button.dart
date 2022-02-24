@@ -25,9 +25,6 @@ class _FavoriteButtonWidgetState extends State<FavoriteButtonWidget> {
       child: Container(
           height: SizeConfig().h(40),
           width: SizeConfig().w(40),
-          margin: EdgeInsets.symmetric(
-              horizontal: SizeConfig().w(15),
-              vertical: SizeConfig().h(60)),
           child: Image(image: AssetImage((widget.isAddedToFavorite) ? "assets/favorite.png" : "assets/not_favorite.png"),
             width: SizeConfig().w(40),
           )),

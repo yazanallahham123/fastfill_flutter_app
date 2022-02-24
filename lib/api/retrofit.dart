@@ -2,6 +2,7 @@
 import 'package:fastfill/model/login/login_body.dart';
 import 'package:fastfill/model/login/login_user.dart';
 import 'package:fastfill/model/notification/notification_body.dart';
+import 'package:fastfill/model/notification/notifications_with_pagination.dart';
 import 'package:fastfill/model/otp/otp_resend_response_body.dart';
 import 'package:fastfill/model/otp/otp_send_response_body.dart';
 import 'package:fastfill/model/otp/otp_validation_body.dart';
@@ -15,8 +16,10 @@ import 'package:fastfill/model/user/signup_body.dart';
 import 'package:fastfill/model/user/update_firebase_token_body.dart';
 import 'package:fastfill/model/user/update_profile_body.dart';
 import 'package:fastfill/model/user/user.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart' hide Headers;
+import '../model/station/add_remove_station_branch_favorite_body.dart';
 import 'apis.dart';
 part 'retrofit.g.dart';
 
@@ -61,7 +64,11 @@ abstract class ApiClient {
   @GET(Apis.favoriteCompaniesBranches)
   Future<StationBranchesWithPagination> getFavoritesStationsBranches(@Header("Authorization") String token);
 
-  @GET(Apis.companyBranchByCode+"/{code}")
+  @GET(Apis.companyBranchByCode+"/{text}")
+  Future<StationBranchesWithPagination> getStationBranchByCode(@Header("Authorization") String token,
+      @Path("text") String text, @Query("page") int page, @Query("pageSize") int pageSize);
+
+  @GET(Apis.companyByCode+"/{code}")
   Future<StationBranch> getStationByCode(@Header("Authorization") String token,
       @Path("code") String code);
 
@@ -72,6 +79,17 @@ abstract class ApiClient {
   @PUT(Apis.removeCompanyFromFavorite)
   Future<bool> removeStationFromFavorite(@Header("Authorization") String token,
       @Body() AddRemoveStationFavoriteBody addRemoveStationFavoriteBody);
+
+  @PUT(Apis.addCompanyBranchToFavorite)
+  Future<bool> addStationBranchToFavorite(@Header("Authorization") String token,
+      @Body() AddRemoveStationBranchFavoriteBody addRemoveStationBranchFavoriteBody);
+
+  @PUT(Apis.removeCompanyBranchFromFavorite)
+  Future<bool> removeStationBranchFromFavorite(@Header("Authorization") String token,
+      @Body() AddRemoveStationBranchFavoriteBody addRemoveStationBranchFavoriteBody);
+
+  @GET(Apis.allCompaniesBranches)
+  Future<StationBranchesWithPagination> getAllStationsBranches(@Header("Authorization") String token);
 
 
   //User
@@ -85,5 +103,9 @@ abstract class ApiClient {
   //User
   @POST(Apis.addNotification)
   Future<bool> addNotification(@Header("Authorization") String token, @Body() NotificationBody notificationBody);
+
+  //User
+  @GET(Apis.getNotifications)
+  Future<NotificationsWithPagination> getNotifications(@Header("Authorization") String token, @Query("page") int page, @Query("pageSize") int pageSize);
 
 }

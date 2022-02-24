@@ -6,6 +6,13 @@ bool validateMobile(String? value) {
   return true;
 }
 
+
+bool validateAmount(String? value) {
+  if (value==null || value.length == 0)
+    return false;
+  return true;
+}
+
 bool validateMobile2(String? value) {
   if (value != null) {
     if ((value.length == 9) || (value.length == 10)) {

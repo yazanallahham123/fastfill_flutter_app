@@ -45,14 +45,14 @@ class _FavoritesTabPageState extends State<FavoritesTabPage> {
     return BlocListener<StationBloc, StationState>(
         listener: (context, state) async {
           if (state is InitStationState) {
-            bloc.add(FavoriteStationsEvent());
+            bloc.add(FavoriteStationsBranchesEvent());
           } else if (state is ErrorStationState)
             pushToast(state.error);
-          else if (state is GotFavoriteStationsState) {
+          else if (state is GotFavoriteStationsBranchesState) {
             if (mounted) {
               setState(() {
-                if (state.favoriteStations.companiesBranches != null)
-                  favoriteStations = state.favoriteStations.companiesBranches!;
+                if (state.favoriteStationsBranches.companiesBranches != null)
+                  favoriteStations = state.favoriteStationsBranches.companiesBranches!;
                 else
                   favoriteStations = [];
               });
@@ -136,7 +136,7 @@ class _BuildUIState extends State<_BuildUI> {
                       top: SizeConfig().h(10))),
               alignment: AlignmentDirectional.topStart,
             ),
-            (widget.state is LoadingStationState)
+            (widget.state is LoadingStationState || widget.state is InitStationState)
                 ? CustomLoading()
                 : (favoriteStations.length > 0)
                     ? Padding(
@@ -231,7 +231,7 @@ class _BuildUIState extends State<_BuildUI> {
                         child: Column(
                           children: [
                             Text(
-                              "You have no favorites",
+                              translate("labels.noFavorites"),
                               style: TextStyle(color: Colors.white),
                             )
                           ],

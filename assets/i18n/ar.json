@@ -25,13 +25,13 @@
   "logout": "تسجيل خروج",
   "forgotPassword": "نسيت كلمة المرور؟",
   "fastfill": "فاست فيل",
-  "gasoline": "مازوت",
+  "gasoline": "جازولين",
   "benzine": "بنزين",
   "amount": "الكمية",
   "confirmAmount": "تأكيد الكمية",
   "choose": "إختيار",
   "chooseFuel": "إختر نوع المحروقات",
-  "date": "التاريه",
+  "date": "التاريخ",
   "gasStation": "محطة بنزين",
   "successPayment": "تم التسديد بنجاح",
   "failedPayment": "فشلت عملية التسديد",
@@ -57,10 +57,19 @@
   "searchResults": "نتائج البحث",
   "youBought": "قمت بشراء",
   "litersOf": "لتر من",
-  "youRefueledWith": "قمت بتعبة"
+  "youRefueledWith": "قمت بتعبة",
+  "youHaveNoFavorites": "ليس لديك آي محطه ضمن المفضله",
+  "searchResult": "نتائج البحث",
+  "noFrequentlyVisited": "لم تقم بزيارة آي محطة حتى الآن",
+  "noFavorites": "لم تم باضافة اي محطة الى المفضلة",
+  "noSearchResult": "لا يوجد آي نتائج للبحث",
+  "newPassword": "كلمة المرور الجديدة",
+  "confirmNewPassword": "تآكيد كلمة المرور الجديدة"
+
 },
   "buttons" : {
     "search": "بحث",
+    "cancel": "إلغا، الآمر",
     "signUp": "إنشاء حساب",
     "donotHaveAccount": "ليس لديك حساب؟",
     "signIn" : "تسجيل دخول",
@@ -97,7 +106,20 @@
     "otpCodeNotSent": "لم يتم إرسال رمز التحقق, يرجى اعادة المحاولة بعد عدة دقائق",
     "passwordResetIsNotSuccessful": "لم يتم اعادة ضبط كلمة المرور",
     "passwordResetIsSuccessful": "تم إعادة ضبط كلمة المرور بنجاح",
-    "emptyCode": "رمز التحقق فارغ!"
+    "emptyCode": "رمز التحقق فارغ!",
+    "couldNotSearchStationByCode": "لم يتم البحث عن المحطة حسب الرقم",
+    "couldNotSearchStationBranchByCode": "لم يتم البحث عن المحطة حسب الرقم",
+    "couldNotLoadFrequentlyVisitedStation": "لم يتم تحميل المحطات الآكثر زيارة",
+    "couldNotLoadFrequentlyVisitedStationBranches":  "لم يتم تحميل المحطات الآكثر زيارة",
+    "couldNotAddStationToFavorite": "لم يتم اضافة المحطة الى المفضله",
+    "couldNotRemoveStationFromFavorite":   "لم يتم ازالة المحطة من المفضله",
+    "couldNotAddStationBranchToFavorite": "لم يتم اضافة المحطة الى المفضله",
+    "couldNotRemoveStationBranchFromFavorite": "لم يتم ازالة المحطة من المفضله",
+    "couldNotLoadFavoriteStations": "لم يتم تحميل جميع المحطات",
+    "couldNotLoadFavoriteStationBranches": "لم يتم تحميل المحطات المفضله",
+    "couldNotLoadAllStationBranches": "لم يتم تحميل جميع المحطات",
+    "amountMustBeMoreThanZero": "الكمية يجب ان تكون آكبر من صفر",
+    "confirmAmountPlease": "يرجى مطابقة الكمية"
   },
   "titles" : {
     "welcome": "اهلا و سهلاً"

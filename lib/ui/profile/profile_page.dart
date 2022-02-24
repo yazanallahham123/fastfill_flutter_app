@@ -94,6 +94,18 @@ class _BuildUIState extends State<_BuildUI> {
   XFile? imageFile = null;
 
   @override
+  void initState() {
+    super.initState();
+
+    LocalData().getCurrentUserValue().then((user) {
+      phoneController.text = user.mobileNumber??"";
+      nameController.text = user.firstName??"";
+    });
+
+  }
+
+
+  @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
         statusBarColor: Colors.transparent,
@@ -194,9 +206,26 @@ class _BuildUIState extends State<_BuildUI> {
         if (u.id != null) {
           if (u.mobileNumber != phoneController.text)
             {
+
+              String pn = "";
+              if (phoneController.text != null) {
+                if ((phoneController.text.length == 9) ||
+                    (phoneController.text.length == 10)) {
+                  if ((phoneController.text.length == 10) &&
+                      (phoneController.text.substring(0, 1) == "0")) {
+                    pn = phoneController.text
+                        .substring(1, phoneController.text.length);
+                  } else {
+                    if (phoneController.text.length == 9) {
+                      pn = phoneController.text;
+                    }
+                  }
+                }
+              }
+
               widget.bloc.add(CallOTPScreenEvent());
               await auth.verifyPhoneNumber(
-                  phoneNumber: countryCode + u.mobileNumber!,
+                  phoneNumber: countryCode + pn,
                   timeout: const Duration(seconds: 5),
                   verificationCompleted: await (PhoneAuthCredential credential) {
                     print("OTP is valid");
@@ -209,6 +238,8 @@ class _BuildUIState extends State<_BuildUI> {
                           arguments: verificationId) as String;
 
                       if (smsCode.isNotEmpty) {
+
+
                         PhoneAuthCredential credential = PhoneAuthProvider.credential(
                             verificationId: verificationId, smsCode: smsCode);
                         auth.signInWithCredential(credential).then((value) {
@@ -225,6 +256,7 @@ class _BuildUIState extends State<_BuildUI> {
                         context, OTPValidationPage.route,
                         arguments: verificationId) as String;
                     if (smsCode.isNotEmpty) {
+
                       PhoneAuthCredential credential = PhoneAuthProvider.credential(
                           verificationId: verificationId, smsCode: smsCode);
                       auth.signInWithCredential(credential).then((value) {

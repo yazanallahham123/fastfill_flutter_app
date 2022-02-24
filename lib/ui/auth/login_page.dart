@@ -29,6 +29,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 
 import '../../main.dart';
+import '../../utils/misc.dart';
 
 class LoginPage extends StatefulWidget {
   static const route = "/login_page";
@@ -57,6 +58,11 @@ class _LoginPageState extends State<LoginPage> {
                 .setCurrentUserValue(state.loginUser.value!.userDetails!);
             await LocalData().setTokenValue(state.loginUser.value!.token!);
             pushToast(translate("messages.youLoggedSuccessfully"));
+            FocusScopeNode currentFocus = FocusScope.of(context);
+            if (!currentFocus.hasPrimaryFocus &&
+                currentFocus.focusedChild != null) {
+              FocusManager.instance.primaryFocus?.unfocus();
+            }
             Navigator.pushNamedAndRemoveUntil(
                 context, HomePage.route, (Route<dynamic> route) => false);
           }
@@ -170,11 +176,21 @@ class _BuildUIState extends State<_BuildUI> {
                                 titleColor: buttonColor1,
                                 title: translate("buttons.signUp"),
                                 onTap: () {
+                                  FocusScopeNode currentFocus = FocusScope.of(context);
+                                  if (!currentFocus.hasPrimaryFocus &&
+                                      currentFocus.focusedChild != null) {
+                                    FocusManager.instance.primaryFocus?.unfocus();
+                                  }
                                   Navigator.pushNamed(
                                       context, SignupPage.route);
                                 })),
                         InkWell(
                             onTap: () {
+                              FocusScopeNode currentFocus = FocusScope.of(context);
+                              if (!currentFocus.hasPrimaryFocus &&
+                                  currentFocus.focusedChild != null) {
+                                FocusManager.instance.primaryFocus?.unfocus();
+                              }
                               Navigator.pushNamed(
                                   context, ResetPassword_PhoneNumberPage.route);
                             },
@@ -209,7 +225,7 @@ class _BuildUIState extends State<_BuildUI> {
               child: Container(
                   alignment: Alignment.topLeft,
                   height: SizeConfig().h(50),
-                  width: SizeConfig().h(50),
+                  width: SizeConfig().w(75),
                   margin: EdgeInsets.symmetric(
                       horizontal: SizeConfig().w(12),
                       vertical: SizeConfig().h(55)),
@@ -229,9 +245,33 @@ class _BuildUIState extends State<_BuildUI> {
       else if (!isStrongPassword(passController.text))
         FocusScope.of(context).requestFocus(passNode);
       else {
+        FocusScopeNode currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus &&
+            currentFocus.focusedChild != null) {
+          FocusManager.instance.primaryFocus?.unfocus();
+        }
+
+
         hideKeyboard(context);
+
+        String pn = "";
+        if (phoneController.text != null) {
+          if ((phoneController.text.length == 9) ||
+              (phoneController.text.length == 10)) {
+            if ((phoneController.text.length == 10) &&
+                (phoneController.text.substring(0, 1) == "0")) {
+              pn = phoneController.text
+                  .substring(1, phoneController.text.length);
+            } else {
+              if (phoneController.text.length == 9) {
+                pn = phoneController.text;
+              }
+            }
+          }
+        }
+
         bloc.add(LoginUserEvent(LoginBody(
-            mobileNumber: phoneController.text,
+            mobileNumber: pn,
             password: passController.text)));
       }
     } else

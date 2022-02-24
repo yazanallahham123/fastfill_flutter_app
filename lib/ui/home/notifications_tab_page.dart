@@ -1,10 +1,15 @@
 
 import 'package:fastfill/bloc/otp/bloc.dart';
 import 'package:fastfill/bloc/otp/state.dart';
+import 'package:fastfill/bloc/user/bloc.dart';
+import 'package:fastfill/bloc/user/event.dart';
+import 'package:fastfill/bloc/user/state.dart';
+import 'package:fastfill/common_widgets/app_widgets/custom_loading.dart';
 import 'package:fastfill/helper/app_colors.dart';
 import 'package:fastfill/helper/const_styles.dart';
 import 'package:fastfill/helper/size_config.dart';
 import 'package:fastfill/helper/toast.dart';
+import 'package:fastfill/model/notification/notification_body.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,57 +17,68 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 
-class NotificationsTabPage extends StatelessWidget {
+import '../../utils/misc.dart';
+
+class NotificationsTabPage extends StatefulWidget {
   const NotificationsTabPage({Key? key}) : super(key: key);
 
   @override
+  State<NotificationsTabPage> createState() => _NotificationsTabPageState();
+}
+
+List<NotificationBody> notifications = [];
+
+class _NotificationsTabPageState extends State<NotificationsTabPage> {
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider<OTPBloc>(
-        create: (BuildContext context) => OTPBloc(), //.add(InitEvent()),
+    return BlocProvider<UserBloc>(
+        create: (BuildContext context) => UserBloc()..add(UserInitEvent()), //.add(InitEvent()),
         child: Builder(builder: (context) => _buildPage(context)));
   }
 
   Widget _buildPage(BuildContext context) {
-    final bloc = BlocProvider.of<OTPBloc>(context);
+    final bloc = BlocProvider.of<UserBloc>(context);
 
-    return BlocListener<OTPBloc, OTPState>(
+    return BlocListener<UserBloc, UserState>(
         listener: (context, state) async {
-          if (state is ErrorOTPState)
+          if (state is InitUserState)
+            bloc.add(GetNotificationsEvent());
+            else
+          if (state is ErrorUserState)
             pushToast(state.error);
-          else if (state is SuccessOTPCodeVerifiedState) {}
+          else if (state is GotNotificationsState) {
+            if (mounted) {
+              setState(() {
+                if (state.notifications.notifications != null)
+                  notifications = state.notifications.notifications!;
+                else
+                  notifications = [];
+              });
+            }
+          }
         },
         bloc: bloc,
         child: BlocBuilder(
             bloc: bloc,
-            builder: (context, OTPState state) {
+            builder: (context, UserState state) {
               return _BuildUI(bloc: bloc, state: state);
             }));
   }
 }
 
-class _BuildUI extends StatelessWidget {
-  final OTPBloc bloc;
-  final OTPState state;
+class _BuildUI extends StatefulWidget {
+  final UserBloc bloc;
+  final UserState state;
 
-  final List<String> strings = [
-    "abc",
-    "def",
-    "ghi",
-    "klm",
-    "abc",
-    "def",
-    "ghi",
-    "klm",
-    "abc",
-    "def",
-    "ghi",
-    "klm"
-  ];
 
   _BuildUI({required this.bloc, required this.state});
 
-  final otpCodeController = TextEditingController();
-  final searchController = TextEditingController();
+  @override
+  State<_BuildUI> createState() => _BuildUIState();
+}
+
+class _BuildUIState extends State<_BuildUI> {
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
@@ -91,7 +107,7 @@ class _BuildUI extends StatelessWidget {
                             fontSize: 20,
                             color: buttonColor1),
                       ),
-                          (strings.length > 0) ? Text(translate("buttons.clear"),style: TextStyle(
+                          (notifications.length > 0) ? Text(translate("buttons.clear"),style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: buttonColor1)) : Container()
                       ],),
@@ -102,10 +118,14 @@ class _BuildUI extends StatelessWidget {
                   alignment: AlignmentDirectional.topStart,
                 ),
 
-                (strings.length > 0) ?
+                (widget.state is LoadingUserState) ?
+                    CustomLoading()
+                    :
+
+                (notifications.length > 0) ?
                 Padding(child:
 
-                Column(children: strings.map((i) =>
+                Column(children: notifications.map((i) =>
                     Padding(child:
 
                     Container(
@@ -118,8 +138,8 @@ class _BuildUI extends StatelessWidget {
                           Padding(child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(translate("labels.youBought")+" 10 "+translate("labels.litersOf")+" "+translate("labels.gasoline")),
-                              Text("10:12")
+                              Text(((i.liters != null) ? (translate("labels.youBought")+" " + i.liters! + " "+translate("labels.litersOf")+" "+translate("labels."+((i.material != null) ? i.material! : ""))) : "")),
+                              Text((i.time != null) ? i.time! : "")
                             ],),padding: EdgeInsetsDirectional.fromSTEB(5, 10, 5, 2),),
                     Divider(color: Colors.black45, thickness: 0.3,),
 
@@ -139,7 +159,7 @@ class _BuildUI extends StatelessWidget {
                                 Expanded(child:
                                 Text(translate("labels.fuelRefueling"), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),),
 
-                                Text('10 L.', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
+                                Text(((i.liters != null) ? i.liters!+' L.' : ""), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
                               ],), padding: EdgeInsetsDirectional.fromSTEB(20, 0, 10, 0)),),
 
                           Container(
@@ -149,9 +169,9 @@ class _BuildUI extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Expanded(child:
-                                Text('Jun 25, 2021 / 12:00', style: TextStyle(color: Colors.black),),),
+                                Text(((i.date != null) ? i.date! : "") + " / " + ((i.time != null) ? i.time! : ""), style: TextStyle(color: Colors.black),),),
 
-                                Text('30 '+translate("labels.sdg"), style: TextStyle(color: Colors.black),),
+                                Text(((i.price != null) ? (i.price != "") ? formatter.format(double.parse(i.price!)) +' '+translate("labels.sdg") : "" : ""), style: TextStyle(color: Colors.black),),
                               ],), padding: EdgeInsetsDirectional.fromSTEB(20, 0, 10, 0)),),
 
                           Container(
@@ -161,7 +181,7 @@ class _BuildUI extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Expanded(child:
-                                Text('Address', style: TextStyle(color: Colors.black),),),
+                                Text(((i.address != null) ? i.address! : ""), style: TextStyle(color: Colors.black),),),
 
                               ],), padding: EdgeInsetsDirectional.fromSTEB(20, 0, 10, 0)),),
                         ],)

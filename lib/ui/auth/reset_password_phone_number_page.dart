@@ -33,9 +33,14 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'login_page.dart';
 import 'otp_validation_page.dart';
 
-class ResetPassword_PhoneNumberPage extends StatelessWidget {
+class ResetPassword_PhoneNumberPage extends StatefulWidget {
   static const route = "/resetpassword_phonenumber_page";
 
+  @override
+  State<ResetPassword_PhoneNumberPage> createState() => _ResetPassword_PhoneNumberPageState();
+}
+
+class _ResetPassword_PhoneNumberPageState extends State<ResetPassword_PhoneNumberPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<UserBloc>(
@@ -52,6 +57,13 @@ class ResetPassword_PhoneNumberPage extends StatelessWidget {
             pushToast(state.error);
           else if (state is SuccessfulUserOTPVerificationState) {
             pushToast(translate(translate("messages.otpCodeIsVerified")));
+
+            FocusScopeNode currentFocus = FocusScope.of(context);
+            if (!currentFocus.hasPrimaryFocus &&
+                currentFocus.focusedChild != null) {
+              FocusManager.instance.primaryFocus?.unfocus();
+            }
+
             Navigator.pushNamed(context, ResetPassword_PasswordPage.route,
                 arguments: state.resetPasswordBody);
           }
@@ -64,15 +76,21 @@ class ResetPassword_PhoneNumberPage extends StatelessWidget {
   }
 }
 
-class _BuildUI extends StatelessWidget {
+class _BuildUI extends StatefulWidget {
   final UserBloc userBloc;
   final UserState userState;
 
+
+  _BuildUI({required this.userBloc, required this.userState});
+
+  @override
+  State<_BuildUI> createState() => _BuildUIState();
+}
+
+class _BuildUIState extends State<_BuildUI> {
   final phoneController = TextEditingController();
 
   final phoneNode = FocusNode();
-
-  _BuildUI({required this.userBloc, required this.userState});
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +126,7 @@ class _BuildUI extends StatelessWidget {
                         onFieldSubmitted: (_) {
                           _resetPassword(context);
                         })),
-                if (userState is LoadingUserState)
+                if (widget.userState is LoadingUserState)
                   Padding(
                     child: const CustomLoading(),
                     padding: EdgeInsetsDirectional.only(
@@ -139,14 +157,61 @@ class _BuildUI extends StatelessWidget {
       if (!validateMobile(phoneController.text))
         FocusScope.of(context).requestFocus(phoneNode);
       else {
-        userBloc.add(CallOTPScreenEvent());
+        widget.userBloc.add(CallOTPScreenEvent());
+
+        String pn = "";
+        if (phoneController.text != null) {
+          if ((phoneController.text.length == 9) ||
+              (phoneController.text.length == 10)) {
+            if ((phoneController.text.length == 10) &&
+                (phoneController.text.substring(0, 1) == "0")) {
+              pn = phoneController.text
+                  .substring(1, phoneController.text.length);
+            } else {
+              if (phoneController.text.length == 9) {
+                pn = phoneController.text;
+              }
+            }
+          }
+        }
+
+        FocusScopeNode currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus &&
+            currentFocus.focusedChild != null) {
+          FocusManager.instance.primaryFocus?.unfocus();
+        }
+
         await auth.verifyPhoneNumber(
-            phoneNumber: countryCode + phoneController.text,
+            phoneNumber: countryCode + pn,
             timeout: const Duration(seconds: 5),
-            verificationCompleted: await (PhoneAuthCredential credential) {},
-            verificationFailed: await (FirebaseAuthException e) {},
+            verificationCompleted: await (PhoneAuthCredential credential) {
+
+              auth.signInWithCredential(credential).then((value) {
+                widget.userBloc.add(SuccessfulUserOTPVerificationEvent(
+                    null,
+                    ResetPasswordBody(
+                        verificationId: credential.verificationId,
+                        newPassword: "",
+                        mobileNumber: pn)));
+              }).catchError((e) {
+                widget.userBloc.add(ErrorUserOTPVerificationEvent(
+                    (e.message != null) ? e.message! : e.code));
+              });
+
+            },
+            verificationFailed: await (FirebaseAuthException e) async {
+              widget.userBloc.add(ErrorUserOTPVerificationEvent(
+                  (e.message != null)
+                      ? e.message! + " " + e.code + countryCode + pn
+                      : e.code));
+            },
             codeSent: await (String verificationId, int? resendToken) async {
               if (Platform.isIOS) {
+                FocusScopeNode currentFocus = FocusScope.of(context);
+                if (!currentFocus.hasPrimaryFocus &&
+                    currentFocus.focusedChild != null) {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                }
                 String smsCode = await Navigator.pushNamed(
                     context, OTPValidationPage.route,
                     arguments: verificationId) as String;
@@ -155,20 +220,27 @@ class _BuildUI extends StatelessWidget {
                   PhoneAuthCredential credential = PhoneAuthProvider.credential(
                       verificationId: verificationId, smsCode: smsCode);
                   auth.signInWithCredential(credential).then((value) {
-                    userBloc.add(SuccessfulUserOTPVerificationEvent(
+
+
+                    widget.userBloc.add(SuccessfulUserOTPVerificationEvent(
                         null,
                         ResetPasswordBody(
                             verificationId: verificationId,
                             newPassword: "",
-                            mobileNumber: phoneController.text)));
+                            mobileNumber: pn)));
                   }).catchError((e) {
-                    userBloc.add(ErrorUserOTPVerificationEvent(
+                    widget.userBloc.add(ErrorUserOTPVerificationEvent(
                         (e.message != null) ? e.message! : e.code));
                   });
                 }
               }
             },
             codeAutoRetrievalTimeout: await (String verificationId) async {
+              FocusScopeNode currentFocus = FocusScope.of(context);
+              if (!currentFocus.hasPrimaryFocus &&
+                  currentFocus.focusedChild != null) {
+                FocusManager.instance.primaryFocus?.unfocus();
+              }
               String smsCode = await Navigator.pushNamed(
                   context, OTPValidationPage.route,
                   arguments: verificationId) as String;
@@ -176,14 +248,14 @@ class _BuildUI extends StatelessWidget {
                 PhoneAuthCredential credential = PhoneAuthProvider.credential(
                     verificationId: verificationId, smsCode: smsCode);
                 auth.signInWithCredential(credential).then((value) {
-                  userBloc.add(SuccessfulUserOTPVerificationEvent(
+                  widget.userBloc.add(SuccessfulUserOTPVerificationEvent(
                       null,
                       ResetPasswordBody(
                           verificationId: verificationId,
                           newPassword: "",
-                          mobileNumber: phoneController.text)));
+                          mobileNumber:pn)));
                 }).catchError((e) {
-                  userBloc.add(ErrorUserOTPVerificationEvent(
+                  widget.userBloc.add(ErrorUserOTPVerificationEvent(
                       (e.message != null) ? e.message! : e.code));
                 });
               }

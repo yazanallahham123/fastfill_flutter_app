@@ -1,6 +1,4 @@
 import 'dart:io';
-import 'dart:math';
-
 import 'package:fastfill/bloc/user/bloc.dart';
 import 'package:fastfill/bloc/user/event.dart';
 import 'package:fastfill/bloc/user/state.dart';
@@ -23,7 +21,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 
 import 'otp_validation_page.dart';
@@ -58,6 +55,11 @@ class _SignupPageState extends State<SignupPage> {
                 .setCurrentUserValue(state.signedUpUser.userDetails!);
             await LocalData().setTokenValue(state.signedUpUser.token!);
             pushToast(translate("messages.youSignedupSuccessfully"));
+            FocusScopeNode currentFocus = FocusScope.of(context);
+            if (!currentFocus.hasPrimaryFocus &&
+                currentFocus.focusedChild != null) {
+              FocusManager.instance.primaryFocus?.unfocus();
+            }
             Navigator.pushNamedAndRemoveUntil(
                 context, HomePage.route, (Route<dynamic> route) => false);
           }
@@ -208,6 +210,7 @@ class _BuildUIState extends State<_BuildUI> {
       else if (confirmPassController.text != passController.text)
         FocusScope.of(context).requestFocus(confirmPassNode);
       else {
+
         String pn = "";
         if (phoneController.text != null) {
           if ((phoneController.text.length == 9) ||
@@ -224,6 +227,12 @@ class _BuildUIState extends State<_BuildUI> {
           }
         }
 
+        FocusScopeNode currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus &&
+            currentFocus.focusedChild != null) {
+          FocusManager.instance.primaryFocus?.unfocus();
+        }
+
         widget.userBloc.add(CallOTPScreenEvent());
         await auth.verifyPhoneNumber(
             phoneNumber: countryCode + pn,
@@ -235,8 +244,8 @@ class _BuildUIState extends State<_BuildUI> {
                     SignupBody(
                         firstName: firstNameController.text,
                         lastName: firstNameController.text,
-                        username: phoneController.text,
-                        mobileNumber: phoneController.text,
+                        username: pn,
+                        mobileNumber: pn,
                         password: passController.text),
                     null));
               }).catchError((e) {
@@ -253,6 +262,11 @@ class _BuildUIState extends State<_BuildUI> {
             codeSent: await (String verificationId, int? resendToken) async {
               if (Platform.isIOS)
                 {
+                  FocusScopeNode currentFocus = FocusScope.of(context);
+                  if (!currentFocus.hasPrimaryFocus &&
+                      currentFocus.focusedChild != null) {
+                    FocusManager.instance.primaryFocus?.unfocus();
+                  }
                   String smsCode = await Navigator.pushNamed(
                       context, OTPValidationPage.route,
                       arguments: verificationId) as String;
@@ -264,8 +278,8 @@ class _BuildUIState extends State<_BuildUI> {
                           SignupBody(
                               firstName: firstNameController.text,
                               lastName: firstNameController.text,
-                              username: phoneController.text,
-                              mobileNumber: phoneController.text,
+                              username: pn,
+                              mobileNumber: pn,
                               password: passController.text),
                           null));
                     }).catchError((e) {
@@ -279,6 +293,11 @@ class _BuildUIState extends State<_BuildUI> {
                 }
             },
             codeAutoRetrievalTimeout: await (String verificationId) async {
+              FocusScopeNode currentFocus = FocusScope.of(context);
+              if (!currentFocus.hasPrimaryFocus &&
+                  currentFocus.focusedChild != null) {
+                FocusManager.instance.primaryFocus?.unfocus();
+              }
               String smsCode = await Navigator.pushNamed(
                   context, OTPValidationPage.route,
                   arguments: verificationId) as String;
@@ -290,8 +309,8 @@ class _BuildUIState extends State<_BuildUI> {
                       SignupBody(
                           firstName: firstNameController.text,
                           lastName: firstNameController.text,
-                          username: phoneController.text,
-                          mobileNumber: phoneController.text,
+                          username: pn,
+                          mobileNumber: pn,
                           password: passController.text),
                       null));
                 }).catchError((e) {

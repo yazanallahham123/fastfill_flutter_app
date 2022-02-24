@@ -17,9 +17,10 @@ class NotificationBody extends Equatable{
    final String? price;
    final String? liters;
    final String? material;
+   final String? address;
 
    NotificationBody({this.id, this.typeId, this.date, this.time, this.title, this.content, this.notes,
-      this.imageURL, this.userId, this.price, this.liters, this.material});
+      this.imageURL, this.userId, this.price, this.liters, this.material, this.address});
 
    factory NotificationBody.fromJson(Map<String, dynamic> json) =>
        _$NotificationBodyFromJson(json);
@@ -29,5 +30,5 @@ class NotificationBody extends Equatable{
    @override
    List<Object?> get props =>
        [this.id, this.typeId, this.date, this.time, this.title, this.content, this.notes,
-          this.imageURL, this.userId, this.price, this.liters, this.material];
+          this.imageURL, this.userId, this.price, this.liters, this.material, this.address];
 }

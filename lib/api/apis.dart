@@ -11,6 +11,8 @@ class Apis{
   static const String updateUserProfile = "User/UpdateUserProfile";
   static const String updateFirebaseToken = "User/UpdateFirebaseToken";
   static const String addNotification = "User/AddNotification";
+  static const String getNotifications = "User/GetNotifications";
+
   //  OTP
   static const String otpSendCode = "https://d7networks.com/api/verifier/send";
   static const String otpResendCode = "https://d7networks.com/api/verifier/resend";
@@ -26,11 +28,12 @@ class Apis{
   static const String companiesByName = "Company/CompaniesByName";
   static const String allCompaniesBranches = "Company/AllCompaniesBranches";
   static const String companyBranches = "Company/CompanyBranches";
-  static const String companyBranchByCode = "Company/CompanyBranchByCode";
+  static const String companyBranchByCode = "Company/CompaniesBranchesByText";
   static const String companyBranchesByAddress = "Company/CompanyBranchesByAddress";
   static const String addCompanyToFavorite = "Company/AddToFavorite";
   static const String removeCompanyFromFavorite = "Company/RemoveFromFavorite";
   static const String favoriteCompaniesBranches = "Company/FavoriteCompaniesBranches";
   static const String frequentlyVisitedCompaniesBranches = "Company/FrequentlyVisitedCompaniesBranches";
-
+  static const String addCompanyBranchToFavorite = "Company/AddBranchToFavorite";
+  static const String removeCompanyBranchFromFavorite = "Company/RemoveBranchFromFavorite";
 }

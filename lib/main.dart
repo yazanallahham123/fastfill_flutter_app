@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fastfill/ui/home/home_page.dart';
 import 'package:fastfill/ui/language/language_page.dart';
 import 'package:fastfill/utils/local_data.dart';
+import 'package:fastfill/utils/misc.dart';
 import 'package:fastfill/utils/notifications.dart';
 import 'package:fastfill/utils/routes.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -103,7 +104,7 @@ class _FastFillApp extends State<FastFillApp> {
     var localizationDelegate = LocalizedApp.of(context).delegate;
     return LocalizationProvider(
         state: LocalizationProvider.of(context).state,
-        child: GetMaterialApp(
+        child: DismissKeyboard(child: GetMaterialApp(
             title: 'FastFill',
             onGenerateRoute: AppRouter.generateRoute,
             debugShowCheckedModeBanner: false,
@@ -117,8 +118,8 @@ class _FastFillApp extends State<FastFillApp> {
             theme: ThemeData(
                 primaryColor: primaryColor1,
                 accentColor: primaryColor2,
-                fontFamily: isArabic() ? 'Markazi' : 'Poppins'),
+                fontFamily: isArabic() ? 'Poppins' : 'Poppins'),
             initialRoute: (isSigned) ? HomePage.route : LanguagePage.route,
-        ));
+        )));
   }
 }

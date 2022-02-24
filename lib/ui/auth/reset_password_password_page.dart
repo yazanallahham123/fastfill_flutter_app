@@ -55,6 +55,13 @@ class ResetPassword_PasswordPage extends StatelessWidget {
           else if (state is PasswordResetState) {
             if (state.passwordReset == "Updated successfully.") {
               pushToast(translate("messages.passwordResetIsSuccessful"));
+
+              FocusScopeNode currentFocus = FocusScope.of(context);
+              if (!currentFocus.hasPrimaryFocus &&
+                  currentFocus.focusedChild != null) {
+                FocusManager.instance.primaryFocus?.unfocus();
+              }
+
               Navigator.pushNamedAndRemoveUntil(context, LoginPage.route,(Route<dynamic> route) => false);
             }
             else
@@ -164,9 +171,33 @@ class _BuildUI extends StatelessWidget {
       if (confirmNewPasswordController.text != newPasswordController.text)
         FocusScope.of(context).requestFocus(confirmNewPasswordNode);
       else {
+
+        FocusScopeNode currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus &&
+            currentFocus.focusedChild != null) {
+          FocusManager.instance.primaryFocus?.unfocus();
+        }
+
+
+        String pn = "";
+        if (resetPasswordBody.mobileNumber != null) {
+          if ((resetPasswordBody.mobileNumber!.length == 9) ||
+              (resetPasswordBody.mobileNumber!.length == 10)) {
+            if ((resetPasswordBody.mobileNumber!.length == 10) &&
+                (resetPasswordBody.mobileNumber!.substring(0, 1) == "0")) {
+              pn = resetPasswordBody.mobileNumber!
+                  .substring(1, resetPasswordBody.mobileNumber!.length);
+            } else {
+              if (resetPasswordBody.mobileNumber!.length == 9) {
+                pn = resetPasswordBody.mobileNumber!;
+              }
+            }
+          }
+        }
+
         userBloc.add(ResetPasswordEvent(ResetPasswordBody(
           newPassword: newPasswordController.text,
-          mobileNumber: resetPasswordBody.mobileNumber,
+          mobileNumber: pn,
           verificationId: resetPasswordBody.verificationId
         )));
       }

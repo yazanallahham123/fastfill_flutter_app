@@ -45,13 +45,17 @@ class Notifications {
 
       print("notification background message: ${message.data}");
       NotificationBody notificationBody = NotificationBody(
-          imageURL : message.data["imageURL"].toString(),
-          title : message.data["title"].toString(),
-          content : message.data["content"].toString(),
-          notes : message.data["notes"].toString(),
-          typeId : message.data["typeId"].toString(),
-          date : message.data["date"].toString(),
-          time : message.data["time"].toString(),
+          imageURL : message.data["imageURL"]?.toString() ?? "",
+          title : message.data["title"]?.toString() ?? "",
+          content : message.data["content"]?.toString() ?? "",
+          notes : message.data["notes"]?.toString() ?? "",
+          typeId : message.data["typeId"]?.toString() ?? "",
+          date : message.data["date"]?.toString() ?? "",
+          time : message.data["time"]?.toString() ?? "",
+          price: message.data["price"]?.toString() ?? "",
+          liters: message.data["liters"]?.toString() ?? "",
+          address: message.data["address"]?.toString() ?? "",
+          material: message.data["material"]?.toString() ?? "",
           userId: (user.id != null) ? user.id : 0
       );
 
@@ -66,13 +70,17 @@ class Notifications {
 
       print("notification message: ${message.data}");
       NotificationBody notificationBody = NotificationBody(
-          imageURL : message.data["imageURL"].toString(),
-          title : message.data["title"].toString(),
-      content : message.data["content"].toString(),
-      notes : message.data["notes"].toString(),
-      typeId : message.data["typeId"].toString(),
-      date : message.data["date"].toString(),
-      time : message.data["time"].toString(),
+          imageURL : message.data["imageURL"]?.toString() ?? "",
+          title : message.data["title"]?.toString() ?? "",
+          content : message.data["content"]?.toString() ?? "",
+          notes : message.data["notes"]?.toString() ?? "",
+          typeId : message.data["typeId"]?.toString() ?? "",
+          date : message.data["date"]?.toString() ?? "",
+          time : message.data["time"]?.toString() ?? "",
+          price: message.data["price"]?.toString() ?? "",
+          liters: message.data["liters"]?.toString() ?? "",
+          address: message.data["address"]?.toString() ?? "",
+          material: message.data["material"]?.toString() ?? "",
       userId: (user.id != null) ? user.id : 0
       );
 

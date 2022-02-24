@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
+
     switch (settings.name) {
       case SplashScreen.route:
         return PageRouteBuilder(
@@ -159,14 +160,7 @@ class AppRouter {
           },
         );
       case PaymentResultPage.route:
-        return PageRouteBuilder( pageBuilder: (context, animation, secondaryAnimation) => PaymentResultPage(paymentResultBody: PaymentResultBody(
-          status: true,
-          value: 10,
-          amount: 10,
-          date: "10 10 10",
-          fuelType: "Gasoline",
-          stationName: "AVIA"
-        ),),
+        return PageRouteBuilder( pageBuilder: (context, animation, secondaryAnimation) => PaymentResultPage(paymentResultBody: settings.arguments as PaymentResultBody,),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             const begin = Offset(0.0, 1.0);
             const end = Offset.zero;

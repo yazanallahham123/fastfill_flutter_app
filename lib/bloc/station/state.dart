@@ -18,6 +18,11 @@ class LoadingStationState extends StationState{
   const LoadingStationState();
 }
 
+class LoadingFavoriteStationState extends StationState{
+  const LoadingFavoriteStationState();
+}
+
+
 class ErrorStationState extends StationState{
   final String error;
 
@@ -55,19 +60,83 @@ class GotStationByCodeState extends StationState{
 }
 
 class AddedStationToFavorite extends StationState{
-  final bool result;
+  final int stationId;
 
-  const AddedStationToFavorite(this.result);
+  const AddedStationToFavorite(this.stationId);
 
   @override
-  List<Object?> get props => [this.result];
+  List<Object?> get props => [this.stationId];
 }
 
 class RemovedStationFromFavorite extends StationState{
-  final bool result;
+  final int stationId;
 
-  const RemovedStationFromFavorite(this.result);
+  const RemovedStationFromFavorite(this.stationId);
 
   @override
-  List<Object?> get props => [this.result];
+  List<Object?> get props => [this.stationId];
+}
+
+
+class AddedStationBranchToFavorite extends StationState{
+  final int stationBranchId;
+
+  const AddedStationBranchToFavorite(this.stationBranchId);
+
+  @override
+  List<Object?> get props => [this.stationBranchId];
+}
+
+class RemovedStationBranchFromFavorite extends StationState{
+  final int stationBranchId;
+
+  const RemovedStationBranchFromFavorite(this.stationBranchId);
+
+  @override
+  List<Object?> get props => [this.stationBranchId];
+}
+
+class GotFrequentlyVisitedStationsBranchesState extends StationState{
+  final StationBranchesWithPagination frequentlyVisitedStationsBranches;
+
+  const GotFrequentlyVisitedStationsBranchesState(this.frequentlyVisitedStationsBranches);
+
+  @override
+  List<Object?> get props => [this.frequentlyVisitedStationsBranches];
+}
+
+class GotFavoriteStationsBranchesState extends StationState{
+  final StationBranchesWithPagination favoriteStationsBranches;
+
+  const GotFavoriteStationsBranchesState(this.favoriteStationsBranches);
+
+  @override
+  List<Object?> get props => [this.favoriteStationsBranches];
+}
+
+class GotStationBranchByCodeState extends StationState{
+  final StationBranchesWithPagination stationsBranches;
+
+  const GotStationBranchByCodeState(this.stationsBranches);
+
+  @override
+  List<Object?> get props => [this.stationsBranches];
+}
+
+class GotAllStationsBranchesState extends StationState{
+  final StationBranchesWithPagination stationsBranches;
+
+  const GotAllStationsBranchesState(this.stationsBranches);
+
+  @override
+  List<Object?> get props => [this.stationsBranches];
+}
+
+class AddingRemovingStationBranchToFavorite extends StationState{
+  final int stationBranchId;
+
+  const AddingRemovingStationBranchToFavorite(this.stationBranchId);
+
+  @override
+  List<Object?> get props => [this.stationBranchId];
 }

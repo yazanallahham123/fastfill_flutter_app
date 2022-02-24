@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'package:fastfill/model/notification/notification_body.dart';
+import 'package:fastfill/model/notification/notifications_with_pagination.dart';
 import 'package:fastfill/model/user/reset_password_body.dart';
 import 'package:fastfill/model/user/signedup_user.dart';
 import 'package:fastfill/model/user/signup_body.dart';
@@ -67,5 +69,15 @@ class UserProfileUpdated extends UserState{
 
   @override
   List<Object?> get props => [this.profileUpdated];
+
+}
+
+class GotNotificationsState extends UserState{
+  final NotificationsWithPagination notifications;
+
+  const GotNotificationsState(this.notifications);
+
+  @override
+  List<Object?> get props => [this.notifications];
 
 }

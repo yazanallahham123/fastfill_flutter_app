@@ -42,7 +42,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: backgroundColor1,
       bottomNavigationBar: Container(
-        height: 60,
+        height: 70,
         decoration: BoxDecoration(
           color: backgroundColor2,
           borderRadius: const BorderRadius.only(
@@ -64,9 +64,9 @@ class _HomePageState extends State<HomePage> {
                       border: BorderDirectional(end: BorderSide(color: Colors.white, width: 0.05, style: BorderStyle.solid))
 
                   ),
-                  padding: EdgeInsetsDirectional.fromSTEB(25, 10, 10, 10),
+                  padding: EdgeInsetsDirectional.fromSTEB(25, 5, 10, 15),
                 //alignment: Alignment.topLeft,
-                  height: SizeConfig().h(60),
+                  height: SizeConfig().h(45),
                   width: SizeConfig().w(25),
                   child: SvgPicture.asset(
                     'assets/svg/homebutton.svg',
@@ -88,8 +88,8 @@ class _HomePageState extends State<HomePage> {
 
                   ),
 
-                  padding: EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
-                  height: SizeConfig().h(60),
+                  padding: EdgeInsetsDirectional.fromSTEB(10, 5, 10, 15),
+                  height: SizeConfig().h(45),
                   width: SizeConfig().w(25),
                   child: SvgPicture.asset(
                     'assets/svg/transactionsbutton.svg',
@@ -105,14 +105,14 @@ class _HomePageState extends State<HomePage> {
                 });
               },
               child: Container(
-                  padding: EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
+                  padding: EdgeInsetsDirectional.fromSTEB(10, 5, 10, 15),
                 //alignment: Alignment.topLeft,
                   decoration: BoxDecoration(
                       border: BorderDirectional(end: BorderSide(color: Colors.white, width: 0.05, style: BorderStyle.solid))
 
                   ),
 
-                  height: SizeConfig().h(60),
+                  height: SizeConfig().h(55),
                   width: SizeConfig().w(25),
                   child: SvgPicture.asset(
                     'assets/svg/notificationsbutton.svg',
@@ -128,9 +128,9 @@ class _HomePageState extends State<HomePage> {
                 });
               },
               child: Container(
-                  padding: EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
+                  padding: EdgeInsetsDirectional.fromSTEB(10, 5, 10, 15),
                 //alignment: Alignment.topLeft,
-                  height: SizeConfig().h(60),
+                  height: SizeConfig().h(45),
                   width: SizeConfig().w(25),
                   child: SvgPicture.asset(
                     'assets/svg/favoritesbutton.svg',

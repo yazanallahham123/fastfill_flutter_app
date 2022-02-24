@@ -64,3 +64,8 @@ class UpdateProfileEvent extends UserEvent{
   @override
   List<Object?> get props => [this.updateProfileBody];
 }
+
+class GetNotificationsEvent extends UserEvent{
+  const GetNotificationsEvent();
+}
+

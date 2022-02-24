@@ -11,11 +11,11 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>fastfill</string>
+	<string>Fast Fuelfill</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>$(FLUTTER_BUILD_NAME)</string>
+	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -30,7 +30,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
 	<key>LSApplicationQueriesSchemes</key>
@@ -49,6 +49,10 @@
 	<array>
 		<string>_dartobservatory._tcp</string>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Check user location to suggest most close stations</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Upload profile picture</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

@@ -19,6 +19,30 @@ class UserBloc extends Bloc<UserEvent, UserState> {
        emit(InitUserState());
      });
 
+    on<GetNotificationsEvent>((event, emit) async {
+      try {
+        emit(LoadingUserState());
+        var token = await LocalData().getBearerTokenValue();
+        if (token != null) {
+          await mClient.getNotifications(token, 1, 100).then((v) {
+            emit(GotNotificationsState(v));
+          });
+        }
+      } on DioError catch (e) {
+        if (e.response != null) {
+          if (e.response!.statusCode == 400 || e.response!.statusCode == 404)
+            emit(ErrorUserState(
+                translate("messages.phoneNumberOrPasswordIncorrect")));
+          else {
+            print("Error" + e.toString());
+            emit(ErrorUserState(dioErrorMessageAdapter(e)));
+          }
+        }
+        else
+          emit(ErrorUserState(dioErrorMessageAdapter(e)));
+      }
+    });
+
      on<SuccessfulUserOTPVerificationEvent>((event, emit){
        emit(SuccessfulUserOTPVerificationState(event.signupBody, event.resetPasswordBody));
      });

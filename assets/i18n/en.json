@@ -57,10 +57,18 @@
   "searchResults": "Search results",
   "youBought": "You bought",
   "litersOf": "liters of",
-  "youRefueledWith": "You refueled with"
+  "youRefueledWith": "You refueled with",
+  "youHaveNoFavorites": "You have no favorites",
+  "searchResult": "Search Results",
+  "noFrequentlyVisited": "You haven't visit any station yet.",
+  "noFavorites": "You haven't add any station to favorite list.",
+  "noSearchResult": "Nothing match your search criteria",
+  "newPassword": "New password",
+  "confirmNewPassword": "Confirm new password"
 },
 "buttons" : {
   "search": "Search",
+  "cancel": "Cancel",
   "signUp": "Sign Up",
   "donotHaveAccount": "Don't have account?",
   "signIn" : "Sign In",
@@ -97,7 +105,21 @@
   "otpCodeNotSent": "Ops! Could not send OTP Code, Please try again in few minutes",
   "passwordResetIsNotSuccessful": "Could not reset your password!",
   "passwordResetIsSuccessful": "Password was successfully reset",
-  "emptyCode": "OTP Code is empty!"
+  "emptyCode": "OTP Code is empty!",
+  "couldNotSearchStationByCode": "Could not search for station by code",
+  "couldNotSearchStationBranchByCode": "Could not search for station branch by code",
+  "couldNotLoadFrequentlyVisitedStation": "Could not load frequently visited stations",
+  "couldNotLoadFrequentlyVisitedStationBranches": "Could not load frequently visited station branches",
+  "couldNotAddStationToFavorite": "Could not add station to favorites",
+  "couldNotRemoveStationFromFavorite":  "Could not remove station from favorites",
+  "couldNotAddStationBranchToFavorite": "Could not add station branch to favorites",
+  "couldNotRemoveStationBranchFromFavorite": "Could not remove station branch from favorites",
+  "couldNotLoadFavoriteStations": "Could not load favorite stations",
+  "couldNotLoadFavoriteStationBranches": "Could not load favorite station branches",
+  "couldNotLoadAllStationBranches": "Could not load all station branches",
+  "amountMustBeMoreThanZero": "Amount must be more than zero",
+  "confirmAmountPlease": "Confirm amount please"
+
 },
   "titles" : {
     "welcome": "Welcome"
