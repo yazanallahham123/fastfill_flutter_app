@@ -29,7 +29,9 @@ class StationBranchWidget extends StatefulWidget{
 class _StationBranchWidgetState extends State<StationBranchWidget> {
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return
+      Padding(child:
+      Stack(
       children: [
         InkWell(child:
 
@@ -84,7 +86,7 @@ class _StationBranchWidgetState extends State<StationBranchWidget> {
               padding: EdgeInsetsDirectional.only(
                   start: SizeConfig().w(40),
                   end: SizeConfig().w(40),
-                  top: SizeConfig().w(20)),
+                  top: SizeConfig().w(16)),
             ), alignment: AlignmentDirectional.topStart,),
             Align(child: Padding(
               child: Text(
@@ -109,6 +111,6 @@ class _StationBranchWidgetState extends State<StationBranchWidget> {
           ],
         )
       ],
-    );
+    ), padding: EdgeInsetsDirectional.fromSTEB(10, 0, 10, 0),);
   }
 }

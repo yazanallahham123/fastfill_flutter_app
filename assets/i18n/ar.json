@@ -85,7 +85,8 @@
     "apply": "تطبيق",
     "clear": "مسح",
     "save": "حفظ",
-    "validate": "تحقق"
+    "validate": "تحقق",
+    "back": "عودة"
   },
   "messages" : {
     "phoneNumberOrPasswordIncorrect": "رقم الموبايل او كلمة المرور خطأ",
@@ -119,7 +120,8 @@
     "couldNotLoadFavoriteStationBranches": "لم يتم تحميل المحطات المفضله",
     "couldNotLoadAllStationBranches": "لم يتم تحميل جميع المحطات",
     "amountMustBeMoreThanZero": "الكمية يجب ان تكون آكبر من صفر",
-    "confirmAmountPlease": "يرجى مطابقة الكمية"
+    "confirmAmountPlease": "يرجى مطابقة الكمية",
+    "couldNotAddTransaction": "لم تتم عملية التحميل بنجاح، يرجى اعادة المحاولة"
   },
   "titles" : {
     "welcome": "اهلا و سهلاً"

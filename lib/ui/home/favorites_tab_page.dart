@@ -21,6 +21,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 
+import '../../common_widgets/app_widgets/station_widget.dart';
+
 class FavoritesTabPage extends StatefulWidget {
   const FavoritesTabPage({Key? key}) : super(key: key);
 
@@ -29,6 +31,7 @@ class FavoritesTabPage extends StatefulWidget {
 }
 
 List<StationBranch> favoriteStations = [];
+List<StationBranch> allStationsBranches = [];
 
 class _FavoritesTabPageState extends State<FavoritesTabPage> {
   @override
@@ -46,15 +49,42 @@ class _FavoritesTabPageState extends State<FavoritesTabPage> {
         listener: (context, state) async {
           if (state is InitStationState) {
             bloc.add(FavoriteStationsBranchesEvent());
+            bloc.add(AllStationsBranchesEvent());
           } else if (state is ErrorStationState)
             pushToast(state.error);
           else if (state is GotFavoriteStationsBranchesState) {
             if (mounted) {
               setState(() {
                 if (state.favoriteStationsBranches.companiesBranches != null)
-                  favoriteStations = state.favoriteStationsBranches.companiesBranches!;
+                  favoriteStations =
+                      state.favoriteStationsBranches.companiesBranches!;
                 else
                   favoriteStations = [];
+              });
+            }
+          }
+          else if (state is GotAllStationsBranchesState) {
+            if (state.stationsBranches != null)
+              allStationsBranches = state.stationsBranches.companiesBranches!;
+            else
+              allStationsBranches = [];
+          }
+          else if (state is AddedStationBranchToFavorite) {
+            if (mounted) {
+              setState(() {
+                isAddedToFavorite = true;
+                StationBranch sb = allStationsBranches
+                    .firstWhere((s) => s.id == state.stationBranchId);
+                addRemoveFavoriteStreamController.sink.add(sb);
+              });
+            }
+          } else if (state is RemovedStationBranchFromFavorite) {
+            if (mounted) {
+              setState(() {
+                isAddedToFavorite = false;
+                StationBranch sb = allStationsBranches
+                    .firstWhere((s) => s.id == state.stationBranchId);
+                addRemoveFavoriteStreamController.sink.add(sb);
               });
             }
           }
@@ -90,13 +120,25 @@ class _BuildUIState extends State<_BuildUI> {
     addRemoveFavoriteStreamController.stream.listen((event) {
       if (mounted) {
         setState(() {
+          StationBranch sb = StationBranch(
+              id: event.id,
+              arabicName: event.arabicName,
+              englishName: event.englishName,
+              arabicAddress: event.arabicAddress,
+              englishAddress: event.englishAddress,
+              code: event.code,
+              companyId: event.companyId,
+              longitude: event.longitude,
+              latitude: event.latitude,
+              isFavorite: !event.isFavorite!);
           if (event.isFavorite != null) {
-            if (!event.isFavorite!)
+            if (event.isFavorite!)
               favoriteStations.removeWhere((fs) => fs.id == event.id);
             else
-              favoriteStations.add(event);
+              favoriteStations.add(sb);
           } else
             favoriteStations.removeWhere((fs) => fs.id == event.id);
+
         });
       }
       ;
@@ -136,93 +178,18 @@ class _BuildUIState extends State<_BuildUI> {
                       top: SizeConfig().h(10))),
               alignment: AlignmentDirectional.topStart,
             ),
-            (widget.state is LoadingStationState || widget.state is InitStationState)
+            (widget.state is LoadingStationState ||
+                    widget.state is InitStationState)
                 ? CustomLoading()
                 : (favoriteStations.length > 0)
                     ? Padding(
                         child: Column(
                             children: favoriteStations
-                                .map((i) => InkWell(
-                                    onTap: () {
-                                      Navigator.pushNamed(
-                                          context, PurchasePage.route,
-                                          arguments: i);
-                                    },
-                                    child: Stack(
-                                      children: [
-                                        (isArabic())
-                                            ? Transform(
-                                                alignment: Alignment.center,
-                                                transform:
-                                                    Matrix4.rotationY(pi),
-                                                child: Image(
-                                                    image: AssetImage(
-                                                        "assets/station_row.png")))
-                                            : Image(
-                                                image: AssetImage(
-                                                    "assets/station_row.png")),
-                                        Column(
-                                          children: [
-                                            Align(
-                                              child: Padding(
-                                                child: Text(
-                                                  (isArabic())
-                                                      ? i.arabicName!
-                                                      : i.englishName!,
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 18),
-                                                ),
-                                                padding:
-                                                    EdgeInsetsDirectional.only(
-                                                        start:
-                                                            SizeConfig().w(40),
-                                                        end: SizeConfig().w(40),
-                                                        top:
-                                                            SizeConfig().w(20)),
-                                              ),
-                                              alignment:
-                                                  AlignmentDirectional.topStart,
-                                            ),
-                                            Align(
-                                              child: Padding(
-                                                child: Text(
-                                                  i.code!,
-                                                  style:
-                                                      TextStyle(fontSize: 16),
-                                                ),
-                                                padding:
-                                                    EdgeInsetsDirectional.only(
-                                                  start: SizeConfig().w(40),
-                                                  end: SizeConfig().w(40),
-                                                ),
-                                              ),
-                                              alignment:
-                                                  AlignmentDirectional.topStart,
-                                            ),
-                                            Align(
-                                              child: Padding(
-                                                child: Text(
-                                                  (isArabic())
-                                                      ? i.arabicAddress!
-                                                      : i.englishAddress!,
-                                                  style:
-                                                      TextStyle(fontSize: 16),
-                                                ),
-                                                padding:
-                                                    EdgeInsetsDirectional.only(
-                                                  start: SizeConfig().w(40),
-                                                  end: SizeConfig().w(40),
-                                                ),
-                                              ),
-                                              alignment:
-                                                  AlignmentDirectional.topStart,
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    )))
+                                .map((i) => StationBranchWidget(
+                                      stationBranch: i,
+                                      stationBloc: widget.bloc,
+                                      stationState: widget.state,
+                                    ))
                                 .toList()),
                         padding: EdgeInsetsDirectional.fromSTEB(0, 20, 0, 0),
                       )

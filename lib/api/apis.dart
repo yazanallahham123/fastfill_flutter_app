@@ -12,6 +12,8 @@ class Apis{
   static const String updateFirebaseToken = "User/UpdateFirebaseToken";
   static const String addNotification = "User/AddNotification";
   static const String getNotifications = "User/GetNotifications";
+  static const String addPaymentTransaction = "User/AddPaymentTransaction";
+  static const String getPaymentTransactions = "User/GetPaymentTransactions";
 
   //  OTP
   static const String otpSendCode = "https://d7networks.com/api/verifier/send";
@@ -36,4 +38,6 @@ class Apis{
   static const String frequentlyVisitedCompaniesBranches = "Company/FrequentlyVisitedCompaniesBranches";
   static const String addCompanyBranchToFavorite = "Company/AddBranchToFavorite";
   static const String removeCompanyBranchFromFavorite = "Company/RemoveBranchFromFavorite";
+
+
 }

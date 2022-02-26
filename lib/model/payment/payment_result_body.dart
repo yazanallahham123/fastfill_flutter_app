@@ -7,18 +7,20 @@ part 'payment_result_body.g.dart';
 class PaymentResultBody extends Equatable {
   final String date;
   final String stationName;
-  final String fuelType;
+  final int fuelTypeId;
   final double amount;
   final double value;
   final bool status;
+  final bool fromList;
 
   const PaymentResultBody({
     required this.date,
     required this.stationName,
-    required this.fuelType,
+    required this.fuelTypeId,
     required this.amount,
     required this.value,
-    required this.status
+    required this.status,
+    required this.fromList
   });
 
   factory PaymentResultBody.fromJson(Map<String, dynamic> json) =>
@@ -30,8 +32,9 @@ class PaymentResultBody extends Equatable {
   List<Object?> get props =>
       [  this.date,
          this.stationName,
-         this.fuelType,
+         this.fuelTypeId,
          this.amount,
          this.value,
-         this.status];
+         this.status,
+         this.fromList];
 }

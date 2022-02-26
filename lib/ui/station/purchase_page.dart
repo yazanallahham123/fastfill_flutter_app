@@ -23,6 +23,7 @@ import 'package:fastfill/helper/size_config.dart';
 import 'package:fastfill/helper/toast.dart';
 import 'package:fastfill/model/login/login_body.dart';
 import 'package:fastfill/model/station/add_remove_station_favorite_body.dart';
+import 'package:fastfill/model/station/payment_transaction_body.dart';
 import 'package:fastfill/model/station/station_branch.dart';
 import 'package:fastfill/streams/add_remove_favorite_stream.dart';
 import 'package:fastfill/ui/auth/reset_password_phone_number_page.dart';
@@ -37,6 +38,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:intl/intl.dart';
 
 import '../../model/payment/payment_result_body.dart';
+import '../../model/user/user.dart';
 import '../../utils/misc.dart';
 
 
@@ -55,6 +57,7 @@ class PurchasePage extends StatefulWidget {
 }
 
 bool isAddedToFavorite = false;
+PaymentResultBody? prb = null;
 
 class _PurchasePage extends State<PurchasePage> {
 
@@ -121,6 +124,10 @@ class _PurchasePage extends State<PurchasePage> {
                 });
               }
 
+            }
+          else if (state is AddedPaymentTransaction)
+            {
+              Navigator.pushNamed(context, PaymentResultPage.route, arguments: prb);
             }
         }
 
@@ -381,7 +388,7 @@ class _BuildUI extends State<BuildUI> {
                       start: SizeConfig().w(20),
                         end: SizeConfig().w(20),
                         top: SizeConfig().h(10), bottom: SizeConfig().h(35)),
-                    child: CustomButton(
+                    child: (state is LoadingStationState) ? CustomLoading() : CustomButton(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
                       height: SizeConfig().h(60),
@@ -390,7 +397,6 @@ class _BuildUI extends State<BuildUI> {
                         borderColor: buttonColor1,
                         title: translate("buttons.pay"),
                         onTap: () {
-
                           pay();
                         })),
 
@@ -407,21 +413,21 @@ class _BuildUI extends State<BuildUI> {
   }
 
   pay()
-  {
+  async {
     if (amountController.text == confirmAmountController.text) {
       if (double.tryParse(amountController.text.replaceAll(",", "")) != null) {
         if (double.parse(amountController.text.replaceAll(",", "")) > 0.0) {
-          PaymentResultBody prb = PaymentResultBody(
+          prb = PaymentResultBody(
               date: DateFormat('yyyy-MM-dd - hh:mm a').format(DateTime.now()),
               stationName: (isArabic())
                   ? widget.stationBranch.arabicName!
                   : widget
                   .stationBranch.englishName!,
               status: true,
-              fuelType: (_fuelTypeValue == FuelType.Gasoline) ? translate(
-                  "labels.gasoline") : translate("labels.benzine"),
-              amount: double.tryParse(amountController.text.replaceAll(",", "")) ?? 0.0,
-              value: 100.0
+              fuelTypeId: (_fuelTypeValue == FuelType.Gasoline) ? 1 : 2,
+              amount: (double.tryParse(amountController.text.replaceAll(",", "")) ?? 0.0),
+              value: 100.0,
+              fromList: false
           );
 
           FocusScopeNode currentFocus = FocusScope.of(context);
@@ -430,7 +436,19 @@ class _BuildUI extends State<BuildUI> {
             FocusManager.instance.primaryFocus?.unfocus();
           }
 
-          Navigator.pushNamed(context, PaymentResultPage.route, arguments: prb);
+          User user = await LocalData().getCurrentUserValue();
+
+          PaymentTransactionBody paymentTransactionBody = PaymentTransactionBody(
+            userId: user.id,
+            amount: (double.tryParse(amountController.text.replaceAll(",", "")) ?? 0.0),
+            fastfill: 100.0,
+            fuelTypeId: (_fuelTypeValue == FuelType.Gasoline) ? 1 : 2,
+            status: true,
+            date: DateFormat('yyyy-MM-dd hh:mm a').format(DateTime.now()),
+            companyBranchId: widget.stationBranch.id
+          );
+
+          bloc.add(AddPaymentTransaction(paymentTransactionBody));
         }
         else
           {

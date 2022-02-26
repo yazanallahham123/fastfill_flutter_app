@@ -1,6 +1,11 @@
 import 'package:equatable/equatable.dart';
+import 'package:fastfill/model/payment/payment_result_body.dart';
+import 'package:fastfill/model/station/payment_transaction_body.dart';
+import 'package:fastfill/model/station/payment_transactions_with_pagination.dart';
 import 'package:fastfill/model/station/station_branch.dart';
 import 'package:fastfill/model/station/station_branches_with_pagination.dart';
+
+import '../../model/station/payment_transaction_result.dart';
 
 abstract class StationState extends Equatable{
 
@@ -139,4 +144,22 @@ class AddingRemovingStationBranchToFavorite extends StationState{
 
   @override
   List<Object?> get props => [this.stationBranchId];
+}
+
+class AddedPaymentTransaction extends StationState{
+  final bool addPaymentTransactionResult;
+
+  const AddedPaymentTransaction(this.addPaymentTransactionResult);
+
+  @override
+  List<Object?> get props => [this.addPaymentTransactionResult];
+}
+
+class GotPaymentTransactions extends StationState{
+  final PaymentTransactionsWithPagination paymentTransactionsWithPagination;
+
+  const GotPaymentTransactions(this.paymentTransactionsWithPagination);
+
+  @override
+  List<Object?> get props => [this.paymentTransactionsWithPagination];
 }

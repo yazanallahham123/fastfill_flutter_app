@@ -8,6 +8,8 @@ import 'package:fastfill/model/otp/otp_send_response_body.dart';
 import 'package:fastfill/model/otp/otp_validation_body.dart';
 import 'package:fastfill/model/otp/otp_verify_response_body.dart';
 import 'package:fastfill/model/station/add_remove_station_favorite_body.dart';
+import 'package:fastfill/model/station/payment_transaction_body.dart';
+import 'package:fastfill/model/station/payment_transactions_with_pagination.dart';
 import 'package:fastfill/model/station/station_branch.dart';
 import 'package:fastfill/model/station/station_branches_with_pagination.dart';
 import 'package:fastfill/model/user/reset_password_body.dart';
@@ -107,5 +109,12 @@ abstract class ApiClient {
   //User
   @GET(Apis.getNotifications)
   Future<NotificationsWithPagination> getNotifications(@Header("Authorization") String token, @Query("page") int page, @Query("pageSize") int pageSize);
+
+  //User
+  @POST(Apis.addPaymentTransaction)
+  Future<bool> addPaymentTransaction(@Header("Authorization") String token, @Body() PaymentTransactionBody paymentTransactionBody);
+
+  @GET(Apis.getPaymentTransactions)
+  Future<PaymentTransactionsWithPagination> getPaymentTransactions(@Header("Authorization") String token, @Query("page") int page, @Query("pageSize") int pageSize);
 
 }

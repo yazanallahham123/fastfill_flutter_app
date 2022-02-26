@@ -18,7 +18,7 @@ class HomeAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return
       AppBar(
-        toolbarHeight: 250,
+        toolbarHeight: 275,
         automaticallyImplyLeading: false,
         brightness: Brightness.dark,
         elevation: 0,
@@ -72,15 +72,15 @@ class HomeAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                   ],
             child: Container(
                 alignment: Alignment.topLeft,
-                height: SizeConfig().h(50),
-                width: SizeConfig().h(50),
+                height: SizeConfig().h(45),
+                width: SizeConfig().h(45),
                 margin: EdgeInsets.symmetric(
                     horizontal: SizeConfig().w(12),
                     vertical: SizeConfig().h(55)),
                 child: SvgPicture.asset(
                   'assets/svg/menu.svg',
                   width: SizeConfig().w(50),
-                ))), padding: EdgeInsetsDirectional.fromSTEB(0, 25, 0, 30),),
+                ))), padding: EdgeInsetsDirectional.fromSTEB(0, 37, 0, 30),),
           //),
           Padding(child: InkWell(
             onTap: () {
@@ -88,8 +88,8 @@ class HomeAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
             },
             child: Container(
                 alignment: Alignment.topRight,
-                height: SizeConfig().h(50),
-                width: SizeConfig().h(50),
+                height: SizeConfig().h(45),
+                width: SizeConfig().h(45),
                 margin: EdgeInsets.symmetric(
                     horizontal: SizeConfig().w(12),
                     vertical: SizeConfig().h(55)),
@@ -97,7 +97,7 @@ class HomeAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                   'assets/svg/profile.svg',
                   width: SizeConfig().w(50),
                 )),
-          ), padding: EdgeInsetsDirectional.fromSTEB(0, 25, 0, 30),)
+          ), padding: EdgeInsetsDirectional.fromSTEB(0, 37, 0, 30),)
       ],), padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 20),)),
 
     );

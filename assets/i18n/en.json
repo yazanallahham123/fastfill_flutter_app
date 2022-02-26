@@ -84,7 +84,8 @@
   "apply": "Apply",
   "clear": "Clear",
   "save": "Save",
-  "validate": "Validate"
+  "validate": "Validate",
+  "back": "Back"
 },
 "messages" : {
   "phoneNumberOrPasswordIncorrect": "Phone number or password are incorrect",
@@ -118,8 +119,9 @@
   "couldNotLoadFavoriteStationBranches": "Could not load favorite station branches",
   "couldNotLoadAllStationBranches": "Could not load all station branches",
   "amountMustBeMoreThanZero": "Amount must be more than zero",
-  "confirmAmountPlease": "Confirm amount please"
-
+  "confirmAmountPlease": "Confirm amount please",
+  "couldNotAddTransaction": "Could not process your transaction, Please try again",
+  "couldNotLoadTransaction": "Could not load your transactions, Please try again"
 },
   "titles" : {
     "welcome": "Welcome"

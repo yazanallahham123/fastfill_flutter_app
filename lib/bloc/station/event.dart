@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:fastfill/model/otp/otp_validation_body.dart';
+import 'package:fastfill/model/station/payment_transaction_body.dart';
 
 abstract class StationEvent extends Equatable{
 
@@ -80,6 +81,18 @@ class RemoveStationBranchFromFavoriteEvent extends StationEvent{
 
 class AllStationsBranchesEvent extends StationEvent{
   const AllStationsBranchesEvent();
+}
+
+class AddPaymentTransaction extends StationEvent{
+  final PaymentTransactionBody paymentTransactionBody;
+  const AddPaymentTransaction(this.paymentTransactionBody);
+
+  @override
+  List<Object?> get props => [this.paymentTransactionBody];
+}
+
+class GetPaymentTransactions extends StationEvent{
+  const GetPaymentTransactions();
 }
 
 

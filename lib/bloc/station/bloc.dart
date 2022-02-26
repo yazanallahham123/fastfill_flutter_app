@@ -19,6 +19,50 @@ class StationBloc extends Bloc<StationEvent, StationState> {
        emit(InitStationState());
      });
 
+    on<GetPaymentTransactions>((event, emit) async {
+      try {
+        emit(LoadingStationState());
+        var token = await LocalData().getBearerTokenValue();
+        if (token != null) {
+          await mClient.getPaymentTransactions(token, 1, 999999).then((v) {
+            if (v != null)
+              emit(GotPaymentTransactions(v));
+          });
+        }
+        else
+          emit(ErrorStationState(translate("messages.couldNotLoadTransaction")));
+      } on DioError catch (e) {
+        if (e.response!.statusCode == 400 || e.response!.statusCode == 404)
+          emit(ErrorStationState(translate("messages.couldNotLoadTransaction")));
+        else {
+          print("Error" + e.toString());
+          emit(ErrorStationState(dioErrorMessageAdapter(e)));
+        }
+      }
+    });
+
+    on<AddPaymentTransaction>((event, emit) async {
+      try {
+        emit(LoadingStationState());
+        var token = await LocalData().getBearerTokenValue();
+        if (token != null) {
+          await mClient.addPaymentTransaction(token, event.paymentTransactionBody).then((v) {
+            if (v != null)
+              emit(AddedPaymentTransaction(v));
+          });
+        }
+        else
+          emit(ErrorStationState(translate("messages.couldNotAddTransaction")));
+      } on DioError catch (e) {
+        if (e.response!.statusCode == 400 || e.response!.statusCode == 404)
+          emit(ErrorStationState(translate("messages.couldNotAddTransaction")));
+        else {
+          print("Error" + e.toString());
+          emit(ErrorStationState(dioErrorMessageAdapter(e)));
+        }
+      }
+    });
+
     on<AllStationsBranchesEvent>((event, emit) async {
       try {
         emit(LoadingStationState());

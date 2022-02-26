@@ -42,7 +42,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: backgroundColor1,
       bottomNavigationBar: Container(
-        height: 70,
+        height: 62,
         decoration: BoxDecoration(
           color: backgroundColor2,
           borderRadius: const BorderRadius.only(

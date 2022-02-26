@@ -73,6 +73,15 @@ class PaymentResultPage extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+                          Text(translate("labels.amount")+":", style: TextStyle(color: textColor2, fontSize: 18),),
+                          Text(formatter.format(paymentResultBody.amount-paymentResultBody.value)+" "+translate("labels.sdg"), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),),
+                        ],)
+                        ,padding: EdgeInsetsDirectional.fromSTEB(SizeConfig().w(20), SizeConfig().h(0), SizeConfig().w(24), SizeConfig().h(10)),),
+
+                      Padding(child:
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
                           Text(translate("labels.date")+":", style: TextStyle(color: textColor2, fontSize: 18),),
                           Text(paymentResultBody.date, style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),),
                         ],)
@@ -109,19 +118,9 @@ class PaymentResultPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(translate("labels.choose")+":", style: TextStyle(color: textColor2, fontSize: 18),),
-                    Text(paymentResultBody.fuelType, style: TextStyle(color: Colors.black, fontSize: 18),),
+                    Text((paymentResultBody.fuelTypeId == 1) ? translate("labels.gasoline"): translate("labels.benzine"), style: TextStyle(color: Colors.black, fontSize: 18),),
                   ],)
                   ,padding: EdgeInsetsDirectional.fromSTEB(SizeConfig().w(20), SizeConfig().h(35), SizeConfig().w(24), SizeConfig().h(10)),),
-
-
-                Padding(child:
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(translate("labels.amount")+":", style: TextStyle(color: textColor2, fontSize: 18),),
-                    Text(formatter.format(paymentResultBody.amount-paymentResultBody.value)+" "+translate("labels.sdg"), style: TextStyle(color: Colors.black, fontSize: 18),),
-                  ],)
-                  ,padding: EdgeInsetsDirectional.fromSTEB(SizeConfig().w(20), SizeConfig().h(0), SizeConfig().w(24), SizeConfig().h(10)),),
 
                 Padding(child:
                 Row(
@@ -150,12 +149,19 @@ class PaymentResultPage extends StatelessWidget {
                         backColor: buttonColor1,
                         titleColor: Colors.white,
                         borderColor: buttonColor1,
-                        title: translate((paymentResultBody.status) ? "buttons.ok" : "buttons.tryAgain"),
+                        title: translate((paymentResultBody.fromList) ? "buttons.back" : (paymentResultBody.status) ? "buttons.ok" : "buttons.tryAgain"),
                         onTap: () {
-                          if (paymentResultBody.status)
-                            Navigator.pushNamedAndRemoveUntil(context, HomePage.route, (Route<dynamic> route) => false);
+                          if (!paymentResultBody.fromList) {
+                            if (paymentResultBody.status)
+                              Navigator.pushNamedAndRemoveUntil(context,
+                                  HomePage.route, (
+                                      Route<dynamic> route) => false);
+                            else
+                              Navigator.pop(context);
+                          }
                           else
-                            Navigator.pop(context);
+                            {Navigator.pop(context);}
+
                         })),
               ])),
 

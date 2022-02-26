@@ -336,6 +336,7 @@ class _BuildUIState extends State<_BuildUI> {
                 (widget.state is LoadingStationState)
                     ? CustomLoading()
                     : Container(
+                        padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 15),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: const BorderRadius.only(
@@ -464,7 +465,7 @@ class _BuildUIState extends State<_BuildUI> {
                                         alignment:
                                             AlignmentDirectional.topCenter,
                                       ),
-                                Align(
+                                /*Align(
                                   child: Padding(
                                     child: Text(
                                       translate("labels.frequentlyVisited"),
@@ -479,8 +480,8 @@ class _BuildUIState extends State<_BuildUI> {
                                         bottom: SizeConfig().w(15)),
                                   ),
                                   alignment: AlignmentDirectional.topStart,
-                                ),
-                                (frequentlyVistedStationsBranches.length > 0)
+                                ),*/
+                                /*(frequentlyVistedStationsBranches.length > 0)
                                     ? Column(
                                         children:
                                             frequentlyVistedStationsBranches
@@ -504,7 +505,7 @@ class _BuildUIState extends State<_BuildUI> {
                                         ),
                                         alignment:
                                             AlignmentDirectional.topCenter,
-                                      ),
+                                      ),*/
                               ],
                             ),
                           ],
