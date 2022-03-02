@@ -14,6 +14,7 @@ import 'package:fastfill/helper/toast.dart';
 import 'package:fastfill/model/station/station_branch.dart';
 import 'package:fastfill/model/user/user.dart';
 import 'package:fastfill/streams/add_remove_favorite_stream.dart';
+import 'package:fastfill/streams/update_profile_stream.dart';
 import 'package:fastfill/ui/search/search_page.dart';
 import 'package:fastfill/ui/station/purchase_page.dart';
 import 'package:fastfill/utils/local_data.dart';
@@ -37,6 +38,7 @@ List<StationBranch> frequentlyVistedStationsBranches = [];
 List<StationBranch> searchResult = [];
 List<StationBranch> allStationsBranches = [];
 String searchText = "";
+String userName = "";
 
 class _HomeTabPageState extends State<HomeTabPage> {
   @override
@@ -156,6 +158,10 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
     WidgetsBinding.instance?.addObserver(this);
     super.initState();
 
+    LocalData().getCurrentUserValue().then((value) {
+      userName = value.firstName??"";
+    });
+
 
     print("ddddd");
 
@@ -174,6 +180,15 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
           });
         }
       }
+    });
+
+    updateProfileStreamController.stream.listen((event) {
+      if (mounted)
+        {
+          setState(() {
+            userName = event.firstName??"";
+          });
+        }
     });
 
     addRemoveFavoriteStreamController.stream.listen((event) {
@@ -279,7 +294,7 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
                                 Align(
                                   child: Padding(
                                     child: Text(
-                                      usr.firstName!,
+                                      userName,
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold,

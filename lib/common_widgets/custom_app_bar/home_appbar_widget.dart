@@ -12,9 +12,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 
+import '../../streams/update_profile_stream.dart';
 import '../../utils/misc.dart';
 
 class HomeAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
+
+  HomeAppBarWidget();
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +86,7 @@ class HomeAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                 ))),
           //),
           Padding(child: InkWell(
-            onTap: () {
+            onTap: () async {
               hideKeyboard(context);
               Navigator.pushNamed(context, ProfilePage.route);
             },

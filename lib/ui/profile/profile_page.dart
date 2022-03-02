@@ -22,6 +22,7 @@ import 'package:fastfill/helper/toast.dart';
 import 'package:fastfill/model/login/login_body.dart';
 import 'package:fastfill/model/user/update_profile_body.dart';
 import 'package:fastfill/model/user/user.dart' as UserModel;
+import 'package:fastfill/streams/update_profile_stream.dart';
 import 'package:fastfill/ui/auth/login_page.dart';
 import 'package:fastfill/ui/auth/otp_validation_page.dart';
 import 'package:fastfill/ui/auth/reset_password_phone_number_page.dart';
@@ -46,6 +47,8 @@ class ProfilePage extends StatefulWidget {
 }
 
 String profilePhotoURL = "";
+bool phoneIsChanged = false;
+String name = "";
 
 class _ProfilePageState extends State<ProfilePage> {
   @override
@@ -71,10 +74,18 @@ class _ProfilePageState extends State<ProfilePage> {
               }
             }
           else if (state is UserProfileUpdated) {
-            UserModel.User user = UserModel.User(lastName: null, firstName: null, disabled: null, id: null, mobileNumber: null, roleId: null, username: null);
-            await LocalData().setCurrentUserValue(user);
-            Navigator.pushNamedAndRemoveUntil(
-                context, LoginPage.route, (Route<dynamic> route) => false);
+            if (phoneIsChanged) {
+              UserModel.User user = UserModel.User(lastName: null, firstName: null, disabled: null, id: null, mobileNumber: null, roleId: null, username: null);
+              await LocalData().setCurrentUserValue(user);
+              Navigator.pushNamedAndRemoveUntil(
+                  context, LoginPage.route, (Route<dynamic> route) => false);
+            }
+            else
+              {
+                UserModel.User u = await LocalData().getCurrentUserValue();
+                updateProfileStreamController.sink.add(u);
+                Navigator.pop(context);
+              }
           }
         },
         bloc: bloc,
@@ -221,6 +232,18 @@ class _BuildUIState extends State<_BuildUI> {
 
       UserModel.User u = await LocalData().getCurrentUserValue();
 
+      UserModel.User newUser = new UserModel.User(id: u.id,
+        firstName: nameController.text,
+        lastName: nameController.text,
+        username: nameController.text,
+        mobileNumber: u.mobileNumber,
+        roleId: u.roleId,
+        imageURL: profilePhotoURL,
+        disabled: u.disabled
+      );
+
+      await LocalData().setCurrentUserValue(newUser);
+
       String pn = "";
       if (phoneController.text != null) {
         if ((phoneController.text.length == 9) ||
@@ -241,8 +264,7 @@ class _BuildUIState extends State<_BuildUI> {
         if (u.id != null) {
           if (u.mobileNumber != pn)
             {
-
-
+              phoneIsChanged = true;
 
               widget.bloc.add(CallOTPScreenEvent());
               await auth.verifyPhoneNumber(
@@ -292,6 +314,7 @@ class _BuildUIState extends State<_BuildUI> {
             }
           else
             {
+              phoneIsChanged = false;
               widget.bloc.add(UpdateProfileEvent(UpdateProfileBody(name: nameController.text, mobileNumber: pn, imageURL: profilePhotoURL)));
             }
         }
