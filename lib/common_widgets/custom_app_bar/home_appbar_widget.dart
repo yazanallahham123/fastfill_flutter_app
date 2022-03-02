@@ -12,32 +12,32 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 
+import '../../utils/misc.dart';
+
 class HomeAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
     return
       AppBar(
-        toolbarHeight: 275,
         automaticallyImplyLeading: false,
         brightness: Brightness.dark,
         elevation: 0,
         backgroundColor: backgroundColor1,
-        title: SafeArea(child:
-      Padding(child: Row(
+        title:
+   Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           //InkWell(
             //onTap: () {
             //},
-          Padding(child:
+
             PopupMenuButton(
               onSelected: (s) async {
+                hideKeyboard(context);
                 if (s == LoginPage.route)
                   {
-                    User user = User(lastName: null, firstName: null, disabled: null, id: null, mobileNumber: null, roleId: null, username: null);
-                    await LocalData().setCurrentUserValue(user);
-                    Navigator.pushNamedAndRemoveUntil(context, LoginPage.route, (Route<dynamic> route) => false);
+                    showLogoutAlertDialog(context);
                   }
                 else if (s == TermsPage.route)
                   {
@@ -80,10 +80,11 @@ class HomeAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                 child: SvgPicture.asset(
                   'assets/svg/menu.svg',
                   width: SizeConfig().w(50),
-                ))), padding: EdgeInsetsDirectional.fromSTEB(0, 37, 0, 30),),
+                ))),
           //),
           Padding(child: InkWell(
             onTap: () {
+              hideKeyboard(context);
               Navigator.pushNamed(context, ProfilePage.route);
             },
             child: Container(
@@ -98,11 +99,14 @@ class HomeAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                   width: SizeConfig().w(50),
                 )),
           ), padding: EdgeInsetsDirectional.fromSTEB(0, 37, 0, 30),)
-      ],), padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 20),)),
+      ],),
 
     );
   }
 
   @override
   Size get preferredSize => Size.fromHeight(AppBar().preferredSize.height);
+
+
+
 }

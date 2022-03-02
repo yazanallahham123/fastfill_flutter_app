@@ -30,6 +30,7 @@
   "amount": "القيمة",
   "confirmAmount": "تأكيد القيمة",
   "choose": "إختيار",
+  "choice": "إختيار",
   "chooseFuel": "إختر نوع المحروقات",
   "date": "التاريخ",
   "gasStation": "محطة بنزين",
@@ -64,8 +65,8 @@
   "noFavorites": "لم تقم باضافة اي محطة الى المفضلة",
   "noSearchResult": "لا يوجد آي نتائج للبحث",
   "newPassword": "كلمة المرور الجديدة",
-  "confirmNewPassword": "تآكيد كلمة المرور الجديدة"
-
+  "confirmNewPassword": "تآكيد كلمة المرور الجديدة",
+  "logoutAlertTitle": "تسجيل خروج"
 },
   "buttons" : {
     "search": "بحث",
@@ -86,9 +87,13 @@
     "clear": "مسح",
     "save": "حفظ",
     "validate": "تحقق",
-    "back": "عودة"
+    "back": "عودة",
+    "yes": "نعم",
+    "no": "لا"
   },
   "messages" : {
+    "couldNotUploadProfilePhoto": "خطآ عند رفع الصورة",
+    "logoutAlertMessage": "هل آنت متآكد من تسجيل الخروج؟",
     "phoneNumberOrPasswordIncorrect": "رقم الموبايل او كلمة المرور خطأ",
     "requestWasCancelled" :  "تم إلغاء الطلب",
     "checkYourInternetConnection" :  "يرجى التأكد من إتصال الإنترنيت",

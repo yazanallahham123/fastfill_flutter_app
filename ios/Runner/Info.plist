@@ -49,6 +49,8 @@
 	<array>
 		<string>_dartobservatory._tcp</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Take photo for profile picture</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Check user location to suggest most close stations</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -72,5 +74,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>io.flutter.embedded_views_preview</key>
+	<string>YES</string>
 </dict>
 </plist>

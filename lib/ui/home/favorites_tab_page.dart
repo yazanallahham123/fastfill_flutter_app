@@ -154,6 +154,7 @@ class _BuildUIState extends State<_BuildUI> {
 
     SizeConfig().init(context);
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: backgroundColor1,
         body: SingleChildScrollView(
             child: Column(

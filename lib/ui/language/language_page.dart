@@ -28,6 +28,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:get/get.dart';
 
+import '../../utils/misc.dart';
+
 class LanguagePage extends StatefulWidget {
   static const route = "/language_page";
 
@@ -95,6 +97,7 @@ class _BuildUIState extends State<_BuildUI> {
         statusBarBrightness: Brightness.light));
     SizeConfig().init(context);
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: backgroundColor1,
         body: SingleChildScrollView(
           child: Stack(children: [Container(
@@ -151,6 +154,7 @@ class _BuildUIState extends State<_BuildUI> {
                         borderColor: buttonColor1,
                         title: (!widget.forSettings) ? translate("buttons.next") : translate("buttons.apply"),
                         onTap: () {
+                          hideKeyboard(context);
                           if (!widget.forSettings) {
                             Navigator.pushNamed(context, LoginPage.route);
                           }

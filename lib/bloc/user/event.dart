@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 import 'package:fastfill/model/login/login_body.dart';
 import 'package:fastfill/model/user/reset_password_body.dart';
@@ -67,5 +69,14 @@ class UpdateProfileEvent extends UserEvent{
 
 class GetNotificationsEvent extends UserEvent{
   const GetNotificationsEvent();
+}
+
+class UploadProfileImageEvent extends UserEvent{
+  final File imageFile;
+
+  const UploadProfileImageEvent(this.imageFile);
+
+  @override
+  List<Object?> get props => [this.imageFile];
 }
 

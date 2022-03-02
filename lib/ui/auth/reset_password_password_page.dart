@@ -25,6 +25,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 
+import '../../utils/misc.dart';
 import 'login_page.dart';
 import 'otp_validation_page.dart';
 
@@ -56,11 +57,6 @@ class ResetPassword_PasswordPage extends StatelessWidget {
             if (state.passwordReset == "Updated successfully.") {
               pushToast(translate("messages.passwordResetIsSuccessful"));
 
-              FocusScopeNode currentFocus = FocusScope.of(context);
-              if (!currentFocus.hasPrimaryFocus &&
-                  currentFocus.focusedChild != null) {
-                FocusManager.instance.primaryFocus?.unfocus();
-              }
 
               Navigator.pushNamedAndRemoveUntil(context, LoginPage.route,(Route<dynamic> route) => false);
             }
@@ -102,6 +98,7 @@ class _BuildUI extends StatelessWidget {
         statusBarBrightness: Brightness.light));
     SizeConfig().init(context);
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: backgroundColor1,
         body: SingleChildScrollView(
             child: Stack(children: [
@@ -172,13 +169,8 @@ class _BuildUI extends StatelessWidget {
         FocusScope.of(context).requestFocus(confirmNewPasswordNode);
       else {
 
-        FocusScopeNode currentFocus = FocusScope.of(context);
-        if (!currentFocus.hasPrimaryFocus &&
-            currentFocus.focusedChild != null) {
-          FocusManager.instance.primaryFocus?.unfocus();
-        }
 
-
+        hideKeyboard(context);
         String pn = "";
         if (resetPasswordBody.mobileNumber != null) {
           if ((resetPasswordBody.mobileNumber!.length == 9) ||

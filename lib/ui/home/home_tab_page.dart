@@ -145,7 +145,7 @@ class _BuildUI extends StatefulWidget {
   State<_BuildUI> createState() => _BuildUIState();
 }
 
-class _BuildUIState extends State<_BuildUI> {
+class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
   OverlayEntry? overlayEntry;
 
   final searchController = TextEditingController();
@@ -153,7 +153,11 @@ class _BuildUIState extends State<_BuildUI> {
 
   @override
   void initState() {
+    WidgetsBinding.instance?.addObserver(this);
     super.initState();
+
+
+    print("ddddd");
 
     searchController.addListener(() {
       if (mounted) {
@@ -237,9 +241,9 @@ class _BuildUIState extends State<_BuildUI> {
 
     SizeConfig().init(context);
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: backgroundColor1,
         body: SingleChildScrollView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             child: Column(
               children: [
                 Align(
@@ -316,7 +320,9 @@ class _BuildUIState extends State<_BuildUI> {
                                       borderColor: Colors.white,
                                       titleColor: Colors.white,
                                       backColor: buttonColor1,
-                                      onTap: () {},
+                                      onTap: () {
+                                        hideKeyboard(context);
+                                      },
                                     ),
                                     padding: EdgeInsetsDirectional.only(
                                         start: SizeConfig().w(120),
@@ -360,6 +366,7 @@ class _BuildUIState extends State<_BuildUI> {
                                       textInputType: TextInputType.text,
                                       textInputAction: TextInputAction.search,
                                       onFieldSubmitted: (_) {
+                                        hideKeyboard(context);
                                         widget.bloc.add(
                                             StationBranchByCodeEvent(
                                                 searchController.text));
@@ -437,7 +444,7 @@ class _BuildUIState extends State<_BuildUI> {
                                     padding: EdgeInsetsDirectional.only(
                                         start: SizeConfig().w(30),
                                         end: SizeConfig().w(30),
-                                        bottom: SizeConfig().w(15)),
+                                        bottom: SizeConfig().w(0)),
                                   ),
                                   alignment: AlignmentDirectional.topStart,
                                 ),
@@ -516,7 +523,17 @@ class _BuildUIState extends State<_BuildUI> {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (mounted) {
+      setState(() {
+        hideKeyboard(context);
+      });
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance?.removeObserver(this);
     super.dispose();
     searchController.dispose();
   }

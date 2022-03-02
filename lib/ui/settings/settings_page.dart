@@ -19,6 +19,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 
 import '../../main.dart';
+import '../../utils/misc.dart';
 
 
 class SettingsPage extends StatefulWidget {
@@ -53,6 +54,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: backgroundColor1 ,
       body:
       SingleChildScrollView(
@@ -104,6 +106,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       activeColor: buttonColor1,
                       inactiveTrackColor: textColor2,
                       onChanged: (bool value) {
+                        hideKeyboard(context);
                         if (receiveNotifications) {
                           if (mounted) {
                             setState(() {
@@ -152,6 +155,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       ],)
                     ],),padding: EdgeInsetsDirectional.fromSTEB(0, 10, 0, 25),),onTap: () async {
 
+                    hideKeyboard(context);
                     String? l = await Navigator.pushNamed(
                         context, LanguagePage.route, arguments: true) as String?;
 
@@ -202,6 +206,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           ,padding: EdgeInsetsDirectional.fromSTEB(5, 0, 5, 0),)
 
                       ],), onTap: () {
+                      hideKeyboard(context);
                       Navigator.pushNamed(context, TermsPage.route);
 
                     },),padding: EdgeInsetsDirectional.fromSTEB(0, 10, 0, 10),),
@@ -227,6 +232,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
                           ,padding: EdgeInsetsDirectional.fromSTEB(5, 0, 5, 0),)
                       ],), onTap: () {
+                      hideKeyboard(context);
                       Navigator.pushNamed(context, ContactUsPage.route);
                     },),padding: EdgeInsetsDirectional.fromSTEB(0, 10, 0, 25),)
 
@@ -247,10 +253,8 @@ class _SettingsPageState extends State<SettingsPage> {
                         borderColor: Colors.white,
                         title: translate("buttons.logOut"),
                         onTap: () async {
-                          User user = User(lastName: null, firstName: null, disabled: null, id: null, mobileNumber: null, roleId: null, username: null);
-                          await LocalData().setCurrentUserValue(user);
-                          Navigator.pushNamedAndRemoveUntil(
-                              context, LoginPage.route, (Route<dynamic> route) => false);
+                          hideKeyboard(context);
+                          showLogoutAlertDialog(context);
 
                         })),
 

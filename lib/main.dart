@@ -99,29 +99,29 @@ class _FastFillApp extends State<FastFillApp> {
     return _locale;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    var localizationDelegate = LocalizedApp.of(context).delegate;
-    return LocalizationProvider(
-        state: LocalizationProvider.of(context).state,
-        child: DismissKeyboard(child: GetMaterialApp(
-            title: 'FastFill',
-            onGenerateRoute: AppRouter.generateRoute,
-            debugShowCheckedModeBanner: false,
-            localizationsDelegates: [
-              localizationDelegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-              DefaultWidgetsLocalizations.delegate,
-            ],
-            supportedLocales: localizationDelegate.supportedLocales,
-            locale: _locale,
-            theme: ThemeData(
-                primaryColor: primaryColor1,
-                accentColor: primaryColor2,
-                fontFamily: isArabic() ? 'Poppins' : 'Poppins'),
-            initialRoute: (isSigned) ? HomePage.route : LanguagePage.route,
-        )));
-  }
+    @override
+    Widget build(BuildContext context) {
+      var localizationDelegate = LocalizedApp.of(context).delegate;
+      return LocalizationProvider(
+          state: LocalizationProvider.of(context).state,
+          child: DismissKeyboard(child: GetMaterialApp(
+              title: 'FastFill',
+              onGenerateRoute: AppRouter.generateRoute,
+              debugShowCheckedModeBanner: false,
+              localizationsDelegates: [
+                localizationDelegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+                DefaultWidgetsLocalizations.delegate,
+              ],
+              supportedLocales: localizationDelegate.supportedLocales,
+              locale: _locale,
+              theme: ThemeData(
+                  primaryColor: primaryColor1,
+                  accentColor: primaryColor2,
+                  fontFamily: isArabic() ? 'Poppins' : 'Poppins'),
+              initialRoute: (isSigned) ? HomePage.route : LanguagePage.route,
+          )));
+    }
 }

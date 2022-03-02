@@ -7,10 +7,12 @@ part 'update_profile_body.g.dart';
 class UpdateProfileBody extends Equatable {
   final String? name;
   final String? mobileNumber;
+  final String? imageURL;
 
   const UpdateProfileBody(
       {this.name,
-        this.mobileNumber});
+        this.mobileNumber,
+        this.imageURL});
 
   factory UpdateProfileBody.fromJson(Map<String, dynamic> json) => _$UpdateProfileBodyFromJson(json);
 
@@ -19,6 +21,7 @@ class UpdateProfileBody extends Equatable {
   @override
   List<Object?> get props => [
     this.name,
-    this.mobileNumber
+    this.mobileNumber,
+    this.imageURL
   ];
 }

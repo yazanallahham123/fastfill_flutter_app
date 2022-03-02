@@ -58,11 +58,7 @@ class _LoginPageState extends State<LoginPage> {
                 .setCurrentUserValue(state.loginUser.value!.userDetails!);
             await LocalData().setTokenValue(state.loginUser.value!.token!);
             pushToast(translate("messages.youLoggedSuccessfully"));
-            FocusScopeNode currentFocus = FocusScope.of(context);
-            if (!currentFocus.hasPrimaryFocus &&
-                currentFocus.focusedChild != null) {
-              FocusManager.instance.primaryFocus?.unfocus();
-            }
+
 
             Navigator.pushNamedAndRemoveUntil(
                 context, HomePage.route, (Route<dynamic> route) => false);
@@ -96,11 +92,12 @@ class _BuildUIState extends State<_BuildUI> {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
-        statusBarColor: Colors.transparent,
+        statusBarColor: Colors.red,//Colors.transparent,
         statusBarIconBrightness: Brightness.light,
         statusBarBrightness: Brightness.light));
     SizeConfig().init(context);
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: backgroundColor1,
         body: SingleChildScrollView(
             child: Stack(
@@ -177,21 +174,13 @@ class _BuildUIState extends State<_BuildUI> {
                                 titleColor: buttonColor1,
                                 title: translate("buttons.signUp"),
                                 onTap: () {
-                                  FocusScopeNode currentFocus = FocusScope.of(context);
-                                  if (!currentFocus.hasPrimaryFocus &&
-                                      currentFocus.focusedChild != null) {
-                                    FocusManager.instance.primaryFocus?.unfocus();
-                                  }
+                                  hideKeyboard(context);
                                   Navigator.pushNamed(
                                       context, SignupPage.route);
                                 })),
                         InkWell(
                             onTap: () {
-                              FocusScopeNode currentFocus = FocusScope.of(context);
-                              if (!currentFocus.hasPrimaryFocus &&
-                                  currentFocus.focusedChild != null) {
-                                FocusManager.instance.primaryFocus?.unfocus();
-                              }
+
                               Navigator.pushNamed(
                                   context, ResetPassword_PhoneNumberPage.route);
                             },
@@ -239,6 +228,7 @@ class _BuildUIState extends State<_BuildUI> {
   }
 
   void _login(BuildContext context) async {
+    hideKeyboard(context);
     final bloc = BlocProvider.of<LoginBloc>(context);
     if (phoneController.text.isNotEmpty && passController.text.isNotEmpty) {
       if (!validateMobile(phoneController.text))
@@ -246,14 +236,6 @@ class _BuildUIState extends State<_BuildUI> {
       else if (!isStrongPassword(passController.text))
         FocusScope.of(context).requestFocus(passNode);
       else {
-        FocusScopeNode currentFocus = FocusScope.of(context);
-        if (!currentFocus.hasPrimaryFocus &&
-            currentFocus.focusedChild != null) {
-          FocusManager.instance.primaryFocus?.unfocus();
-        }
-
-
-        hideKeyboard(context);
 
         String pn = "";
         if (phoneController.text != null) {
@@ -279,12 +261,7 @@ class _BuildUIState extends State<_BuildUI> {
       pushToast(translate("messages.theseFieldsMustBeFilledIn"));
   }
 
-  void hideKeyboard(BuildContext context) {
-    FocusScopeNode currentFocus = FocusScope.of(context);
-    if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
-      currentFocus.focusedChild!.unfocus();
-    }
-  }
+
 
   @override
   void dispose() {

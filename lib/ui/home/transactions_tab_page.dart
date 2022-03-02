@@ -82,6 +82,7 @@ class _BuildUI extends StatelessWidget {
 
     SizeConfig().init(context);
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: backgroundColor1,
         body: SingleChildScrollView(
             child:
@@ -124,9 +125,9 @@ class _BuildUI extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                       Expanded(child:
-                      Text(translate("labels.fuelRefueling"), style: TextStyle(color: Colors.white),),),
+                      Text((isArabic()) ? i.companyBranch!.arabicName! : i.companyBranch!.englishName! + " - " + i.companyBranch!.code!, style: TextStyle(fontWeight: FontWeight.bold, color: textColor2),),),
 
-                      Text(formatter.format(i.amount!)+' '+translate("labels.sdg"), style: TextStyle(color: Colors.white),),
+                      Text(formatter.format(i.amount!-i.fastfill!)+' '+translate("labels.sdg"), style: TextStyle(color: Colors.white),),
                     ],), padding: EdgeInsetsDirectional.fromSTEB(20, 0, 0, 0)),),
 
                       Container(
@@ -139,18 +140,10 @@ class _BuildUI extends StatelessWidget {
                             Text(DateFormat('yyyy-MM-dd - hh:mm a').format(DateTime.parse(i.date!)), style: TextStyle(color: textColor2),),),
                           ],), padding: EdgeInsetsDirectional.fromSTEB(20, 0, 0, 0)),),
 
-                      Container(
-                        width: MediaQuery.of(context).size.width - 110,
-                        child:
-                        Padding(child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(child:
-                            Text((isArabic()) ? i.companyBranch!.arabicName! : i.companyBranch!.englishName!, style: TextStyle(color: textColor2),),),
 
-                          ],), padding: EdgeInsetsDirectional.fromSTEB(20, 0, 10, 0)),),
                   ],)
                 ],), onTap: () {
+                      hideKeyboard(context);
                       PaymentResultBody prb = PaymentResultBody(date: DateFormat('yyyy-MM-dd - hh:mm a').format(DateTime.parse(i.date!)), stationName: (isArabic()) ? i.companyBranch!.arabicName! : i.companyBranch!.englishName!, fuelTypeId: i.fuelTypeId!, amount: i.amount!, value: i.fastfill!, status: i.status!, fromList: true);
                       Navigator.pushNamed(context, PaymentResultPage.route, arguments: prb);
                     },)

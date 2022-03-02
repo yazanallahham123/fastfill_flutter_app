@@ -10,6 +10,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../utils/misc.dart';
+
 
 class ContactUsPage extends StatelessWidget {
   static const route = "/contactus_page";
@@ -23,6 +25,7 @@ class ContactUsPage extends StatelessWidget {
         statusBarBrightness: Brightness.light));
     SizeConfig().init(context);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: backgroundColor1 ,
       body:
       SingleChildScrollView(
@@ -114,6 +117,7 @@ class ContactUsPage extends StatelessWidget {
 
                     Text("+249 91 226 7239", style: TextStyle(color: Colors.white),)
                     ,onTap: (){
+                        hideKeyboard(context);
                         callNumber(phoneNumber);
                       },)
                       , padding: EdgeInsetsDirectional.fromSTEB(30, 0, 0, 0),)
@@ -133,6 +137,7 @@ class ContactUsPage extends StatelessWidget {
                     Padding(child:
     InkWell(child:
                     Text("+1 (515) 708-5882", style: TextStyle(color: Colors.white),),onTap: (){
+      hideKeyboard(context);
       openWhatsapp(context, whatsappNumber);
 
     },)

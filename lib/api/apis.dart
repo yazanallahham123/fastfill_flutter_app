@@ -14,7 +14,7 @@ class Apis{
   static const String getNotifications = "User/GetNotifications";
   static const String addPaymentTransaction = "User/AddPaymentTransaction";
   static const String getPaymentTransactions = "User/GetPaymentTransactions";
-
+  static const String uploadProfilePhoto = "User/UploadLogo";
   //  OTP
   static const String otpSendCode = "https://d7networks.com/api/verifier/send";
   static const String otpResendCode = "https://d7networks.com/api/verifier/resend";

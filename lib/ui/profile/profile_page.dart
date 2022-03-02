@@ -45,6 +45,8 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
+String profilePhotoURL = "";
+
 class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
@@ -60,6 +62,14 @@ class _ProfilePageState extends State<ProfilePage> {
         listener: (context, state) async {
           if (state is ErrorUserState)
             pushToast(state.error);
+          else if (state is UploadedProfilePhoto)
+            {
+              if (mounted) {
+                setState(() {
+                  profilePhotoURL = state.profilePhotoURL;
+                });
+              }
+            }
           else if (state is UserProfileUpdated) {
             UserModel.User user = UserModel.User(lastName: null, firstName: null, disabled: null, id: null, mobileNumber: null, roleId: null, username: null);
             await LocalData().setCurrentUserValue(user);
@@ -100,6 +110,7 @@ class _BuildUIState extends State<_BuildUI> {
     LocalData().getCurrentUserValue().then((user) {
       phoneController.text = user.mobileNumber??"";
       nameController.text = user.firstName??"";
+      profilePhotoURL = user.imageURL??"";
     });
 
   }
@@ -113,7 +124,7 @@ class _BuildUIState extends State<_BuildUI> {
         statusBarBrightness: Brightness.light));
     SizeConfig().init(context);
     return Scaffold(
-
+        resizeToAvoidBottomInset: false,
         backgroundColor: backgroundColor1 ,
         body:
         SingleChildScrollView(
@@ -129,15 +140,22 @@ class _BuildUIState extends State<_BuildUI> {
 
                 Align(child:
 
-                InkWell(child: (imageFile != null) ? Image.file(File(imageFile!.path), width: 100, height: 100,) : SvgPicture.asset("assets/svg/profile_logo.svg"),
+                InkWell(child: (profilePhotoURL != "") ? Image.network(profilePhotoURL, width: 100, height: 100,) : (imageFile != null) ? Image.file(File(imageFile!.path), width: 100, height: 100,) : SvgPicture.asset("assets/svg/profile_logo.svg"),
                 onTap: () async {
+                  hideKeyboard(context);
                   ImagePicker _picker = ImagePicker();
                   final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
                   if (image != null) {
                     setState(()  {
+                      profilePhotoURL = "";
                       imageFile = image;
                     });
-                    File f = File(image.path);
+
+                    if (imageFile != null)
+                    {
+                      File f = File(imageFile!.path);
+                      widget.bloc.add(UploadProfileImageEvent(f));
+                    }
                   }
                 },
                 ),
@@ -182,6 +200,7 @@ class _BuildUIState extends State<_BuildUI> {
                             borderColor: buttonColor1,
                             title: translate("buttons.save"),
                             onTap: () {
+
                               _updateProfile();
 
                             })),
@@ -201,33 +220,32 @@ class _BuildUIState extends State<_BuildUI> {
       if (!validateName(nameController.text))
         FocusScope.of(context).requestFocus(nameNode);
 
-      FocusScopeNode currentFocus = FocusScope.of(context);
-      if (!currentFocus.hasPrimaryFocus &&
-          currentFocus.focusedChild != null) {
-        FocusManager.instance.primaryFocus?.unfocus();
-      }
+      hideKeyboard(context);
 
       UserModel.User u = await LocalData().getCurrentUserValue();
+
+      String pn = "";
+      if (phoneController.text != null) {
+        if ((phoneController.text.length == 9) ||
+            (phoneController.text.length == 10)) {
+          if ((phoneController.text.length == 10) &&
+              (phoneController.text.substring(0, 1) == "0")) {
+            pn = phoneController.text
+                .substring(1, phoneController.text.length);
+          } else {
+            if (phoneController.text.length == 9) {
+              pn = phoneController.text;
+            }
+          }
+        }
+      }
+
       if (u != null) {
         if (u.id != null) {
-          if (u.mobileNumber != phoneController.text)
+          if (u.mobileNumber != pn)
             {
 
-              String pn = "";
-              if (phoneController.text != null) {
-                if ((phoneController.text.length == 9) ||
-                    (phoneController.text.length == 10)) {
-                  if ((phoneController.text.length == 10) &&
-                      (phoneController.text.substring(0, 1) == "0")) {
-                    pn = phoneController.text
-                        .substring(1, phoneController.text.length);
-                  } else {
-                    if (phoneController.text.length == 9) {
-                      pn = phoneController.text;
-                    }
-                  }
-                }
-              }
+
 
               widget.bloc.add(CallOTPScreenEvent());
               await auth.verifyPhoneNumber(
@@ -248,7 +266,7 @@ class _BuildUIState extends State<_BuildUI> {
                         PhoneAuthCredential credential = PhoneAuthProvider.credential(
                             verificationId: verificationId, smsCode: smsCode);
                         auth.signInWithCredential(credential).then((value) {
-                          widget.bloc.add(UpdateProfileEvent(UpdateProfileBody(name: nameController.text, mobileNumber: pn)));
+                          widget.bloc.add(UpdateProfileEvent(UpdateProfileBody(name: nameController.text, mobileNumber: pn, imageURL: profilePhotoURL)));
                         }).catchError((e) {
                           widget.bloc.add(ErrorUserOTPVerificationEvent(
                               (e.message != null) ? e.message! : e.code));
@@ -267,13 +285,17 @@ class _BuildUIState extends State<_BuildUI> {
                       PhoneAuthCredential credential = PhoneAuthProvider.credential(
                           verificationId: verificationId, smsCode: smsCode);
                       auth.signInWithCredential(credential).then((value) {
-                        widget.bloc.add(UpdateProfileEvent(UpdateProfileBody(name: nameController.text, mobileNumber: pn)));
+                        widget.bloc.add(UpdateProfileEvent(UpdateProfileBody(name: nameController.text, mobileNumber: pn, imageURL: profilePhotoURL)));
                       }).catchError((e) {
                         widget.bloc.add(ErrorUserOTPVerificationEvent(
                             (e.message != null) ? e.message! : e.code));
                       });
                     }
                   });
+            }
+          else
+            {
+              widget.bloc.add(UpdateProfileEvent(UpdateProfileBody(name: nameController.text, mobileNumber: pn, imageURL: profilePhotoURL)));
             }
         }
       }

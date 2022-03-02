@@ -176,6 +176,7 @@ class _BuildUI extends State<BuildUI> {
         statusBarBrightness: Brightness.light));
     SizeConfig().init(context);
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: backgroundColor1 ,
         body:
         SingleChildScrollView(
@@ -241,6 +242,7 @@ class _BuildUI extends State<BuildUI> {
                 Padding(child:
                 InkWell(
                     onTap: () {
+                      hideKeyboard(context);
                       if (mounted) {
                         setState(() {
                           _fuelTypeValue = FuelType.Benzine;
@@ -281,6 +283,7 @@ class _BuildUI extends State<BuildUI> {
                 Padding(child:
                 InkWell(
                     onTap: () {
+                      hideKeyboard(context);
                       if (mounted) {
                         setState(() {
                           _fuelTypeValue = FuelType.Gasoline;
@@ -417,6 +420,9 @@ class _BuildUI extends State<BuildUI> {
     if (amountController.text == confirmAmountController.text) {
       if (double.tryParse(amountController.text.replaceAll(",", "")) != null) {
         if (double.parse(amountController.text.replaceAll(",", "")) > 0.0) {
+
+          hideKeyboard(context);
+
           prb = PaymentResultBody(
               date: DateFormat('yyyy-MM-dd - hh:mm a').format(DateTime.now()),
               stationName: (isArabic())
@@ -429,12 +435,6 @@ class _BuildUI extends State<BuildUI> {
               value: 100.0,
               fromList: false
           );
-
-          FocusScopeNode currentFocus = FocusScope.of(context);
-          if (!currentFocus.hasPrimaryFocus &&
-              currentFocus.focusedChild != null) {
-            FocusManager.instance.primaryFocus?.unfocus();
-          }
 
           User user = await LocalData().getCurrentUserValue();
 

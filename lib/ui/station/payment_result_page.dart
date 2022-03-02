@@ -27,7 +27,7 @@ class PaymentResultPage extends StatelessWidget {
         statusBarBrightness: Brightness.light));
     SizeConfig().init(context);
     return Scaffold(
-
+        resizeToAvoidBottomInset: false,
         backgroundColor: backgroundColor1 ,
         body:
         SingleChildScrollView(
@@ -117,7 +117,7 @@ class PaymentResultPage extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(translate("labels.choose")+":", style: TextStyle(color: textColor2, fontSize: 18),),
+                    Text(translate("labels.choice")+":", style: TextStyle(color: textColor2, fontSize: 18),),
                     Text((paymentResultBody.fuelTypeId == 1) ? translate("labels.gasoline"): translate("labels.benzine"), style: TextStyle(color: Colors.black, fontSize: 18),),
                   ],)
                   ,padding: EdgeInsetsDirectional.fromSTEB(SizeConfig().w(20), SizeConfig().h(35), SizeConfig().w(24), SizeConfig().h(10)),),
@@ -151,6 +151,7 @@ class PaymentResultPage extends StatelessWidget {
                         borderColor: buttonColor1,
                         title: translate((paymentResultBody.fromList) ? "buttons.back" : (paymentResultBody.status) ? "buttons.ok" : "buttons.tryAgain"),
                         onTap: () {
+                          hideKeyboard(context);
                           if (!paymentResultBody.fromList) {
                             if (paymentResultBody.status)
                               Navigator.pushNamedAndRemoveUntil(context,

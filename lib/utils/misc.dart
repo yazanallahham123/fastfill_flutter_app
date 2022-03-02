@@ -2,14 +2,19 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:intl/intl.dart';
+
+import '../model/user/user.dart';
+import '../ui/auth/login_page.dart';
+import 'local_data.dart';
 
 String countryCode = (kDebugMode) ? "+963" : "+249";
 
 NumberFormat formatter = NumberFormat("#,##0", "en_US");
 
-// The DismissKeybaord widget (it's reusable)
 class DismissKeyboard extends StatelessWidget {
   final Widget child;
   const DismissKeyboard({Key? key, required this.child}) : super(key: key);
@@ -18,11 +23,7 @@ class DismissKeyboard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        FocusScopeNode currentFocus = FocusScope.of(context);
-        if (!currentFocus.hasPrimaryFocus &&
-            currentFocus.focusedChild != null) {
-          FocusManager.instance.primaryFocus?.unfocus();
-        }
+        hideKeyboard(context);
       },
       child: child,
     );
@@ -73,4 +74,53 @@ class ThousandsSeparatorInputFormatter extends TextInputFormatter {
     // If the new value and old value are the same, just return as-is
     return newValue;
   }
+}
+
+void hideKeyboard(BuildContext context) {
+  FocusScopeNode currentFocus = FocusScope.of(context);
+  if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
+    currentFocus.focusedChild!.unfocus();
+  }
+
+  FocusScope.of(context).requestFocus(new FocusNode());
+}
+
+void showLogoutAlertDialog(BuildContext context) {
+
+  // set up the buttons
+  Widget cancelButton = TextButton(
+    child: Text(translate("buttons.no"), style: TextStyle(color: Colors.black),),
+    onPressed:  () {
+      hideKeyboard(context);
+      Navigator.pop(context);
+    },
+  );
+  Widget continueButton = TextButton(
+    child: Text(translate("buttons.yes"), style: TextStyle(color: Colors.black),),
+    onPressed:  () async {
+      hideKeyboard(context);
+      User user = User(lastName: null, firstName: null, disabled: null, id: null, mobileNumber: null, roleId: null, username: null);
+      await LocalData().setCurrentUserValue(user);
+      Navigator.pop(context);
+      Navigator.pushNamedAndRemoveUntil(context, LoginPage.route, (Route<dynamic> route) => false);
+    },
+  );
+
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: Text(translate("labels.logoutAlertTitle")),
+    content: Text(translate("messages.logoutAlertMessage")),
+    actions: [
+      cancelButton,
+      continueButton,
+    ],
+  );
+
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
 }

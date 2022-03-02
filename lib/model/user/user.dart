@@ -12,6 +12,7 @@ class User extends Equatable {
   final int? roleId;
   final String? mobileNumber;
   final bool? disabled;
+  final String? imageURL;
 
   const User(
       {this.id,
@@ -20,7 +21,8 @@ class User extends Equatable {
         this.username,
         this.roleId,
         this.mobileNumber,
-        this.disabled});
+        this.disabled,
+        this.imageURL});
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 
@@ -34,6 +36,7 @@ class User extends Equatable {
     this.username,
     this.roleId,
     this.mobileNumber,
-    this.disabled
+    this.disabled,
+    this.imageURL
   ];
 }

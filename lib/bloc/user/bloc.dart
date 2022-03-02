@@ -43,6 +43,35 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       }
     });
 
+    on<UploadProfileImageEvent>((event, emit) async {
+      try {
+        emit(LoadingUserState());
+        var token = await LocalData().getBearerTokenValue();
+        if (token != null) {
+          await mClient.uploadProfilePhoto(token, event.imageFile).then((v) {
+            if (v.url != null)
+              emit(UploadedProfilePhoto(v.url!));
+            else
+              emit(ErrorUserState(
+                  translate("messages.couldNotUploadProfilePhoto")));
+          });
+        }
+      } on DioError catch (e) {
+        if (e.response != null) {
+          if (e.response!.statusCode == 400 || e.response!.statusCode == 404)
+            emit(ErrorUserState(
+                translate("messages.couldNotUploadProfilePhoto")));
+          else {
+            print("Error" + e.toString());
+            emit(ErrorUserState(dioErrorMessageAdapter(e)));
+          }
+        }
+        else
+          emit(ErrorUserState(dioErrorMessageAdapter(e)));
+      }
+
+    });
+
      on<SuccessfulUserOTPVerificationEvent>((event, emit){
        emit(SuccessfulUserOTPVerificationState(event.signupBody, event.resetPasswordBody));
      });
@@ -68,7 +97,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         if (e.response != null) {
           if (e.response!.statusCode == 400 || e.response!.statusCode == 404)
             emit(ErrorUserState(
-                translate("messages.phoneNumberOrPasswordIncorrect")));
+                translate("messages.couldNotUpdateUserProfile")));
           else {
             print("Error" + e.toString());
             emit(ErrorUserState(dioErrorMessageAdapter(e)));

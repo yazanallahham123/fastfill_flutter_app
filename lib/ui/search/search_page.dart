@@ -135,6 +135,7 @@ class _BuildUIState extends State<_BuildUI> {
         statusBarBrightness: Brightness.light));
     SizeConfig().init(context);
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: backgroundColor1,
         body: Stack(
           children: [
@@ -160,7 +161,7 @@ class _BuildUIState extends State<_BuildUI> {
                       child: CustomTextFieldWidget(
                           icon: Icon(Icons.search),
                           onFieldSubmitted: (_) {
-
+                            hideKeyboard(context);
                             widget.bloc.add(StationByCodeEvent(searchController.text));
 
                           },

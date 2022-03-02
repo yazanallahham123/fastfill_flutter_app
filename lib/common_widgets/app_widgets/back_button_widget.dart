@@ -7,17 +7,15 @@ import 'package:fastfill/helper/size_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
+import '../../utils/misc.dart';
+
 class BackButtonWidget extends StatelessWidget{
   const BackButtonWidget(BuildContext context);
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-          FocusScopeNode currentFocus = FocusScope.of(context);
-          if (!currentFocus.hasPrimaryFocus &&
-              currentFocus.focusedChild != null) {
-            FocusManager.instance.primaryFocus?.unfocus();
-          }
+        hideKeyboard(context);
           Navigator.pop(context);
         },
       child: Container(

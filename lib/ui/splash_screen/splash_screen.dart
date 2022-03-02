@@ -23,6 +23,7 @@ class _SplashScreenState extends State<SplashScreen> {
     SizeConfig().init(context);
 
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: backgroundColor1,
         body: Container());
   }

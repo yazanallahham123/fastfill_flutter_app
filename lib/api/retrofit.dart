@@ -1,4 +1,6 @@
 
+import 'dart:io';
+
 import 'package:fastfill/model/login/login_body.dart';
 import 'package:fastfill/model/login/login_user.dart';
 import 'package:fastfill/model/notification/notification_body.dart';
@@ -17,13 +19,16 @@ import 'package:fastfill/model/user/signedup_user.dart';
 import 'package:fastfill/model/user/signup_body.dart';
 import 'package:fastfill/model/user/update_firebase_token_body.dart';
 import 'package:fastfill/model/user/update_profile_body.dart';
+import 'package:fastfill/model/user/upload_result.dart';
 import 'package:fastfill/model/user/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart' hide Headers;
 import '../model/station/add_remove_station_branch_favorite_body.dart';
 import 'apis.dart';
+import 'package:http_parser/http_parser.dart';
 part 'retrofit.g.dart';
+
 
 @RestApi(baseUrl: Apis.baseURL)
 @Headers(<String, dynamic>{"Content-Type": "application/json"})
@@ -116,5 +121,10 @@ abstract class ApiClient {
 
   @GET(Apis.getPaymentTransactions)
   Future<PaymentTransactionsWithPagination> getPaymentTransactions(@Header("Authorization") String token, @Query("page") int page, @Query("pageSize") int pageSize);
+
+  @POST(Apis.uploadProfilePhoto)
+  @MultiPart()
+  @Headers(<String, dynamic>{"Content-Type":"multi-part/form-data", "accept":"*/*"})
+  Future<UploadResult> uploadProfilePhoto(@Header("Authorization") String token, @Part(contentType: "image/*", name: "file") File file);
 
 }

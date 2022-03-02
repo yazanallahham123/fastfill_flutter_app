@@ -13,6 +13,7 @@ import '../../bloc/station/bloc.dart';
 import '../../bloc/station/event.dart';
 import '../../bloc/station/state.dart';
 import '../../ui/station/purchase_page.dart';
+import '../../utils/misc.dart';
 import 'favorite_button.dart';
 
 class StationBranchWidget extends StatefulWidget{
@@ -47,6 +48,7 @@ class _StationBranchWidgetState extends State<StationBranchWidget> {
                 "assets/station.png")),
 
             onTap: () {
+              hideKeyboard(context);
               Navigator.pushNamed(
                   context, PurchasePage.route,
                   arguments: widget.stationBranch);
@@ -68,6 +70,7 @@ class _StationBranchWidgetState extends State<StationBranchWidget> {
                   CustomLoading()
                   :
               FavoriteButtonWidget(isAddedToFavorite:widget.stationBranch.isFavorite!, onTap: () {
+                hideKeyboard(context);
                 if (widget.stationBranch.isFavorite!)
                   widget.stationBloc.add(RemoveStationBranchFromFavoriteEvent(widget.stationBranch.id!));
                 else
@@ -111,6 +114,6 @@ class _StationBranchWidgetState extends State<StationBranchWidget> {
           ],
         )
       ],
-    ), padding: EdgeInsetsDirectional.fromSTEB(10, 0, 10, 0),);
+    ), padding: EdgeInsetsDirectional.fromSTEB(10, 6, 10, 6),);
   }
 }

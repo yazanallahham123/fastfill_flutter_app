@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 
+import '../../utils/misc.dart';
+
 
 class TermsPage extends StatelessWidget {
   static const route = "/terms_page";
@@ -18,6 +20,7 @@ class TermsPage extends StatelessWidget {
         statusBarBrightness: Brightness.light));
     SizeConfig().init(context);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: backgroundColor1 ,
       body:
       SingleChildScrollView(
@@ -76,6 +79,7 @@ class TermsPage extends StatelessWidget {
                         borderColor: buttonColor1,
                         title: translate("buttons.agreeTerms"),
                         onTap: () {
+                          hideKeyboard(context);
                         })),
 
                 Padding(
@@ -92,6 +96,7 @@ class TermsPage extends StatelessWidget {
                         borderColor: buttonColor1,
                         title: translate("buttons.declineTerms"),
                         onTap: () {
+                          hideKeyboard(context);
                         })),
               ])),
               BackButtonWidget(context)

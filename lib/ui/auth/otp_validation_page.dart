@@ -16,6 +16,8 @@ import 'package:otp_text_field/otp_field.dart';
 import 'package:otp_text_field/otp_field_style.dart';
 import 'package:otp_text_field/style.dart';
 
+import '../../utils/misc.dart';
+
 class OTPValidationPage extends StatelessWidget {
   static const route = "/otp_validation_page";
 
@@ -74,6 +76,7 @@ class _BuildUI extends StatelessWidget {
 
 
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: backgroundColor1,
         body: SingleChildScrollView(
             child: Stack(children: [
@@ -134,6 +137,7 @@ class _BuildUI extends StatelessWidget {
                       child: InkWell(
                         child: Text(translate("labels.resendCode"), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
                         onTap: () {
+                          hideKeyboard(context);
                         },
                       )),
                   alignment: AlignmentDirectional.bottomEnd,
@@ -150,6 +154,7 @@ class _BuildUI extends StatelessWidget {
                           borderColor: buttonColor1,
                           title: translate("buttons.validate"),
                           onTap: () {
+                            hideKeyboard(context);
                             if (code.isNotEmpty)
                               Navigator.pop(context, code);
                           })),

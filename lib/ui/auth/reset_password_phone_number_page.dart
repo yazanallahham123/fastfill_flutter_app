@@ -58,12 +58,6 @@ class _ResetPassword_PhoneNumberPageState extends State<ResetPassword_PhoneNumbe
           else if (state is SuccessfulUserOTPVerificationState) {
             pushToast(translate(translate("messages.otpCodeIsVerified")));
 
-            FocusScopeNode currentFocus = FocusScope.of(context);
-            if (!currentFocus.hasPrimaryFocus &&
-                currentFocus.focusedChild != null) {
-              FocusManager.instance.primaryFocus?.unfocus();
-            }
-
             Navigator.pushNamed(context, ResetPassword_PasswordPage.route,
                 arguments: state.resetPasswordBody);
           }
@@ -100,6 +94,7 @@ class _BuildUIState extends State<_BuildUI> {
         statusBarBrightness: Brightness.light));
     SizeConfig().init(context);
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: backgroundColor1,
         body: SingleChildScrollView(
             child: Stack(children: [
@@ -157,7 +152,10 @@ class _BuildUIState extends State<_BuildUI> {
       if (!validateMobile(phoneController.text))
         FocusScope.of(context).requestFocus(phoneNode);
       else {
+
+        hideKeyboard(context);
         widget.userBloc.add(CallOTPScreenEvent());
+
 
         String pn = "";
         if (phoneController.text != null) {
@@ -175,11 +173,6 @@ class _BuildUIState extends State<_BuildUI> {
           }
         }
 
-        FocusScopeNode currentFocus = FocusScope.of(context);
-        if (!currentFocus.hasPrimaryFocus &&
-            currentFocus.focusedChild != null) {
-          FocusManager.instance.primaryFocus?.unfocus();
-        }
 
         await auth.verifyPhoneNumber(
             phoneNumber: countryCode + pn,
@@ -207,11 +200,6 @@ class _BuildUIState extends State<_BuildUI> {
             },
             codeSent: await (String verificationId, int? resendToken) async {
               if (Platform.isIOS) {
-                FocusScopeNode currentFocus = FocusScope.of(context);
-                if (!currentFocus.hasPrimaryFocus &&
-                    currentFocus.focusedChild != null) {
-                  FocusManager.instance.primaryFocus?.unfocus();
-                }
 
                 String? smsCode = await Navigator.pushNamed(
                     context, OTPValidationPage.route,
@@ -238,11 +226,7 @@ class _BuildUIState extends State<_BuildUI> {
               }
             },
             codeAutoRetrievalTimeout: await (String verificationId) async {
-              FocusScopeNode currentFocus = FocusScope.of(context);
-              if (!currentFocus.hasPrimaryFocus &&
-                  currentFocus.focusedChild != null) {
-                FocusManager.instance.primaryFocus?.unfocus();
-              }
+
               String? smsCode = await Navigator.pushNamed(
                   context, OTPValidationPage.route,
                   arguments: verificationId) as String?;

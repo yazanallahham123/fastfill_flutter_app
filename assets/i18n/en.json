@@ -30,6 +30,7 @@
   "amount": "Amount",
   "confirmAmount": "Confirm Amount",
   "choose": "Choose",
+  "choice": "Choice",
   "chooseFuel": "Choose Fuel",
   "date": "Date",
   "gasStation": "Gas station",
@@ -64,7 +65,8 @@
   "noFavorites": "You haven't add any station to favorite list.",
   "noSearchResult": "Nothing match your search criteria",
   "newPassword": "New password",
-  "confirmNewPassword": "Confirm new password"
+  "confirmNewPassword": "Confirm new password",
+  "logoutAlertTitle": "Logout"
 },
 "buttons" : {
   "search": "Search",
@@ -85,9 +87,13 @@
   "clear": "Clear",
   "save": "Save",
   "validate": "Validate",
-  "back": "Back"
+  "back": "Back",
+  "yes": "Yes",
+  "no": "No"
 },
 "messages" : {
+  "couldNotUploadProfilePhoto": "Could not upload profile photo",
+  "logoutAlertMessage": "Are you sure want to logout?",
   "phoneNumberOrPasswordIncorrect": "Phone number or password are incorrect",
   "requestWasCancelled" :  "Request was cancelled",
   "checkYourInternetConnection" :  "Check your internet connection",

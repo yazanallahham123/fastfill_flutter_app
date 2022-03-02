@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 
+import '../../utils/misc.dart';
 import 'favorites_tab_page.dart';
 import 'home_tab_page.dart';
 import 'notifications_tab_page.dart';
@@ -40,6 +41,7 @@ class _HomePageState extends State<HomePage> {
 
     SizeConfig().init(context);
     return Scaffold(
+        resizeToAvoidBottomInset: false,
       backgroundColor: backgroundColor1,
       bottomNavigationBar: Container(
         height: 62,
@@ -56,6 +58,7 @@ class _HomePageState extends State<HomePage> {
             Expanded(child: InkWell(
               onTap: () {
                 setState(() {
+                  hideKeyboard(context);
                   pageIndex = 0;
                 });
               },
@@ -78,6 +81,7 @@ class _HomePageState extends State<HomePage> {
             Expanded(child: InkWell(
               onTap: () {
                 setState(() {
+                  hideKeyboard(context);
                   pageIndex = 1;
                 });
               },
@@ -101,6 +105,7 @@ class _HomePageState extends State<HomePage> {
             Expanded(child: InkWell(
               onTap: () {
                 setState(() {
+                  hideKeyboard(context);
                   pageIndex = 2;
                 });
               },
@@ -124,6 +129,7 @@ class _HomePageState extends State<HomePage> {
             Expanded(child: InkWell(
               onTap: () {
                 setState(() {
+                  hideKeyboard(context);
                   pageIndex = 3;
                 });
               },
@@ -146,5 +152,7 @@ class _HomePageState extends State<HomePage> {
       body: pages[pageIndex]
     );
   }
+
+
 }
 

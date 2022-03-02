@@ -81,3 +81,15 @@ class GotNotificationsState extends UserState{
   List<Object?> get props => [this.notifications];
 
 }
+
+class UploadedProfilePhoto extends UserState{
+  final String profilePhotoURL;
+
+  const UploadedProfilePhoto(this.profilePhotoURL);
+
+  @override
+  List<Object?> get props => [this.profilePhotoURL];
+
+}
+
+
