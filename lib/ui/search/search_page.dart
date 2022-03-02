@@ -54,10 +54,7 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
 
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
-        statusBarBrightness: Brightness.light));
+
 
     return BlocProvider<StationBloc>(
         create: (BuildContext context) => StationBloc()..add(InitStationEvent()), //.add(InitEvent()),
@@ -129,10 +126,7 @@ class _BuildUIState extends State<_BuildUI> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
-        statusBarBrightness: Brightness.light));
+
     SizeConfig().init(context);
     return Scaffold(
         resizeToAvoidBottomInset: false,

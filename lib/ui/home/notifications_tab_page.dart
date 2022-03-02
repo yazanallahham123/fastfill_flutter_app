@@ -81,10 +81,7 @@ class _BuildUIState extends State<_BuildUI> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
-        statusBarBrightness: Brightness.light));
+
 
     SizeConfig().init(context);
     return Scaffold(
