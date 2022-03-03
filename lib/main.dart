@@ -101,10 +101,10 @@ class _FastFillApp extends State<FastFillApp> {
 
     @override
     Widget build(BuildContext context) {
-      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
+      /*SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(
           statusBarColor: backgroundColor1,
           statusBarIconBrightness: Brightness.light,
-          statusBarBrightness: Brightness.light));
+          statusBarBrightness: Brightness.light)); */
       var localizationDelegate = LocalizedApp.of(context).delegate;
       return LocalizationProvider(
           state: LocalizationProvider.of(context).state,
@@ -122,6 +122,13 @@ class _FastFillApp extends State<FastFillApp> {
               supportedLocales: localizationDelegate.supportedLocales,
               locale: _locale,
               theme: ThemeData(
+                  appBarTheme: AppBarTheme(
+                  systemOverlayStyle: SystemUiOverlayStyle(
+                    statusBarColor: backgroundColor1,
+                    statusBarBrightness: Brightness.light,
+                    statusBarIconBrightness: Brightness.light,
+                  )
+                  ),
                   primaryColor: primaryColor1,
                   accentColor: primaryColor2,
                   fontFamily: isArabic() ? 'Poppins' : 'Poppins'),
