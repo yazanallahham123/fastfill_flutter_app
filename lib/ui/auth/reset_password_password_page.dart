@@ -95,7 +95,7 @@ class _BuildUI extends StatelessWidget {
 
     SizeConfig().init(context);
     return Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         backgroundColor: backgroundColor1,
         body: SingleChildScrollView(
             child: Stack(children: [

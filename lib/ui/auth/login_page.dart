@@ -27,6 +27,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:keyboard_actions/keyboard_actions.dart';
+import 'package:keyboard_actions/keyboard_actions_config.dart';
 
 import '../../main.dart';
 import '../../utils/misc.dart';
@@ -83,19 +85,26 @@ class _BuildUI extends StatefulWidget {
   State<_BuildUI> createState() => _BuildUIState();
 }
 
+
 class _BuildUIState extends State<_BuildUI> {
-  final phoneNode = FocusNode();
-  final passNode = FocusNode();
+
   final phoneController = TextEditingController();
   final passController = TextEditingController();
+  final phoneNode = FocusNode();
+  final passNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         backgroundColor: backgroundColor1,
-        body: SingleChildScrollView(
+        body:
+        KeyboardActions(
+        config: _buildConfig(context),
+    child:
+
+    SingleChildScrollView(
             child: Stack(
           children: [
             Container(
@@ -220,7 +229,7 @@ class _BuildUIState extends State<_BuildUI> {
                       : Text("عربي", style: TextStyle(color: buttonColor1))),
             )
           ],
-        )));
+        ))));
   }
 
   void _login(BuildContext context) async {
@@ -257,7 +266,43 @@ class _BuildUIState extends State<_BuildUI> {
       pushToast(translate("messages.theseFieldsMustBeFilledIn"));
   }
 
+  KeyboardActionsConfig _buildConfig(BuildContext context){
+    return KeyboardActionsConfig(
+        keyboardActionsPlatform: KeyboardActionsPlatform.ALL,
+        keyboardBarColor: Colors.grey[200],
+        nextFocus: true,
+        actions: [
+          KeyboardActionsItem(focusNode: phoneNode, toolbarButtons: [
+                (node) {
+              return GestureDetector(
+                onTap: () {
+                  FocusScope.of(context).requestFocus(passNode);
+                }
+                ,
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(translate("buttons.next"), style: TextStyle(fontWeight: FontWeight.bold),),
+                ),
+              );
+            }
+          ]),
 
+          KeyboardActionsItem(focusNode: passNode, toolbarButtons: [
+                (node) {
+              return GestureDetector(
+                onTap: () {
+                  _login(context);
+                }
+                ,
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(translate("buttons.signIn"), style: TextStyle(fontWeight: FontWeight.bold),),
+                ),
+              );
+            }
+          ]),
+        ]);
+  }
 
   @override
   void dispose() {
@@ -268,3 +313,5 @@ class _BuildUIState extends State<_BuildUI> {
     phoneNode.dispose();
   }
 }
+
+

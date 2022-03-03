@@ -38,12 +38,12 @@ class CustomTextFieldWidget extends StatelessWidget {
   Widget build(BuildContext context) {
 
     ValueNotifier<bool?> showError = ValueNotifier<bool?>(null);
-    return Container(
-        height: SizeConfig().h(75),
-        child: ValueListenableBuilder<bool?>(
+    return  ValueListenableBuilder<bool?>(
             valueListenable: showError,
             builder: (BuildContext context, value, Widget? child) {
-              return Column(
+              return Container(
+                  height: (value != null && value) ? SizeConfig().h(70) : SizeConfig().h(55),
+              child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
@@ -105,7 +105,7 @@ class CustomTextFieldWidget extends StatelessWidget {
                               horizontal: SizeConfig().w(10)),
                           child: Text(translate("messages.thisFieldMustBeFilledIn"),
                               style: errorStyle()))
-                  ]);
-            }));
+                  ]));
+            });
   }
 }

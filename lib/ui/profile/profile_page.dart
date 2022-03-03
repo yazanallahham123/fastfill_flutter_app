@@ -37,6 +37,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:keyboard_actions/keyboard_actions.dart';
+import 'package:keyboard_actions/keyboard_actions_config.dart';
 
 
 class ProfilePage extends StatefulWidget {
@@ -132,9 +134,13 @@ class _BuildUIState extends State<_BuildUI> {
 
     SizeConfig().init(context);
     return Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         backgroundColor: backgroundColor1 ,
         body:
+        KeyboardActions(
+        config: _buildConfig(context),
+    child:
+
         SingleChildScrollView(
             child:
             Stack(children: [
@@ -218,7 +224,7 @@ class _BuildUIState extends State<_BuildUI> {
             ),),
               BackButtonWidget(context)
             ],)
-        ));
+        )));
   }
 
   _updateProfile() async {
@@ -324,12 +330,6 @@ class _BuildUIState extends State<_BuildUI> {
     else {}
   }
 
-  void hideKeyboard(BuildContext context) {
-    FocusScopeNode currentFocus = FocusScope.of(context);
-    if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
-      currentFocus.focusedChild!.unfocus();
-    }
-  }
 
   @override
   void dispose() {
@@ -338,5 +338,44 @@ class _BuildUIState extends State<_BuildUI> {
     phoneController.dispose();
     phoneNode.dispose();
     nameNode.dispose();
+  }
+
+  KeyboardActionsConfig _buildConfig(BuildContext context){
+    return KeyboardActionsConfig(
+        keyboardActionsPlatform: KeyboardActionsPlatform.ALL,
+        keyboardBarColor: Colors.grey[200],
+        nextFocus: true,
+        actions: [
+          KeyboardActionsItem(focusNode: nameNode, toolbarButtons: [
+                (node) {
+              return GestureDetector(
+                onTap: () {
+                  FocusScope.of(context).requestFocus(phoneNode);
+                }
+                ,
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(translate("buttons.next"), style: TextStyle(fontWeight: FontWeight.bold),),
+                ),
+              );
+            }
+          ]),
+
+          KeyboardActionsItem(focusNode: phoneNode, toolbarButtons: [
+                (node) {
+              return GestureDetector(
+                onTap: () {
+                  _updateProfile();
+                }
+                ,
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(translate("buttons.apply"), style: TextStyle(fontWeight: FontWeight.bold),),
+                ),
+              );
+            }
+          ]),
+
+        ]);
   }
 }

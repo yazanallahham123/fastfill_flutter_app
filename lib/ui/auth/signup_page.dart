@@ -22,6 +22,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:keyboard_actions/keyboard_actions.dart';
+import 'package:keyboard_actions/keyboard_actions_config.dart';
 
 import 'otp_validation_page.dart';
 
@@ -94,9 +96,14 @@ class _BuildUIState extends State<_BuildUI> {
 
     SizeConfig().init(context);
     return Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         backgroundColor: backgroundColor1,
-        body: SingleChildScrollView(
+        body:
+        KeyboardActions(
+        config: _buildConfig(context),
+    child:
+
+        SingleChildScrollView(
             child: Stack(children: [
           Container(
             margin: EdgeInsetsDirectional.only(
@@ -138,7 +145,7 @@ class _BuildUIState extends State<_BuildUI> {
                         FocusScope.of(context).requestFocus(confirmPassNode)),
                 TextFieldPasswordWidget(
                     controller: confirmPassController,
-                    textInputAction: TextInputAction.send,
+                    textInputAction: TextInputAction.go,
                     focusNode: confirmPassNode,
                     hintText: translate("labels.confirmPassword"),
                     onFieldSubmitted: (_) {
@@ -185,7 +192,7 @@ class _BuildUIState extends State<_BuildUI> {
                         ))),
               )*/
           BackButtonWidget(context)
-        ])));
+        ]))));
   }
 
   void _signUp(BuildContext context) async {
@@ -326,5 +333,73 @@ class _BuildUIState extends State<_BuildUI> {
     confirmPassNode.dispose();
     passNode.dispose();
     phoneNode.dispose();
+  }
+
+  KeyboardActionsConfig _buildConfig(BuildContext context){
+    return KeyboardActionsConfig(
+        keyboardActionsPlatform: KeyboardActionsPlatform.ALL,
+        keyboardBarColor: Colors.grey[200],
+        nextFocus: true,
+        actions: [
+          KeyboardActionsItem(focusNode: firstNameNode, toolbarButtons: [
+                (node) {
+              return GestureDetector(
+                onTap: () {
+                  FocusScope.of(context).requestFocus(phoneNode);
+                }
+                ,
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(translate("buttons.next"), style: TextStyle(fontWeight: FontWeight.bold),),
+                ),
+              );
+            }
+          ]),
+
+          KeyboardActionsItem(focusNode: phoneNode, toolbarButtons: [
+                (node) {
+              return GestureDetector(
+                onTap: () {
+                  FocusScope.of(context).requestFocus(passNode);
+                }
+                ,
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(translate("buttons.next"), style: TextStyle(fontWeight: FontWeight.bold),),
+                ),
+              );
+            }
+          ]),
+
+          KeyboardActionsItem(focusNode: passNode, toolbarButtons: [
+                (node) {
+              return GestureDetector(
+                onTap: () {
+                  FocusScope.of(context).requestFocus(confirmPassNode);
+                }
+                ,
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(translate("buttons.next"), style: TextStyle(fontWeight: FontWeight.bold),),
+                ),
+              );
+            }
+          ]),
+
+          KeyboardActionsItem(focusNode: confirmPassNode, toolbarButtons: [
+                (node) {
+              return GestureDetector(
+                onTap: () {
+                  _signUp(context);
+                }
+                ,
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(translate("buttons.signUp"), style: TextStyle(fontWeight: FontWeight.bold),),
+                ),
+              );
+            }
+          ]),
+        ]);
   }
 }

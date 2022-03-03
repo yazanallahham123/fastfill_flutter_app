@@ -129,7 +129,7 @@ class _BuildUIState extends State<_BuildUI> {
 
     SizeConfig().init(context);
     return Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         backgroundColor: backgroundColor1,
         body: Stack(
           children: [

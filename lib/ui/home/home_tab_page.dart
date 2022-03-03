@@ -253,7 +253,7 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
 
     SizeConfig().init(context);
     return Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         backgroundColor: backgroundColor1,
         body: SingleChildScrollView(
             child: Column(
@@ -387,7 +387,8 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
                                     padding: EdgeInsetsDirectional.only(
                                         start: SizeConfig().w(30),
                                         end: SizeConfig().w(30),
-                                        top: SizeConfig().h(30))),
+                                        top: SizeConfig().h(15),
+                                        bottom: SizeConfig().h(0),)),
                                 (!searchResetted) ?
                                 ((searchText.trim() != ""))
                                     ? Align(
@@ -401,7 +402,7 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
                                           padding: EdgeInsetsDirectional.only(
                                               start: SizeConfig().w(30),
                                               end: SizeConfig().w(30),
-                                              bottom: SizeConfig().w(15)),
+                                              bottom: SizeConfig().h(0)),
                                         ),
                                         alignment:
                                             AlignmentDirectional.topStart,
@@ -432,13 +433,13 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
                                                   padding: EdgeInsetsDirectional
                                                       .only(
                                                           top: SizeConfig()
-                                                              .w(15),
+                                                              .h(15),
                                                           start: SizeConfig()
                                                               .w(30),
                                                           end: SizeConfig()
                                                               .w(30),
                                                           bottom: SizeConfig()
-                                                              .w(15)),
+                                                              .h(15)),
                                                 ),
                                                 alignment: AlignmentDirectional
                                                     .topCenter,
@@ -456,7 +457,8 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
                                     padding: EdgeInsetsDirectional.only(
                                         start: SizeConfig().w(30),
                                         end: SizeConfig().w(30),
-                                        bottom: SizeConfig().w(0)),
+                                        bottom: SizeConfig().h(0),
+                                        top: SizeConfig().h(0)),
                                   ),
                                   alignment: AlignmentDirectional.topStart,
                                 ),

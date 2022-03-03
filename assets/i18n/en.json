@@ -63,7 +63,7 @@
   "searchResult": "Search Results",
   "noFrequentlyVisited": "You haven't visit any station yet.",
   "noFavorites": "You haven't add any station to favorite list.",
-  "noSearchResult": "Nothing match your search criteria",
+  "noSearchResult": "Nothing matches your search criteria",
   "newPassword": "New password",
   "confirmNewPassword": "Confirm new password",
   "logoutAlertTitle": "Logout"
@@ -75,6 +75,7 @@
   "donotHaveAccount": "Don't have account?",
   "signIn" : "Sign In",
   "next": "Next",
+  "done": "Done",
   "fastfill": "Fast Fill",
   "resetPassword": "Reset Password",
   "pay": "Pay",
