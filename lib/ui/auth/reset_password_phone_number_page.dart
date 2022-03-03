@@ -29,6 +29,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:keyboard_actions/keyboard_actions.dart';
+import 'package:keyboard_actions/keyboard_actions_config.dart';
 
 import 'login_page.dart';
 import 'otp_validation_page.dart';
@@ -91,9 +93,13 @@ class _BuildUIState extends State<_BuildUI> {
 
     SizeConfig().init(context);
     return Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         backgroundColor: backgroundColor1,
-        body: SingleChildScrollView(
+        body:
+        KeyboardActions(
+        config: _buildConfig(context),
+    child:
+        SingleChildScrollView(
             child: Stack(children: [
           Container(
             margin: EdgeInsetsDirectional.only(
@@ -141,7 +147,7 @@ class _BuildUIState extends State<_BuildUI> {
           ),
           // Back Button
               BackButtonWidget(context)
-        ])));
+        ]))));
   }
 
   void _resetPassword(BuildContext context) async {
@@ -248,5 +254,29 @@ class _BuildUIState extends State<_BuildUI> {
       }
     } else
       pushToast(translate("messages.theseFieldsMustBeFilledIn"));
+  }
+
+  KeyboardActionsConfig _buildConfig(BuildContext context){
+    return KeyboardActionsConfig(
+        keyboardActionsPlatform: KeyboardActionsPlatform.ALL,
+        keyboardBarColor: Colors.grey[200],
+        nextFocus: true,
+        actions: [
+          KeyboardActionsItem(focusNode: phoneNode, toolbarButtons: [
+                (node) {
+              return GestureDetector(
+                onTap: () {
+                  _resetPassword(context);
+                }
+                ,
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(translate("buttons.apply"), style: TextStyle(fontWeight: FontWeight.bold),),
+                ),
+              );
+            }
+          ]),
+
+        ]);
   }
 }

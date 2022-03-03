@@ -33,12 +33,12 @@ class TextFieldPasswordWidget extends StatelessWidget {
     ValueNotifier<bool?> showError = ValueNotifier<bool?>(null);
     ValueNotifier<bool> showPassword = ValueNotifier<bool>(false);
 
-    return Container(
-        height: SizeConfig().h(75),
-        child: ValueListenableBuilder<bool?>(
+    return ValueListenableBuilder<bool?>(
             valueListenable: showError,
             builder: (BuildContext context, value, Widget? child) {
-              return Column(
+              return Container(
+                  height: (value != null && value) ? SizeConfig().h(70) : SizeConfig().h(55),
+              child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
@@ -124,8 +124,8 @@ class TextFieldPasswordWidget extends StatelessWidget {
                                   ? errorText!
                                   : translate("messages.passContain7Char"),
                               style: errorStyle())),
-                  ]);
-            }));
+                  ]));
+            });
   }
 
   bool isValidator(String value) {

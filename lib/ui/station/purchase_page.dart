@@ -36,6 +36,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:intl/intl.dart';
+import 'package:keyboard_actions/keyboard_actions.dart';
+import 'package:keyboard_actions/keyboard_actions_config.dart';
 
 import '../../model/payment/payment_result_body.dart';
 import '../../model/user/user.dart';
@@ -153,18 +155,19 @@ class BuildUI extends StatefulWidget {
   State<BuildUI> createState() => _BuildUI(this.bloc, this.state, this.stationBranch);
 }
 
+
+
 class _BuildUI extends State<BuildUI> {
   final StationBloc bloc;
   final StationState state;
   final StationBranch stationBranch;
+  final amountNode = FocusNode();
+  final confirmAmountNode = FocusNode();
 
   _BuildUI(this.bloc,this.state,this.stationBranch);
 
   final amountController = TextEditingController();
   final confirmAmountController = TextEditingController();
-
-  final amountNode = FocusNode();
-  final confirmAmountNode = FocusNode();
 
   FuelType _fuelTypeValue = FuelType.Benzine;
 
@@ -173,10 +176,12 @@ class _BuildUI extends State<BuildUI> {
 
     SizeConfig().init(context);
     return Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         backgroundColor: backgroundColor1 ,
         body:
-        SingleChildScrollView(
+        KeyboardActions(
+            config: _buildConfig(context),
+            child: SingleChildScrollView(
                   child:
           Stack(children: [
             Padding(padding: EdgeInsetsDirectional.fromSTEB(0, SizeConfig().h(110), 0, 0),
@@ -362,7 +367,7 @@ class _BuildUI extends State<BuildUI> {
                         textInputType: TextInputType.number,
                         textInputAction: TextInputAction.go,
                         onFieldSubmitted: (_) {
-                          pay();
+                          hideKeyboard(context);
                         })),
 
                 Padding(child:
@@ -408,7 +413,7 @@ class _BuildUI extends State<BuildUI> {
                 BackButtonWidget(context),
 
               ],)
-            ),
+            )),
         );
   }
 
@@ -458,4 +463,44 @@ class _BuildUI extends State<BuildUI> {
     else
       pushToast(translate("messages.confirmAmountPlease"));
   }
+
+  KeyboardActionsConfig _buildConfig(BuildContext context){
+    return KeyboardActionsConfig(
+        keyboardActionsPlatform: KeyboardActionsPlatform.ALL,
+        keyboardBarColor: Colors.grey[200],
+        nextFocus: true,
+        actions: [
+          KeyboardActionsItem(focusNode: amountNode, toolbarButtons: [
+                (node) {
+              return GestureDetector(
+                onTap: () {
+                  FocusScope.of(context).requestFocus(confirmAmountNode);
+                }
+                ,
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(translate("buttons.next"), style: TextStyle(fontWeight: FontWeight.bold),),
+                ),
+              );
+            }
+          ]),
+
+          KeyboardActionsItem(focusNode: confirmAmountNode, toolbarButtons: [
+                (node) {
+              return GestureDetector(
+                onTap: () {
+                  hideKeyboard(context);
+                }
+                ,
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(translate("buttons.done"), style: TextStyle(fontWeight: FontWeight.bold),),
+                ),
+              );
+            }
+          ]),
+        ]);
+  }
 }
+
+

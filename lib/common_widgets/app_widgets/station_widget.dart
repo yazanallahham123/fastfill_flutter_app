@@ -114,6 +114,6 @@ class _StationBranchWidgetState extends State<StationBranchWidget> {
           ],
         )
       ],
-    ), padding: EdgeInsetsDirectional.fromSTEB(10, 6, 10, 6),);
+    ), padding: EdgeInsetsDirectional.fromSTEB(10, 1, 10, 1),);
   }
 }
