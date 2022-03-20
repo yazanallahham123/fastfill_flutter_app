@@ -24,6 +24,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 
 import '../../common_widgets/app_widgets/favorite_button.dart';
+import '../../model/station/station.dart';
 import '../../utils/misc.dart';
 
 class HomeTabPage extends StatefulWidget {
@@ -33,10 +34,10 @@ class HomeTabPage extends StatefulWidget {
   State<HomeTabPage> createState() => _HomeTabPageState();
 }
 
-List<StationBranch> favoriteStationsBranches = [];
-List<StationBranch> frequentlyVistedStationsBranches = [];
-List<StationBranch> searchResult = [];
-List<StationBranch> allStationsBranches = [];
+List<Station> favoriteStations = [];
+List<Station> frequentlyVistedStations = [];
+List<Station> searchResult = [];
+List<Station> allStations = [];
 String searchText = "";
 String userName = "";
 
@@ -55,9 +56,9 @@ class _HomeTabPageState extends State<HomeTabPage> {
     return BlocListener<StationBloc, StationState>(
         listener: (context, state) async {
           if (state is InitStationState) {
-            bloc.add(FavoriteStationsBranchesEvent());
-            bloc.add(FrequentlyVisitedStationsBranchesEvent());
-            bloc.add(AllStationsBranchesEvent());
+            bloc.add(FavoriteStationsEvent());
+            bloc.add(FrequentlyVisitedStationsEvent());
+            bloc.add(AllStationsEvent());
             if (mounted) {
               setState(() {
                 searchResult = [];
@@ -65,35 +66,35 @@ class _HomeTabPageState extends State<HomeTabPage> {
             }
           } else if (state is ErrorStationState)
             pushToast(state.error);
-          else if (state is GotFavoriteStationsBranchesState) {
-            if (state.favoriteStationsBranches.companiesBranches != null)
-              favoriteStationsBranches =
-                  state.favoriteStationsBranches.companiesBranches!;
+          else if (state is GotFavoriteStationsState) {
+            if (state.favoriteStations.companies != null)
+              favoriteStations =
+                  state.favoriteStations.companies!;
             else
-              favoriteStationsBranches = [];
-          } else if (state is GotAllStationsBranchesState) {
-            if (state.stationsBranches != null)
-              allStationsBranches = state.stationsBranches.companiesBranches!;
+              favoriteStations = [];
+          } else if (state is GotAllStationsState) {
+            if (state.stations != null)
+              allStations = state.stations.companies!;
             else
-              allStationsBranches = [];
-          } else if (state is GotFrequentlyVisitedStationsBranchesState) {
-            if (state.frequentlyVisitedStationsBranches.companiesBranches !=
+              allStations= [];
+          } else if (state is GotFrequentlyVisitedStationsState) {
+            if (state.frequentlyVisitedStations.companies !=
                 null)
-              frequentlyVistedStationsBranches =
-                  state.frequentlyVisitedStationsBranches.companiesBranches!;
+              frequentlyVistedStations =
+                  state.frequentlyVisitedStations.companies!;
             else
-              frequentlyVistedStationsBranches = [];
-          } else if (state is GotStationBranchByCodeState) {
+              frequentlyVistedStations = [];
+          } else if (state is GotStationsByTextState) {
             if (mounted) {
               setState(() {
                 searchResult.clear();
-                if (state.stationsBranches != null) {
-                  if (state.stationsBranches.companiesBranches !=
+                if (state.stations != null) {
+                  if (state.stations.companies !=
                       null) if (state
-                          .stationsBranches.companiesBranches!.length >
+                          .stations.companies!.length >
                       0)
                     searchResult
-                        .addAll(state.stationsBranches.companiesBranches!);
+                        .addAll(state.stations.companies!);
                   else
                     searchResult = [];
                 } else
@@ -102,22 +103,22 @@ class _HomeTabPageState extends State<HomeTabPage> {
                 searchResetted = false;
               });
             }
-          } else if (state is AddedStationBranchToFavorite) {
+          } else if (state is AddedStationToFavorite) {
             if (mounted) {
               setState(() {
                 isAddedToFavorite = true;
-                StationBranch sb = allStationsBranches
-                    .firstWhere((s) => s.id == state.stationBranchId);
-                addRemoveFavoriteStreamController.sink.add(sb);
+                Station s = allStations
+                    .firstWhere((s) => s.id == state.stationId);
+                addRemoveFavoriteStreamController.sink.add(s);
               });
             }
-          } else if (state is RemovedStationBranchFromFavorite) {
+          } else if (state is RemovedStationFromFavorite) {
             if (mounted) {
               setState(() {
                 isAddedToFavorite = false;
-                StationBranch sb = allStationsBranches
-                    .firstWhere((s) => s.id == state.stationBranchId);
-                addRemoveFavoriteStreamController.sink.add(sb);
+                Station s = allStations
+                    .firstWhere((s) => s.id == state.stationId);
+                addRemoveFavoriteStreamController.sink.add(s);
               });
             }
           }
@@ -194,52 +195,51 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
     addRemoveFavoriteStreamController.stream.listen((event) {
       if (mounted) {
         setState(() {
-          StationBranch sb = StationBranch(
+          Station s = Station(
               id: event.id,
               arabicName: event.arabicName,
               englishName: event.englishName,
               arabicAddress: event.arabicAddress,
               englishAddress: event.englishAddress,
               code: event.code,
-              companyId: event.companyId,
               longitude: event.longitude,
               latitude: event.latitude,
               isFavorite: !event.isFavorite!);
           if (event.isFavorite != null) {
             if (event.isFavorite!)
-              favoriteStationsBranches.removeWhere((fs) => fs.id == event.id);
+              favoriteStations.removeWhere((fs) => fs.id == event.id);
             else
-              favoriteStationsBranches.add(sb);
+              favoriteStations.add(s);
           } else
-            favoriteStationsBranches.removeWhere((fs) => fs.id == event.id);
+            favoriteStations.removeWhere((fs) => fs.id == event.id);
 
-          if (frequentlyVistedStationsBranches
+          if (frequentlyVistedStations
                   .firstWhere((frs) => frs.id == event.id,
-                      orElse: () => StationBranch())
+                      orElse: () => Station())
                   .id !=
               null) {
-            int idx = frequentlyVistedStationsBranches
+            int idx = frequentlyVistedStations
                 .indexWhere((frs) => frs.id == event.id);
-            frequentlyVistedStationsBranches[idx] = sb;
+            frequentlyVistedStations[idx] = s;
           }
 
-          if (allStationsBranches
+          if (allStations
                   .firstWhere((frs) => frs.id == event.id,
-                      orElse: () => StationBranch())
+                      orElse: () => Station())
                   .id !=
               null) {
             int idx3 =
-                allStationsBranches.indexWhere((frs) => frs.id == event.id);
-            allStationsBranches[idx3] = sb;
+                allStations.indexWhere((frs) => frs.id == event.id);
+            allStations[idx3] = s;
           }
 
           if (searchResult
                   .firstWhere((frs) => frs.id == event.id,
-                      orElse: () => StationBranch())
+                      orElse: () => Station())
                   .id !=
               null) {
             int idx2 = searchResult.indexWhere((frs) => frs.id == event.id);
-            searchResult[idx2] = sb;
+            searchResult[idx2] = s;
           }
         });
       }
@@ -380,7 +380,7 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
                                       onFieldSubmitted: (_) {
                                         hideKeyboard(context);
                                         widget.bloc.add(
-                                            StationBranchByCodeEvent(
+                                            StationByTextEvent(
                                                 searchController.text));
                                       },
                                     ),
@@ -415,8 +415,8 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
                                             ? Column(
                                                 children: searchResult
                                                     .map((i) =>
-                                                        StationBranchWidget(
-                                                            stationBranch: i,
+                                                        StationWidget(
+                                                            station: i,
                                                             stationBloc:
                                                                 widget.bloc,
                                                             stationState:
@@ -462,11 +462,11 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
                                   ),
                                   alignment: AlignmentDirectional.topStart,
                                 ),
-                                (favoriteStationsBranches.length > 0)
+                                (favoriteStations.length > 0)
                                     ? Column(
-                                        children: favoriteStationsBranches
-                                            .map((i) => StationBranchWidget(
-                                                  stationBranch: i,
+                                        children: favoriteStations
+                                            .map((i) => StationWidget(
+                                                  station: i,
                                                   stationBloc: widget.bloc,
                                                   stationState: widget.state,
                                                 ))

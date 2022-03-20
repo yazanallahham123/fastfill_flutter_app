@@ -18,6 +18,8 @@ import 'package:fastfill/ui/station/purchase_page.dart';
 import 'package:fastfill/ui/terms/terms_page.dart';
 import 'package:flutter/material.dart';
 
+import '../model/station/station.dart';
+
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
 
@@ -188,7 +190,7 @@ class AppRouter {
         );
 
       case PurchasePage.route:
-        return PageRouteBuilder( pageBuilder: (context, animation, secondaryAnimation) => PurchasePage(stationBranch: settings.arguments as StationBranch,),
+        return PageRouteBuilder( pageBuilder: (context, animation, secondaryAnimation) => PurchasePage(station: settings.arguments as Station,),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             const begin = Offset(0.0, 1.0);
             const end = Offset.zero;

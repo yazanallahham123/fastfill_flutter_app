@@ -12,22 +12,23 @@ import 'package:flutter_svg/svg.dart';
 import '../../bloc/station/bloc.dart';
 import '../../bloc/station/event.dart';
 import '../../bloc/station/state.dart';
+import '../../model/station/station.dart';
 import '../../ui/station/purchase_page.dart';
 import '../../utils/misc.dart';
 import 'favorite_button.dart';
 
-class StationBranchWidget extends StatefulWidget{
+class StationWidget extends StatefulWidget{
 
-  final StationBranch stationBranch;
+  final Station station;
   final StationBloc stationBloc;
   final StationState stationState;
-  const StationBranchWidget({required this.stationBranch, required this.stationBloc, required this.stationState});
+  const StationWidget({required this.station, required this.stationBloc, required this.stationState});
 
   @override
-  State<StationBranchWidget> createState() => _StationBranchWidgetState();
+  State<StationWidget> createState() => _StationWidgetState();
 }
 
-class _StationBranchWidgetState extends State<StationBranchWidget> {
+class _StationWidgetState extends State<StationWidget> {
   @override
   Widget build(BuildContext context) {
     return
@@ -51,7 +52,7 @@ class _StationBranchWidgetState extends State<StationBranchWidget> {
               hideKeyboard(context);
               Navigator.pushNamed(
                   context, PurchasePage.route,
-                  arguments: widget.stationBranch);
+                  arguments: widget.station);
             }
         ),
         Row(
@@ -65,23 +66,23 @@ class _StationBranchWidgetState extends State<StationBranchWidget> {
                       "assets/icon_station.png")), padding: EdgeInsetsDirectional.fromSTEB(0, 25, 20, 0),),
 
 
-              Padding(child:((widget.stationState is AddingRemovingStationBranchToFavorite) &&
-              ((widget.stationState as AddingRemovingStationBranchToFavorite).stationBranchId == widget.stationBranch.id)) ?
+              Padding(child:((widget.stationState is AddingRemovingStationToFavorite) &&
+              ((widget.stationState as AddingRemovingStationToFavorite).stationId == widget.station.id)) ?
                   CustomLoading()
                   :
-              FavoriteButtonWidget(isAddedToFavorite:widget.stationBranch.isFavorite!, onTap: () {
+              FavoriteButtonWidget(isAddedToFavorite:widget.station.isFavorite!, onTap: () {
                 hideKeyboard(context);
-                if (widget.stationBranch.isFavorite!)
-                  widget.stationBloc.add(RemoveStationBranchFromFavoriteEvent(widget.stationBranch.id!));
+                if (widget.station.isFavorite!)
+                  widget.stationBloc.add(RemoveStationFromFavoriteEvent(widget.station.id!));
                 else
-                  widget.stationBloc.add(AddStationBranchToFavoriteEvent(widget.stationBranch.id!));
+                  widget.stationBloc.add(AddStationToFavoriteEvent(widget.station.id!));
               },),padding: EdgeInsetsDirectional.fromSTEB(0, 40, 20, 0) ,)
             ]),
         Column(
           children: [
             Align(child: Padding(
               child: Text(
-                (isArabic()) ? widget.stationBranch.arabicName! : widget.stationBranch.englishName!,
+                (isArabic()) ? widget.station.arabicName! : widget.station.englishName!,
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 18),
@@ -93,7 +94,7 @@ class _StationBranchWidgetState extends State<StationBranchWidget> {
             ), alignment: AlignmentDirectional.topStart,),
             Align(child: Padding(
               child: Text(
-                widget.stationBranch.code!,
+                widget.station.code!,
                 style: TextStyle(fontSize: 16),
               ),
               padding: EdgeInsetsDirectional.only(
@@ -103,7 +104,7 @@ class _StationBranchWidgetState extends State<StationBranchWidget> {
             ), alignment: AlignmentDirectional.topStart,),
             Align(child: Padding(
               child: Text(
-                (isArabic()) ? widget.stationBranch.arabicAddress! : widget.stationBranch.englishAddress!,
+                (isArabic()) ? widget.station.arabicAddress! : widget.station.englishAddress!,
                 style: TextStyle(fontSize: 16),
               ),
               padding: EdgeInsetsDirectional.only(

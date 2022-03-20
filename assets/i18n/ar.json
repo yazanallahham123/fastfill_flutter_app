@@ -127,7 +127,8 @@
     "couldNotLoadAllStationBranches": "لم يتم تحميل جميع المحطات",
     "amountMustBeMoreThanZero": "الكمية يجب ان تكون آكبر من صفر",
     "confirmAmountPlease": "يرجى مطابقة الكمية",
-    "couldNotAddTransaction": "لم تتم عملية التحميل بنجاح، يرجى اعادة المحاولة"
+    "couldNotAddTransaction": "لم تتم عملية التحميل بنجاح، يرجى اعادة المحاولة",
+    "couldNotLoadNotifications": "لم يتم تحميل الاشعارات"
   },
   "titles" : {
     "welcome": "اهلا و سهلاً"

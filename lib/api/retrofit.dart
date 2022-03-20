@@ -25,6 +25,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart' hide Headers;
 import '../model/station/add_remove_station_branch_favorite_body.dart';
+import '../model/station/stations_with_pagination.dart';
 import 'apis.dart';
 import 'package:http_parser/http_parser.dart';
 part 'retrofit.g.dart';
@@ -63,6 +64,14 @@ abstract class ApiClient {
   @Headers(<String, dynamic>{"Content-Type": "multi-part/form-data", "accept":"*/*", "Authorization":"Token ba7758237f501dcc97cf77292607640a4afd32bb"})
   Future<OTPVerifyResponseBody> otpVerifyCode(@Part(name: "otp_id") String otp_id, @Part(name: "code") String code);
 
+
+  @GET(Apis.frequentlyVisitedCompanies)
+  Future<StationsWithPagination> getFrequentlyVisitedStations(@Header("Authorization") String token);
+
+  @GET(Apis.favoriteCompanies)
+  Future<StationsWithPagination> getFavoritesStations(@Header("Authorization") String token);
+
+
   //Station
 
   @GET(Apis.frequentlyVisitedCompaniesBranches)
@@ -71,13 +80,13 @@ abstract class ApiClient {
   @GET(Apis.favoriteCompaniesBranches)
   Future<StationBranchesWithPagination> getFavoritesStationsBranches(@Header("Authorization") String token);
 
-  @GET(Apis.companyBranchByCode+"/{text}")
-  Future<StationBranchesWithPagination> getStationBranchByCode(@Header("Authorization") String token,
+  @GET(Apis.companyBranchByText+"/{text}")
+  Future<StationBranchesWithPagination> getStationBranchByText(@Header("Authorization") String token,
       @Path("text") String text, @Query("page") int page, @Query("pageSize") int pageSize);
 
-  @GET(Apis.companyByCode+"/{code}")
-  Future<StationBranch> getStationByCode(@Header("Authorization") String token,
-      @Path("code") String code);
+  @GET(Apis.companyByText+"/{text}")
+  Future<StationsWithPagination> getStationByText(@Header("Authorization") String token,
+      @Path("text") String text, @Query("page") int page, @Query("pageSize") int pageSize);
 
   @PUT(Apis.addCompanyToFavorite)
   Future<bool> addStationToFavorite(@Header("Authorization") String token,
@@ -96,8 +105,10 @@ abstract class ApiClient {
       @Body() AddRemoveStationBranchFavoriteBody addRemoveStationBranchFavoriteBody);
 
   @GET(Apis.allCompaniesBranches)
-  Future<StationBranchesWithPagination> getAllStationsBranches(@Header("Authorization") String token);
+  Future<StationBranchesWithPagination> getAllStationsBranches(@Header("Authorization") String token, @Query("page") int page, @Query("pageSize") int pageSize);
 
+  @GET(Apis.allCompanies)
+  Future<StationsWithPagination> getAllStations(@Header("Authorization") String token, @Query("page") int page, @Query("pageSize") int pageSize);
 
   //User
   @PUT(Apis.updateUserProfile)

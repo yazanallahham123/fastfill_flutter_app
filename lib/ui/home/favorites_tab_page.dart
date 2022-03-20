@@ -22,6 +22,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 
 import '../../common_widgets/app_widgets/station_widget.dart';
+import '../../model/station/station.dart';
 
 class FavoritesTabPage extends StatefulWidget {
   const FavoritesTabPage({Key? key}) : super(key: key);
@@ -30,8 +31,8 @@ class FavoritesTabPage extends StatefulWidget {
   State<FavoritesTabPage> createState() => _FavoritesTabPageState();
 }
 
-List<StationBranch> favoriteStations = [];
-List<StationBranch> allStationsBranches = [];
+List<Station> favoriteStations = [];
+List<Station> allStations = [];
 
 class _FavoritesTabPageState extends State<FavoritesTabPage> {
   @override
@@ -48,43 +49,43 @@ class _FavoritesTabPageState extends State<FavoritesTabPage> {
     return BlocListener<StationBloc, StationState>(
         listener: (context, state) async {
           if (state is InitStationState) {
-            bloc.add(FavoriteStationsBranchesEvent());
-            bloc.add(AllStationsBranchesEvent());
+            bloc.add(FavoriteStationsEvent());
+            bloc.add(AllStationsEvent());
           } else if (state is ErrorStationState)
             pushToast(state.error);
-          else if (state is GotFavoriteStationsBranchesState) {
+          else if (state is GotFavoriteStationsState) {
             if (mounted) {
               setState(() {
-                if (state.favoriteStationsBranches.companiesBranches != null)
+                if (state.favoriteStations.companies != null)
                   favoriteStations =
-                      state.favoriteStationsBranches.companiesBranches!;
+                      state.favoriteStations.companies!;
                 else
                   favoriteStations = [];
               });
             }
           }
-          else if (state is GotAllStationsBranchesState) {
-            if (state.stationsBranches != null)
-              allStationsBranches = state.stationsBranches.companiesBranches!;
+          else if (state is GotAllStationsState) {
+            if (state.stations != null)
+              allStations = state.stations.companies!;
             else
-              allStationsBranches = [];
+              allStations = [];
           }
-          else if (state is AddedStationBranchToFavorite) {
+          else if (state is AddedStationToFavorite) {
             if (mounted) {
               setState(() {
                 isAddedToFavorite = true;
-                StationBranch sb = allStationsBranches
-                    .firstWhere((s) => s.id == state.stationBranchId);
-                addRemoveFavoriteStreamController.sink.add(sb);
+                Station s = allStations
+                    .firstWhere((s) => s.id == state.stationId);
+                addRemoveFavoriteStreamController.sink.add(s);
               });
             }
-          } else if (state is RemovedStationBranchFromFavorite) {
+          } else if (state is RemovedStationFromFavorite) {
             if (mounted) {
               setState(() {
                 isAddedToFavorite = false;
-                StationBranch sb = allStationsBranches
-                    .firstWhere((s) => s.id == state.stationBranchId);
-                addRemoveFavoriteStreamController.sink.add(sb);
+                Station s = allStations
+                    .firstWhere((s) => s.id == state.stationId);
+                addRemoveFavoriteStreamController.sink.add(s);
               });
             }
           }
@@ -120,14 +121,13 @@ class _BuildUIState extends State<_BuildUI> {
     addRemoveFavoriteStreamController.stream.listen((event) {
       if (mounted) {
         setState(() {
-          StationBranch sb = StationBranch(
+          Station s = Station(
               id: event.id,
               arabicName: event.arabicName,
               englishName: event.englishName,
               arabicAddress: event.arabicAddress,
               englishAddress: event.englishAddress,
               code: event.code,
-              companyId: event.companyId,
               longitude: event.longitude,
               latitude: event.latitude,
               isFavorite: !event.isFavorite!);
@@ -135,7 +135,7 @@ class _BuildUIState extends State<_BuildUI> {
             if (event.isFavorite!)
               favoriteStations.removeWhere((fs) => fs.id == event.id);
             else
-              favoriteStations.add(sb);
+              favoriteStations.add(s);
           } else
             favoriteStations.removeWhere((fs) => fs.id == event.id);
 
@@ -183,8 +183,8 @@ class _BuildUIState extends State<_BuildUI> {
                     ? Padding(
                         child: Column(
                             children: favoriteStations
-                                .map((i) => StationBranchWidget(
-                                      stationBranch: i,
+                                .map((i) => StationWidget(
+                                      station: i,
                                       stationBloc: widget.bloc,
                                       stationState: widget.state,
                                     ))

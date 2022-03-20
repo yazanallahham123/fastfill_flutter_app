@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:fastfill/model/station/payment_transaction_body.dart';
+import 'package:fastfill/model/station/station.dart';
 import 'package:fastfill/model/station/station_branch.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -8,10 +9,10 @@ part 'payment_transaction_result.g.dart';
 @JsonSerializable()
 class PaymentTransactionResult extends Equatable {
   final int? id;
-  final StationBranch? companyBranch;
+  final Station? company;
   final int? userId;
   final String? date;
-  final int? companyBranchId;
+  final int? companyId;
   final int? fuelTypeId;
   final double? amount;
   final double? fastfill;
@@ -19,10 +20,10 @@ class PaymentTransactionResult extends Equatable {
 
   const PaymentTransactionResult(
       {this.id,
-        this.companyBranch,
+        this.company,
         this.userId,
         this.date,
-        this.companyBranchId,
+        this.companyId,
         this.fuelTypeId,
         this.amount,
         this.fastfill,
@@ -37,10 +38,10 @@ class PaymentTransactionResult extends Equatable {
   @override
   List<Object?> get props => [
     this.id,
-    this.companyBranch,
+    this.company,
     this.userId,
     this.date,
-    this.companyBranchId,
+    this.companyId,
     this.fuelTypeId,
     this.amount,
     this.fastfill,

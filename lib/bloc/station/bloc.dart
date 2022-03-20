@@ -63,12 +63,36 @@ class StationBloc extends Bloc<StationEvent, StationState> {
       }
     });
 
+
+
+    on<AllStationsEvent>((event, emit) async {
+      try {
+        emit(LoadingStationState());
+        var token = await LocalData().getBearerTokenValue();
+        if (token != null) {
+          await mClient.getAllStations(token, 1, 10000).then((v) {
+            if (v.companies != null)
+              emit(GotAllStationsState(v));
+          });
+        }
+        else
+          emit(ErrorStationState(translate("messages.couldNotLoadAllStation")));
+      } on DioError catch (e) {
+        if (e.response!.statusCode == 400 || e.response!.statusCode == 404)
+          emit(ErrorStationState(translate("messages.couldNotLoadAllStation")));
+        else {
+          print("Error" + e.toString());
+          emit(ErrorStationState(dioErrorMessageAdapter(e)));
+        }
+      }
+    });
+
     on<AllStationsBranchesEvent>((event, emit) async {
       try {
         emit(LoadingStationState());
         var token = await LocalData().getBearerTokenValue();
         if (token != null) {
-          await mClient.getAllStationsBranches(token).then((v) {
+          await mClient.getAllStationsBranches(token, 1, 10000).then((v) {
             if (v.companiesBranches != null)
               emit(GotAllStationsBranchesState(v));
           });
@@ -112,8 +136,8 @@ class StationBloc extends Bloc<StationEvent, StationState> {
         emit(LoadingStationState());
         var token = await LocalData().getBearerTokenValue();
         if (token != null) {
-          await mClient.getFavoritesStationsBranches(token).then((v) {
-            if (v.companiesBranches != null)
+          await mClient.getFavoritesStations(token).then((v) {
+            if (v.companies != null)
               emit(GotFavoriteStationsState(v));
           });
         }
@@ -182,7 +206,7 @@ class StationBloc extends Bloc<StationEvent, StationState> {
 
     on<RemoveStationFromFavoriteEvent>((event, emit) async {
       try {
-        emit(LoadingFavoriteStationState());
+        emit(AddingRemovingStationToFavorite(event.stationId));
 
         var token = await LocalData().getBearerTokenValue();
         if (token != null) {
@@ -207,7 +231,7 @@ class StationBloc extends Bloc<StationEvent, StationState> {
 
     on<AddStationToFavoriteEvent>((event, emit) async {
       try {
-        emit(LoadingFavoriteStationState());
+        emit(AddingRemovingStationToFavorite(event.stationId));
         var token = await LocalData().getBearerTokenValue();
         if (token != null) {
           await mClient.addStationToFavorite(token, AddRemoveStationFavoriteBody(companyId: event.stationId)).then((v) {
@@ -257,8 +281,8 @@ class StationBloc extends Bloc<StationEvent, StationState> {
          emit(LoadingStationState());
          var token = await LocalData().getBearerTokenValue();
          if (token != null) {
-           await mClient.getFrequentlyVisitedStationsBranches(token).then((v) {
-             if (v.companiesBranches != null)
+           await mClient.getFrequentlyVisitedStations(token).then((v) {
+             if (v.companies != null)
                emit(GotFrequentlyVisitedStationsState(v));
            });
          }
@@ -274,14 +298,14 @@ class StationBloc extends Bloc<StationEvent, StationState> {
        }
      });
 
-    on<StationBranchByCodeEvent>((event, emit) async {
+    on<StationBranchByTextEvent>((event, emit) async {
       try {
         emit(LoadingStationState());
         var token = await LocalData().getBearerTokenValue();
         if (token != null) {
-          await mClient.getStationBranchByCode(token, event.code, 1, 1000).then((v) {
+          await mClient.getStationBranchByText(token, event.text, 1, 1000).then((v) {
             if (v != null)
-              emit(GotStationBranchByCodeState(v));
+              emit(GotStationBranchByTextState(v));
           });
         }
         else
@@ -296,14 +320,14 @@ class StationBloc extends Bloc<StationEvent, StationState> {
       }
     });
 
-    on<StationByCodeEvent>((event, emit) async {
+    on<StationByTextEvent>((event, emit) async {
       try {
         emit(LoadingStationState());
         var token = await LocalData().getBearerTokenValue();
         if (token != null) {
-          await mClient.getStationByCode(token, event.code).then((v) {
+          await mClient.getStationByText(token, event.text, 1, 10000).then((v) {
             if (v != null)
-              emit(GotStationByCodeState(v));
+              emit(GotStationsByTextState(v));
           });
         }
         else

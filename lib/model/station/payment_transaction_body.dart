@@ -7,7 +7,7 @@ part 'payment_transaction_body.g.dart';
 class PaymentTransactionBody extends Equatable {
   final int? userId;
   final String? date;
-  final int? companyBranchId;
+  final int? companyId;
   final int? fuelTypeId;
   final double? amount;
   final double? fastfill;
@@ -16,7 +16,7 @@ class PaymentTransactionBody extends Equatable {
   const PaymentTransactionBody(
       {this.userId,
         this.date,
-        this.companyBranchId,
+        this.companyId,
         this.fuelTypeId,
         this.amount,
         this.fastfill,
@@ -30,7 +30,7 @@ class PaymentTransactionBody extends Equatable {
   List<Object?> get props => [
     this.userId,
     this.date,
-    this.companyBranchId,
+    this.companyId,
     this.fuelTypeId,
     this.amount,
     this.fastfill,

@@ -30,20 +30,20 @@ class FavoriteStationsEvent extends StationEvent{
   const FavoriteStationsEvent();
 }
 
-class StationByCodeEvent extends StationEvent{
-  final String code;
-  const StationByCodeEvent(this.code);
+class StationByTextEvent extends StationEvent{
+  final String text;
+  const StationByTextEvent(this.text);
 
   @override
-  List<Object?> get props => [this.code];
+  List<Object?> get props => [this.text];
 }
 
-class StationBranchByCodeEvent extends StationEvent{
-  final String code;
-  const StationBranchByCodeEvent(this.code);
+class StationBranchByTextEvent extends StationEvent{
+  final String text;
+  const StationBranchByTextEvent(this.text);
 
   @override
-  List<Object?> get props => [this.code];
+  List<Object?> get props => [this.text];
 }
 
 
@@ -81,6 +81,10 @@ class RemoveStationBranchFromFavoriteEvent extends StationEvent{
 
 class AllStationsBranchesEvent extends StationEvent{
   const AllStationsBranchesEvent();
+}
+
+class AllStationsEvent extends StationEvent{
+  const AllStationsEvent();
 }
 
 class AddPaymentTransaction extends StationEvent{

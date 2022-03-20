@@ -26,16 +26,20 @@ class Apis{
   //Companies
   static const String company = "Company";
   static const String allCompanies = "Company/AllCompanies";
-  static const String companyByCode = "Company/CompanyByCode";
+  static const String companyByText = "Company/CompaniesByText";
   static const String companiesByName = "Company/CompaniesByName";
   static const String allCompaniesBranches = "Company/AllCompaniesBranches";
   static const String companyBranches = "Company/CompanyBranches";
-  static const String companyBranchByCode = "Company/CompaniesBranchesByText";
+  static const String companyBranchByText = "Company/CompaniesBranchesByText";
   static const String companyBranchesByAddress = "Company/CompanyBranchesByAddress";
   static const String addCompanyToFavorite = "Company/AddToFavorite";
   static const String removeCompanyFromFavorite = "Company/RemoveFromFavorite";
   static const String favoriteCompaniesBranches = "Company/FavoriteCompaniesBranches";
   static const String frequentlyVisitedCompaniesBranches = "Company/FrequentlyVisitedCompaniesBranches";
+
+  static const String favoriteCompanies = "Company/FavoriteCompanies";
+  static const String frequentlyVisitedCompanies = "Company/FrequentlyVisitedCompanies";
+
   static const String addCompanyBranchToFavorite = "Company/AddBranchToFavorite";
   static const String removeCompanyBranchFromFavorite = "Company/RemoveBranchFromFavorite";
 

@@ -128,7 +128,8 @@
   "amountMustBeMoreThanZero": "Amount must be more than zero",
   "confirmAmountPlease": "Confirm amount please",
   "couldNotAddTransaction": "Could not process your transaction, Please try again",
-  "couldNotLoadTransaction": "Could not load your transactions, Please try again"
+  "couldNotLoadTransaction": "Could not load your transactions, Please try again",
+  "couldNotLoadNotifications": "Could not load notifications, Please try again"
 },
   "titles" : {
     "welcome": "Welcome"

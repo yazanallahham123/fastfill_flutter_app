@@ -35,6 +35,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../model/station/station.dart';
+
 class SearchPage extends StatefulWidget {
   static const route = "/search_page";
 
@@ -46,7 +48,7 @@ class SearchPage extends StatefulWidget {
   State<SearchPage> createState() => _SearchPageState();
 }
 
-List<StationBranch> listOfStations = [];
+List<Station> listOfStations = [];
 
 class _SearchPageState extends State<SearchPage> {
 
@@ -73,11 +75,13 @@ class _SearchPageState extends State<SearchPage> {
             listOfStations.clear();
           }
           else if (state is InitStationState) {
-            bloc.add(StationByCodeEvent(widget.searchText));
-          } else if (state is GotStationByCodeState)
+            bloc.add(StationByTextEvent(widget.searchText));
+          } else if (state is GotStationsByTextState)
             {
               listOfStations.clear();
-              listOfStations.add(state.stationBranch);
+              if (state.stations.companies != null) {
+                listOfStations.addAll(state.stations.companies!);
+              }
             }
         },
         bloc: bloc,
@@ -156,7 +160,7 @@ class _BuildUIState extends State<_BuildUI> {
                           icon: Icon(Icons.search),
                           onFieldSubmitted: (_) {
                             hideKeyboard(context);
-                            widget.bloc.add(StationByCodeEvent(searchController.text));
+                            widget.bloc.add(StationByTextEvent(searchController.text));
 
                           },
                           controller: searchController,
@@ -270,7 +274,7 @@ class _BuildUIState extends State<_BuildUI> {
           left: 0.0,
           child: InputDoneView(title: translate("buttons.search"), title2: translate("buttons.cancel"), onPressed: ()
           {
-          widget.bloc.add(StationByCodeEvent(searchController.text));
+          widget.bloc.add(StationByTextEvent(searchController.text));
           },));
     });
 
@@ -278,7 +282,7 @@ class _BuildUIState extends State<_BuildUI> {
   }
 
   search(){
-    widget.bloc.add(StationByCodeEvent(searchController.text));
+    widget.bloc.add(StationByTextEvent(searchController.text));
   }
 
   removeOverlay() {

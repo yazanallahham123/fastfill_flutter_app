@@ -122,7 +122,7 @@ class _BuildUI extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                       Expanded(child:
-                      Text((isArabic()) ? i.companyBranch!.arabicName! : i.companyBranch!.englishName! + " - " + i.companyBranch!.code!, style: TextStyle(fontWeight: FontWeight.bold, color: textColor2),),),
+                      Text((isArabic()) ? i.company!.arabicName! : i.company!.englishName! + " - " + i.company!.code!, style: TextStyle(fontWeight: FontWeight.bold, color: textColor2),),),
 
                       Text(formatter.format(i.amount!-i.fastfill!)+' '+translate("labels.sdg"), style: TextStyle(color: Colors.white),),
                     ],), padding: EdgeInsetsDirectional.fromSTEB(20, 0, 0, 0)),),
@@ -141,7 +141,7 @@ class _BuildUI extends StatelessWidget {
                   ],)
                 ],), onTap: () {
                       hideKeyboard(context);
-                      PaymentResultBody prb = PaymentResultBody(date: DateFormat('yyyy-MM-dd - hh:mm a').format(DateTime.parse(i.date!)), stationName: (isArabic()) ? i.companyBranch!.arabicName! : i.companyBranch!.englishName!, fuelTypeId: i.fuelTypeId!, amount: i.amount!, value: i.fastfill!, status: i.status!, fromList: true);
+                      PaymentResultBody prb = PaymentResultBody(date: DateFormat('yyyy-MM-dd - hh:mm a').format(DateTime.parse(i.date!)), stationName: (isArabic()) ? i.company!.arabicName! : i.company!.englishName!, fuelTypeId: i.fuelTypeId!, amount: i.amount!, value: i.fastfill!, status: i.status!, fromList: true);
                       Navigator.pushNamed(context, PaymentResultPage.route, arguments: prb);
                     },)
 

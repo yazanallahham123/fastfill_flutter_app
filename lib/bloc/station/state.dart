@@ -6,6 +6,8 @@ import 'package:fastfill/model/station/station_branch.dart';
 import 'package:fastfill/model/station/station_branches_with_pagination.dart';
 
 import '../../model/station/payment_transaction_result.dart';
+import '../../model/station/station.dart';
+import '../../model/station/stations_with_pagination.dart';
 
 abstract class StationState extends Equatable{
 
@@ -38,7 +40,7 @@ class ErrorStationState extends StationState{
 }
 
 class GotFrequentlyVisitedStationsState extends StationState{
-  final StationBranchesWithPagination frequentlyVisitedStations;
+  final StationsWithPagination frequentlyVisitedStations;
 
   const GotFrequentlyVisitedStationsState(this.frequentlyVisitedStations);
 
@@ -47,7 +49,7 @@ class GotFrequentlyVisitedStationsState extends StationState{
 }
 
 class GotFavoriteStationsState extends StationState{
-  final StationBranchesWithPagination favoriteStations;
+  final StationsWithPagination favoriteStations;
 
   const GotFavoriteStationsState(this.favoriteStations);
 
@@ -55,14 +57,15 @@ class GotFavoriteStationsState extends StationState{
   List<Object?> get props => [this.favoriteStations];
 }
 
-class GotStationByCodeState extends StationState{
-  final StationBranch stationBranch;
+class GotStationsByTextState extends StationState{
+  final StationsWithPagination stations;
 
-  const GotStationByCodeState(this.stationBranch);
+  const GotStationsByTextState(this.stations);
 
   @override
-  List<Object?> get props => [this.stationBranch];
+  List<Object?> get props => [this.stations];
 }
+
 
 class AddedStationToFavorite extends StationState{
   final int stationId;
@@ -119,10 +122,10 @@ class GotFavoriteStationsBranchesState extends StationState{
   List<Object?> get props => [this.favoriteStationsBranches];
 }
 
-class GotStationBranchByCodeState extends StationState{
+class GotStationBranchByTextState extends StationState{
   final StationBranchesWithPagination stationsBranches;
 
-  const GotStationBranchByCodeState(this.stationsBranches);
+  const GotStationBranchByTextState(this.stationsBranches);
 
   @override
   List<Object?> get props => [this.stationsBranches];
@@ -137,6 +140,15 @@ class GotAllStationsBranchesState extends StationState{
   List<Object?> get props => [this.stationsBranches];
 }
 
+class GotAllStationsState extends StationState{
+  final StationsWithPagination stations;
+
+  const GotAllStationsState(this.stations);
+
+  @override
+  List<Object?> get props => [this.stations];
+}
+
 class AddingRemovingStationBranchToFavorite extends StationState{
   final int stationBranchId;
 
@@ -144,6 +156,16 @@ class AddingRemovingStationBranchToFavorite extends StationState{
 
   @override
   List<Object?> get props => [this.stationBranchId];
+}
+
+
+class AddingRemovingStationToFavorite extends StationState{
+  final int stationId;
+
+  const AddingRemovingStationToFavorite(this.stationId);
+
+  @override
+  List<Object?> get props => [this.stationId];
 }
 
 class AddedPaymentTransaction extends StationState{

@@ -32,7 +32,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         if (e.response != null) {
           if (e.response!.statusCode == 400 || e.response!.statusCode == 404)
             emit(ErrorUserState(
-                translate("messages.phoneNumberOrPasswordIncorrect")));
+                translate("messages.couldNotGetNotifications")));
           else {
             print("Error" + e.toString());
             emit(ErrorUserState(dioErrorMessageAdapter(e)));

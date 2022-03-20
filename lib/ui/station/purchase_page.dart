@@ -40,6 +40,7 @@ import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:keyboard_actions/keyboard_actions_config.dart';
 
 import '../../model/payment/payment_result_body.dart';
+import '../../model/station/station.dart';
 import '../../model/user/user.dart';
 import '../../utils/misc.dart';
 
@@ -49,13 +50,13 @@ enum FuelType {Benzine, Gasoline}
 class PurchasePage extends StatefulWidget {
   static const route = "/purchase_page";
 
-  final StationBranch stationBranch;
+  final Station station;
 
-  const PurchasePage({Key? key, required this.stationBranch})
+  const PurchasePage({Key? key, required this.station})
       : super(key: key);
 
   @override
-  State<PurchasePage> createState() => _PurchasePage(this.stationBranch);
+  State<PurchasePage> createState() => _PurchasePage(this.station);
 }
 
 bool isAddedToFavorite = false;
@@ -63,9 +64,9 @@ PaymentResultBody? prb = null;
 
 class _PurchasePage extends State<PurchasePage> {
 
-  final StationBranch stationBranch;
-  _PurchasePage(this.stationBranch){
-    isAddedToFavorite = this.stationBranch.isFavorite ?? false;
+  final Station station;
+  _PurchasePage(this.station){
+    isAddedToFavorite = this.station.isFavorite ?? false;
   }
 
   @override
@@ -87,19 +88,18 @@ class _PurchasePage extends State<PurchasePage> {
               if (mounted) {
                 setState(() {
                   isAddedToFavorite = true;
-                  StationBranch sb = StationBranch(id: stationBranch.id,
-                  arabicName: stationBranch.arabicName,
-                    englishName:  stationBranch.englishName,
-                    arabicAddress: stationBranch.arabicAddress,
-                    englishAddress: stationBranch.englishAddress,
-                    code: stationBranch.code,
-                    companyId: stationBranch.companyId,
-                    longitude: stationBranch.longitude,
-                    latitude: stationBranch.latitude,
+                  Station s = Station(id: station.id,
+                  arabicName: station.arabicName,
+                    englishName:  station.englishName,
+                    arabicAddress: station.arabicAddress,
+                    englishAddress: station.englishAddress,
+                    code: station.code,
+                    longitude: station.longitude,
+                    latitude: station.latitude,
                       isFavorite: isAddedToFavorite
                   );
 
-                  addRemoveFavoriteStreamController.sink.add(sb);
+                  addRemoveFavoriteStreamController.sink.add(s);
 
                 });
               }
@@ -110,19 +110,18 @@ class _PurchasePage extends State<PurchasePage> {
               if (mounted) {
                 setState(() {
                   isAddedToFavorite = false;
-                  StationBranch sb = StationBranch(id: stationBranch.id,
-                      arabicName: stationBranch.arabicName,
-                      englishName:  stationBranch.englishName,
-                      arabicAddress: stationBranch.arabicAddress,
-                      englishAddress: stationBranch.englishAddress,
-                      code: stationBranch.code,
-                      companyId: stationBranch.companyId,
-                      longitude: stationBranch.longitude,
-                      latitude: stationBranch.latitude,
+                  Station s = Station(id: station.id,
+                      arabicName: station.arabicName,
+                      englishName:  station.englishName,
+                      arabicAddress: station.arabicAddress,
+                      englishAddress: station.englishAddress,
+                      code: station.code,
+                      longitude: station.longitude,
+                      latitude: station.latitude,
                       isFavorite: isAddedToFavorite
                   );
 
-                  addRemoveFavoriteStreamController.sink.add(sb);
+                  addRemoveFavoriteStreamController.sink.add(s);
                 });
               }
 
@@ -138,7 +137,7 @@ class _PurchasePage extends State<PurchasePage> {
         child: BlocBuilder<StationBloc, StationState>(
             bloc: bloc,
             builder: (context, StationState state) {
-              return BuildUI(bloc: bloc, state: state, stationBranch: stationBranch,);
+              return BuildUI(bloc: bloc, state: state, station: station,);
             }));
   }
 }
@@ -146,13 +145,13 @@ class _PurchasePage extends State<PurchasePage> {
 class BuildUI extends StatefulWidget {
   final StationBloc bloc;
   final StationState state;
-  final StationBranch stationBranch;
+  final Station station;
 
-  const BuildUI({Key? key, required this.bloc, required this.state, required this.stationBranch})
+  const BuildUI({Key? key, required this.bloc, required this.state, required this.station})
       : super(key: key);
 
   @override
-  State<BuildUI> createState() => _BuildUI(this.bloc, this.state, this.stationBranch);
+  State<BuildUI> createState() => _BuildUI(this.bloc, this.state, this.station);
 }
 
 
@@ -160,11 +159,11 @@ class BuildUI extends StatefulWidget {
 class _BuildUI extends State<BuildUI> {
   final StationBloc bloc;
   final StationState state;
-  final StationBranch stationBranch;
+  final Station station;
   final amountNode = FocusNode();
   final confirmAmountNode = FocusNode();
 
-  _BuildUI(this.bloc,this.state,this.stationBranch);
+  _BuildUI(this.bloc,this.state,this.station);
 
   final amountController = TextEditingController();
   final confirmAmountController = TextEditingController();
@@ -214,19 +213,19 @@ class _BuildUI extends State<BuildUI> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                    Padding(child: Text((isArabic()) ? stationBranch.arabicName! : stationBranch.englishName!, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),), padding:
+                    Padding(child: Text((isArabic()) ? station.arabicName! : station.englishName!, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),), padding:
                     EdgeInsetsDirectional.only(
                         start: SizeConfig().w(40),
                         end: SizeConfig().w(40),
                         top: SizeConfig().w(20))
                       ,),
-                    Padding(child: Text(stationBranch.code!, style: TextStyle(fontSize: 16),), padding:
+                    Padding(child: Text(station.code!, style: TextStyle(fontSize: 16),), padding:
                     EdgeInsetsDirectional.only(
                       start: SizeConfig().w(40),
                       end: SizeConfig().w(40),
                     )
                       ,),
-                    Padding(child: Text((isArabic()) ? stationBranch.arabicAddress! : stationBranch.englishAddress!, style: TextStyle(fontSize: 16),), padding:
+                    Padding(child: Text((isArabic()) ? station.arabicAddress! : station.englishAddress!, style: TextStyle(fontSize: 16),), padding:
                     EdgeInsetsDirectional.only(
                       start: SizeConfig().w(40),
                       end: SizeConfig().w(40),
@@ -428,9 +427,9 @@ class _BuildUI extends State<BuildUI> {
           prb = PaymentResultBody(
               date: DateFormat('yyyy-MM-dd - hh:mm a').format(DateTime.now()),
               stationName: (isArabic())
-                  ? widget.stationBranch.arabicName!
+                  ? widget.station.arabicName!
                   : widget
-                  .stationBranch.englishName!,
+                  .station.englishName!,
               status: true,
               fuelTypeId: (_fuelTypeValue == FuelType.Gasoline) ? 1 : 2,
               amount: (double.tryParse(amountController.text.replaceAll(",", "")) ?? 0.0),
@@ -447,8 +446,10 @@ class _BuildUI extends State<BuildUI> {
             fuelTypeId: (_fuelTypeValue == FuelType.Gasoline) ? 1 : 2,
             status: true,
             date: DateFormat('yyyy-MM-dd hh:mm a').format(DateTime.now()),
-            companyBranchId: widget.stationBranch.id
+            companyId: widget.station.id
           );
+
+
 
           bloc.add(AddPaymentTransaction(paymentTransactionBody));
         }

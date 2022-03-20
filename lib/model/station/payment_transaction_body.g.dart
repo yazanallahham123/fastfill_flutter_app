@@ -11,7 +11,7 @@ PaymentTransactionBody _$PaymentTransactionBodyFromJson(
     PaymentTransactionBody(
       userId: json['userId'] as int?,
       date: json['date'] as String?,
-      companyBranchId: json['companyBranchId'] as int?,
+      companyId: json['companyId'] as int?,
       fuelTypeId: json['fuelTypeId'] as int?,
       amount: (json['amount'] as num?)?.toDouble(),
       fastfill: (json['fastfill'] as num?)?.toDouble(),
@@ -23,7 +23,7 @@ Map<String, dynamic> _$PaymentTransactionBodyToJson(
     <String, dynamic>{
       'userId': instance.userId,
       'date': instance.date,
-      'companyBranchId': instance.companyBranchId,
+      'companyId': instance.companyId,
       'fuelTypeId': instance.fuelTypeId,
       'amount': instance.amount,
       'fastfill': instance.fastfill,
