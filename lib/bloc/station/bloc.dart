@@ -19,14 +19,36 @@ class StationBloc extends Bloc<StationEvent, StationState> {
        emit(InitStationState());
      });
 
-    on<GetPaymentTransactions>((event, emit) async {
+    on<GetUserBalanceInStationEvent>((event, emit) async {
       try {
         emit(LoadingStationState());
         var token = await LocalData().getBearerTokenValue();
         if (token != null) {
-          await mClient.getPaymentTransactions(token, 1, 999999).then((v) {
+          await mClient.getUserBalance(token).then((v) {
             if (v != null)
-              emit(GotPaymentTransactions(v));
+              emit(GotUserBalanceInStationState(v));
+          });
+        }
+        else
+          emit(ErrorStationState(translate("messages.couldNotGetUserBalance")));
+      } on DioError catch (e) {
+        if (e.response!.statusCode == 400 || e.response!.statusCode == 404)
+          emit(ErrorStationState(translate("messages.couldNotGetUserBalance")));
+        else {
+          print("Error" + e.toString());
+          emit(ErrorStationState(dioErrorMessageAdapter(e)));
+        }
+      }
+    });
+
+    on<GetPaymentTransactionsEvent>((event, emit) async {
+      try {
+        emit(LoadingStationState());
+        var token = await LocalData().getBearerTokenValue();
+        if (token != null) {
+          await mClient.getPaymentTransactions(token, event.page, 10).then((v) {
+            if (v != null)
+              emit(GotPaymentTransactionsState(v));
           });
         }
         else
@@ -41,15 +63,51 @@ class StationBloc extends Bloc<StationEvent, StationState> {
       }
     });
 
+
+    on<AddUserRefillTransactionEvent>((event, emit) async {
+      try {
+        emit(LoadingStationState());
+        var token = await LocalData().getBearerTokenValue();
+        if (token != null) {
+          await mClient.addUserRefillTransaction(token, event.userRefillTransactionDto).then((v) {
+            if (v != null)
+              emit(AddedUserRefillTransactionState(v, event.syberPayGetUrlResponseBody));
+          });
+        }
+        else
+          emit(ErrorStationState(translate("messages.couldAddUserRefillTransaction")));
+      } on DioError catch (e) {
+        if (e.response != null) {
+          if (e.response!.statusCode == 400 || e.response!.statusCode == 404)
+            emit(ErrorStationState(translate("messages.couldAddUserRefillTransaction")));
+          else {
+            print("Error" + e.toString());
+            emit(ErrorStationState(dioErrorMessageAdapter(e)));
+          }
+        }
+        else
+          emit(ErrorStationState(translate("messages.couldAddUserRefillTransaction")));
+      }
+    });
+
     on<AddPaymentTransaction>((event, emit) async {
       try {
         emit(LoadingStationState());
         var token = await LocalData().getBearerTokenValue();
         if (token != null) {
-          await mClient.addPaymentTransaction(token, event.paymentTransactionBody).then((v) {
-            if (v != null)
-              emit(AddedPaymentTransaction(v));
-          });
+          double balance = await mClient.getUserBalance(token);
+          double val = (event.paymentTransactionBody.amount!+event.paymentTransactionBody.fastfill!);
+          if (balance >= val) {
+            await mClient.addPaymentTransaction(
+                token, event.paymentTransactionBody).then((v) {
+              if (v != null)
+                emit(AddedPaymentTransaction(v, false));
+            });
+          }
+          else
+            {
+              emit(AddedPaymentTransaction(false, true));
+            }
         }
         else
           emit(ErrorStationState(translate("messages.couldNotAddTransaction")));
@@ -339,6 +397,32 @@ class StationBloc extends Bloc<StationEvent, StationState> {
           print("Error" + e.toString());
           emit(ErrorStationState(dioErrorMessageAdapter(e)));
         }
+      }
+    });
+
+    on<Station_GetSyberPayUrlEvent>((event, emit) async {
+      try {
+        emit(LoadingStationState());
+        var token = "eAGqwRPbYhFqCZOxywKS";
+        if (token != null) {
+          await mClient.syberPayGetUrl(token, event.syberPayGetUrlBody).then((v) {
+            if (v != null)
+              emit(Station_GotSyberPayUrlState(v));
+          });
+        }
+        else
+          emit(ErrorStationState(translate("messages.couldNotGetSyberPayUrl")));
+      } on DioError catch (e) {
+        if (e.response != null) {
+          if (e.response!.statusCode == 400 || e.response!.statusCode == 404)
+            emit(ErrorStationState(translate("messages.couldNotGetSyberPayUrl")));
+          else {
+            print("Error" + e.toString());
+            emit(ErrorStationState(dioErrorMessageAdapter(e)));
+          }
+        }
+        else
+          emit(ErrorStationState(translate("messages.couldNotGetSyberPayUrl")));
       }
     });
   }

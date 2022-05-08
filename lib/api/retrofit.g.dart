@@ -514,6 +514,164 @@ class _ApiClient implements ApiClient {
     return value;
   }
 
+  @override
+  Future<SyberPayGetUrlResponseBody> syberPayGetUrl(
+      token, syberPayGetUrlBody) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'Authorization': token};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    _data.addAll(syberPayGetUrlBody.toJson());
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<SyberPayGetUrlResponseBody>(
+            Options(method: 'POST', headers: _headers, extra: _extra)
+                .compose(_dio.options,
+                    'https://syberpay.sybertechnology.com/syberpay/getUrl',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = SyberPayGetUrlResponseBody.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<bool> addBankCard(token, addBankCardBody) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'Authorization': token};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    _data.addAll(addBankCardBody.toJson());
+    final _result = await _dio.fetch<bool>(_setStreamType<bool>(
+        Options(method: 'POST', headers: _headers, extra: _extra)
+            .compose(_dio.options, 'User/AddBankCard',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data!;
+    return value;
+  }
+
+  @override
+  Future<BankCardsWithPagination> getBankCards(token, page, pageSize) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'page': page,
+      r'pageSize': pageSize
+    };
+    final _headers = <String, dynamic>{r'Authorization': token};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<BankCardsWithPagination>(
+            Options(method: 'GET', headers: _headers, extra: _extra)
+                .compose(_dio.options, 'User/GetBankCards',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = BankCardsWithPagination.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<bool> deleteBankCard(token, id) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'Authorization': token};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<bool>(_setStreamType<bool>(
+        Options(method: 'DELETE', headers: _headers, extra: _extra)
+            .compose(_dio.options, 'User/DeleteBankCard/${id}',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data!;
+    return value;
+  }
+
+  @override
+  Future<bool> addUserRefillTransaction(token, userRefillTransactionDto) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'Authorization': token};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    _data.addAll(userRefillTransactionDto.toJson());
+    final _result = await _dio.fetch<bool>(_setStreamType<bool>(
+        Options(method: 'POST', headers: _headers, extra: _extra)
+            .compose(_dio.options, 'User/addUserRefillTransaction',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data!;
+    return value;
+  }
+
+  @override
+  Future<bool> updateUserLanguage(token, updateUserLanguageBody) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'Authorization': token};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    _data.addAll(updateUserLanguageBody.toJson());
+    final _result = await _dio.fetch<bool>(_setStreamType<bool>(
+        Options(method: 'PUT', headers: _headers, extra: _extra)
+            .compose(_dio.options, 'User/UpdateUserLanguage',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data!;
+    return value;
+  }
+
+  @override
+  Future<double> getUserBalance(token) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'Authorization': token};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<double>(_setStreamType<double>(
+        Options(method: 'GET', headers: _headers, extra: _extra)
+            .compose(_dio.options, 'User/GetUserBalance',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data!;
+    return value;
+  }
+
+  @override
+  Future<bool> clearUserNotifications(token) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'Authorization': token};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<bool>(_setStreamType<bool>(
+        Options(method: 'GET', headers: _headers, extra: _extra)
+            .compose(_dio.options, 'User/ClearNotifications',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data!;
+    return value;
+  }
+
+  @override
+  Future<SyberPayCheckStatusResponseBody> syberCheckStatus(
+      syberPayCheckStatusBody) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(syberPayCheckStatusBody.toJson());
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<SyberPayCheckStatusResponseBody>(Options(
+                method: 'POST', headers: _headers, extra: _extra)
+            .compose(_dio.options,
+                'https://syberpay.sybertechnology.com/syberpay/payment_status',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = SyberPayCheckStatusResponseBody.fromJson(_result.data!);
+    return value;
+  }
+
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&
         !(requestOptions.responseType == ResponseType.bytes ||

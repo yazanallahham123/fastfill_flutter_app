@@ -1,6 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:fastfill/model/otp/otp_validation_body.dart';
 import 'package:fastfill/model/station/payment_transaction_body.dart';
+import 'package:fastfill/model/syberPay/syber_pay_get_url_body.dart';
+
+import '../../model/syberPay/syber_pay_get_url_response_body.dart';
+import '../../model/user/user_refill_transaction_dto.dart';
 
 abstract class StationEvent extends Equatable{
 
@@ -95,8 +99,37 @@ class AddPaymentTransaction extends StationEvent{
   List<Object?> get props => [this.paymentTransactionBody];
 }
 
-class GetPaymentTransactions extends StationEvent{
-  const GetPaymentTransactions();
+class GetPaymentTransactionsEvent extends StationEvent{
+  final int page;
+
+  const GetPaymentTransactionsEvent(this.page);
+
+  @override
+  List<Object?> get props => [this.page];
 }
+
+class Station_GetSyberPayUrlEvent extends StationEvent {
+  final SyberPayGetUrlBody syberPayGetUrlBody;
+
+  const Station_GetSyberPayUrlEvent(this.syberPayGetUrlBody);
+
+  @override
+  List<Object?> get props => [this.syberPayGetUrlBody];
+}
+
+class AddUserRefillTransactionEvent extends StationEvent {
+  final UserRefillTransactionDto userRefillTransactionDto;
+  final SyberPayGetUrlResponseBody syberPayGetUrlResponseBody;
+
+  const AddUserRefillTransactionEvent(this.userRefillTransactionDto, this.syberPayGetUrlResponseBody);
+
+  @override
+  List<Object?> get props => [this.userRefillTransactionDto];
+}
+
+class GetUserBalanceInStationEvent extends StationEvent {
+  const GetUserBalanceInStationEvent();
+}
+
 
 

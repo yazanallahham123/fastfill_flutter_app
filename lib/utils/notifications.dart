@@ -21,55 +21,9 @@ class Notifications {
 
   static final Notifications _instance = Notifications._();
 
-  FirebaseMessaging _fcm = FirebaseMessaging.instance;
-
   Future<void> init(
       StreamController<NotificationBody> notificationStreamController) async {
-    NotificationSettings ns = await _fcm.getNotificationSettings();
 
-    if (ns.authorizationStatus != AuthorizationStatus.authorized)
-      {
-        ns = await _fcm.requestPermission(
-          alert: true,
-          announcement: true,
-          badge: true,
-          carPlay: true,
-          criticalAlert: true,
-          provisional: true,
-          sound: true
-        );
-      }
-
-    FirebaseMessaging.onBackgroundMessage((message) async {
-      var user = await LocalData().getCurrentUserValue();
-
-      print("notification background message: ${message.data}");
-      NotificationBody notificationBody = NotificationBody(
-          imageURL : message.data["imageURL"]?.toString() ?? "",
-          title : message.data["title"]?.toString() ?? "",
-          content : message.data["content"]?.toString() ?? "",
-          notes : message.data["notes"]?.toString() ?? "",
-          typeId : message.data["typeId"]?.toString() ?? "",
-          date : message.data["date"]?.toString() ?? "",
-          time : message.data["time"]?.toString() ?? "",
-          price: message.data["price"]?.toString() ?? "",
-          liters: message.data["liters"]?.toString() ?? "",
-          address: message.data["address"]?.toString() ?? "",
-          material: message.data["material"]?.toString() ?? "",
-          userId: (user.id != null) ? user.id : 0
-      );
-
-      if (user != null) {
-        if (user.id != null) {
-          if (user.id! > 0) {
-            var token = await LocalData().getBearerTokenValue();
-            if (token != null)
-              await mClient.addNotification(token, notificationBody);
-          }
-        }
-      }
-
-    });
 
     FirebaseMessaging.onMessage.listen((message) async {
       var user = await LocalData().getCurrentUserValue();
@@ -90,18 +44,21 @@ class Notifications {
       userId: (user.id != null) ? user.id : 0
       );
 
-      if (user != null) {
-        if (user.id != null) {
-          if (user.id! > 0) {
-            var token = await LocalData().getBearerTokenValue();
-            if (token != null)
-              await mClient.addNotification(token, notificationBody);
+      if ((message.data["typeId"].toString() != "3") && (message.data["typeId"].toString() != "4")) {
+        if (user != null) {
+          if (user.id != null) {
+            if (user.id! > 0) {
+              var token = await LocalData().getBearerTokenValue();
+              if (token != null)
+                await mClient.addNotification(token, notificationBody);
+            }
           }
         }
       }
 
       notificationStreamController.sink.add(notificationBody);
     });
+
 
     FirebaseMessaging.instance.getToken().then((firebaseToken) async {
       if (firebaseToken != null) {
@@ -112,6 +69,7 @@ class Notifications {
           if (user.id != null) {
             if (user.id! > 0) {
               var token = await LocalData().getBearerTokenValue();
+              await LocalData().setFTokenValue(firebaseToken);
               if (token != null)
                 print(await mClient.updateFirebaseToken(token, UpdateFirebaseTokenBody(firebaseToken: firebaseToken)));
 
@@ -119,6 +77,10 @@ class Notifications {
           }
         }
       }
+    });
+
+    await FirebaseMessaging.instance.getAPNSToken().then((x){
+      print("apns token: ${x}");
     });
 
     FirebaseMessaging.instance.onTokenRefresh.listen((firebaseToken) async {
@@ -130,6 +92,7 @@ class Notifications {
             if (user.id != null) {
               if (user.id! > 0) {
                   var token = await LocalData().getBearerTokenValue();
+                  await LocalData().setFTokenValue(firebaseToken);
                   if (token != null)
                     print(await mClient.updateFirebaseToken(token, UpdateFirebaseTokenBody(firebaseToken: firebaseToken)));
 

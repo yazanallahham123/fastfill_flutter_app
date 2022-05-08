@@ -14,6 +14,11 @@ import 'package:fastfill/model/station/payment_transaction_body.dart';
 import 'package:fastfill/model/station/payment_transactions_with_pagination.dart';
 import 'package:fastfill/model/station/station_branch.dart';
 import 'package:fastfill/model/station/station_branches_with_pagination.dart';
+import 'package:fastfill/model/syberPay/syber_pay_check_status_body.dart';
+import 'package:fastfill/model/syberPay/syber_pay_get_url_body.dart';
+import 'package:fastfill/model/syberPay/syber_pay_get_url_response_body.dart';
+import 'package:fastfill/model/user/add_bank_card_body.dart';
+import 'package:fastfill/model/user/bank_cards_with_pagination.dart';
 import 'package:fastfill/model/user/reset_password_body.dart';
 import 'package:fastfill/model/user/signedup_user.dart';
 import 'package:fastfill/model/user/signup_body.dart';
@@ -21,11 +26,15 @@ import 'package:fastfill/model/user/update_firebase_token_body.dart';
 import 'package:fastfill/model/user/update_profile_body.dart';
 import 'package:fastfill/model/user/upload_result.dart';
 import 'package:fastfill/model/user/user.dart';
+import 'package:fastfill/model/user/user_refill_transaction.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart' hide Headers;
 import '../model/station/add_remove_station_branch_favorite_body.dart';
 import '../model/station/stations_with_pagination.dart';
+import '../model/syberPay/syber_pay_check_status_response_body.dart';
+import '../model/user/update_user_language_body.dart';
+import '../model/user/user_refill_transaction_dto.dart';
 import 'apis.dart';
 import 'package:http_parser/http_parser.dart';
 part 'retrofit.g.dart';
@@ -137,5 +146,33 @@ abstract class ApiClient {
   @MultiPart()
   @Headers(<String, dynamic>{"Content-Type":"multi-part/form-data", "accept":"*/*"})
   Future<UploadResult> uploadProfilePhoto(@Header("Authorization") String token, @Part(contentType: "image/*", name: "file") File file);
+
+  //User
+  @POST(Apis.syberGetUrl)
+  Future<SyberPayGetUrlResponseBody> syberPayGetUrl(@Header("Authorization") String token, @Body() SyberPayGetUrlBody syberPayGetUrlBody);
+
+  @POST(Apis.addBankCard)
+  Future<bool> addBankCard(@Header("Authorization") String token, @Body() AddBankCardBody addBankCardBody);
+
+  @GET(Apis.getBankCards)
+  Future<BankCardsWithPagination> getBankCards(@Header("Authorization") String token,  @Query("page") int page, @Query("pageSize") int pageSize);
+
+  @DELETE(Apis.deleteBankCard)
+  Future<bool> deleteBankCard(@Header("Authorization") String token, @Path("id") int id);
+
+  @POST(Apis.addUserRefillTransaction)
+  Future<bool> addUserRefillTransaction(@Header("Authorization") String token, @Body() UserRefillTransactionDto userRefillTransactionDto);
+
+  @PUT(Apis.updateUserLanguage)
+  Future<bool> updateUserLanguage(@Header("Authorization") String token, @Body() UpdateUserLanguageBody updateUserLanguageBody);
+
+  @GET(Apis.getUserBalance)
+  Future<double> getUserBalance(@Header("Authorization") String token);
+
+  @GET(Apis.clearUserNotifications)
+  Future<bool> clearUserNotifications(@Header("Authorization") String token);
+
+  @POST(Apis.syberCheckStatus)
+  Future<SyberPayCheckStatusResponseBody> syberCheckStatus(@Body() SyberPayCheckStatusBody syberPayCheckStatusBody);
 
 }

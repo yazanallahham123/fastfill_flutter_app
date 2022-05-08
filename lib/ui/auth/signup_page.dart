@@ -25,6 +25,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:keyboard_actions/keyboard_actions_config.dart';
 
+import '../../main.dart';
 import 'otp_validation_page.dart';
 
 class SignupPage extends StatefulWidget {
@@ -202,11 +203,11 @@ class _BuildUIState extends State<_BuildUI> {
         confirmPassController.text.isNotEmpty) {
       if (!validateMobile2(phoneController.text))
         FocusScope.of(context).requestFocus(phoneNode);
-      else if (!isStrongPassword(passController.text))
+      else if (!validatePassword(passController.text))
         FocusScope.of(context).requestFocus(passNode);
       else if (!validateName(firstNameController.text))
         FocusScope.of(context).requestFocus(firstNameNode);
-      else if (!validateName(confirmPassController.text))
+      else if (!validatePassword(confirmPassController.text))
         FocusScope.of(context).requestFocus(confirmPassNode);
       else if (confirmPassController.text != passController.text)
         FocusScope.of(context).requestFocus(confirmPassNode);
@@ -299,13 +300,16 @@ class _BuildUIState extends State<_BuildUI> {
                 PhoneAuthCredential credential = PhoneAuthProvider.credential(
                     verificationId: verificationId, smsCode: smsCode);
                 auth.signInWithCredential(credential).then((value) {
+
+                  int languageId = (languageCode=="en") ? 1 : 2;
                   widget.userBloc.add(SuccessfulUserOTPVerificationEvent(
                       SignupBody(
                           firstName: firstNameController.text,
                           lastName: firstNameController.text,
                           username: pn,
                           mobileNumber: pn,
-                          password: passController.text),
+                          password: passController.text,
+                          language: languageId),
                       null));
                 }).catchError((e) {
                   widget.userBloc.add(ErrorUserOTPVerificationEvent(

@@ -252,3 +252,15 @@ TextStyle invisibleStyle() => TextStyle(
     fontFamily: isArabic() ? 'Poppins' : 'Poppins',
     fontSize: isArabic() ? height15 : height12,
     color: const Color(0x3d000000));
+
+TextStyle largeMediumPrimaryColor4() => TextStyle(
+    fontFamily: isArabic() ? 'Poppins' : 'Poppins',
+    fontSize: isArabic() ? height20 : height17,
+    color: textColor2,
+    fontWeight: FontWeight.w500);
+
+TextStyle smallCustomGreyColor6() => TextStyle(
+    fontFamily: isArabic() ? 'Poppins' : 'Poppins',
+    fontSize: isArabic() ? height16 : height12,
+    color: hintColor2,
+    fontWeight: FontWeight.w500);

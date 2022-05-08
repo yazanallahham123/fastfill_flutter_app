@@ -1,8 +1,12 @@
+import 'dart:convert';
 import 'dart:math';
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:fastfill/api/apis.dart';
 import 'package:fastfill/bloc/station/bloc.dart';
 import 'package:fastfill/bloc/station/event.dart';
 import 'package:fastfill/bloc/station/state.dart';
 import 'package:fastfill/common_widgets/app_widgets/custom_loading.dart';
+import 'package:fastfill/common_widgets/app_widgets/home_box_widget.dart';
 import 'package:fastfill/common_widgets/app_widgets/keyboard_done_widget.dart';
 import 'package:fastfill/common_widgets/app_widgets/station_widget.dart';
 import 'package:fastfill/common_widgets/buttons/custom_button.dart';
@@ -13,6 +17,7 @@ import 'package:fastfill/helper/size_config.dart';
 import 'package:fastfill/helper/toast.dart';
 import 'package:fastfill/model/station/station_branch.dart';
 import 'package:fastfill/model/user/user.dart';
+import 'package:fastfill/model/user/user_refill_transaction_dto.dart';
 import 'package:fastfill/streams/add_remove_favorite_stream.dart';
 import 'package:fastfill/streams/update_profile_stream.dart';
 import 'package:fastfill/ui/search/search_page.dart';
@@ -21,11 +26,20 @@ import 'package:fastfill/utils/local_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 
+import '../../bloc/user/event.dart';
 import '../../common_widgets/app_widgets/favorite_button.dart';
+import '../../common_widgets/app_widgets/new_station_widget.dart';
+import '../../helper/const_styles.dart';
+import '../../helper/font_styles.dart';
 import '../../model/station/station.dart';
+import '../../model/syberPay/syber_pay_get_url_body.dart';
 import '../../utils/misc.dart';
+import 'package:crypto/crypto.dart';
+
+import '../profile/top_up_page.dart';
 
 class HomeTabPage extends StatefulWidget {
   const HomeTabPage({Key? key}) : super(key: key);
@@ -40,6 +54,7 @@ List<Station> searchResult = [];
 List<Station> allStations = [];
 String searchText = "";
 String userName = "";
+double userBalance = 0.0;
 
 class _HomeTabPageState extends State<HomeTabPage> {
   @override
@@ -56,6 +71,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
     return BlocListener<StationBloc, StationState>(
         listener: (context, state) async {
           if (state is InitStationState) {
+            bloc.add(GetUserBalanceInStationEvent());
             bloc.add(FavoriteStationsEvent());
             bloc.add(FrequentlyVisitedStationsEvent());
             bloc.add(AllStationsEvent());
@@ -122,6 +138,108 @@ class _HomeTabPageState extends State<HomeTabPage> {
               });
             }
           }
+          else if (state is GotUserBalanceInStationState) {
+            if (mounted) {
+              setState(() {
+                userBalance = state.balance;
+              });
+            }
+          }
+          else if (state is AddedUserRefillTransactionState)
+            {
+              bool? result = false;
+              if (state.syberPayGetUrlResponseBody.paymentUrl != null) {
+                result = await Navigator.pushNamed(
+                    context, TopUpPage.route,
+                    arguments: state.syberPayGetUrlResponseBody
+                        .paymentUrl!) as bool?;
+
+              }
+              else
+                result = false;
+
+
+              if ((result??false))
+              {
+
+                Widget okButton = TextButton(
+                  child: Text(translate("buttons.ok"), style: TextStyle(color: Colors.black),),
+                  onPressed:  () {
+                    hideKeyboard(context);
+                    Navigator.pop(context);
+                  },
+                );
+
+
+                // set up the AlertDialog
+                AlertDialog alert = AlertDialog(
+                  title: Text(translate("labels.refillTitle")),
+                  content: Text(translate("messages.successRefillMessage")),
+                  actions: [
+                    okButton,
+                  ],
+                );
+
+                // show the dialog
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return alert;
+                  },
+                );
+
+              }
+              else
+              {
+                Widget okButton = TextButton(
+                  child: Text(translate("buttons.ok"), style: TextStyle(color: Colors.black),),
+                  onPressed:  () {
+                    hideKeyboard(context);
+                    Navigator.pop(context);
+                  },
+                );
+
+
+                // set up the AlertDialog
+                AlertDialog alert = AlertDialog(
+                  title: Text(translate("labels.refillTitle")),
+                  content: Text(translate("messages.unsuccessRefillMessage")),
+                  actions: [
+                    okButton,
+                  ],
+                );
+
+                // show the dialog
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return alert;
+                  },
+                );
+              }
+            }
+          else if (state is Station_GotSyberPayUrlState){
+            //pushToast(state.syberPayGetUrlResponseBody.paymentUrl!);
+
+            if (state.syberPayGetUrlResponseBody.responseCode != null)
+            {
+              if (state.syberPayGetUrlResponseBody.responseCode == 1)
+              {
+                User user = await  LocalData().getCurrentUserValue();
+
+                UserRefillTransactionDto userRefillTransactionDto = UserRefillTransactionDto(
+                transactionId: state.syberPayGetUrlResponseBody.transactionId,
+                date: DateTime.now().toString(),
+                userId: user.id, amount: state.syberPayGetUrlResponseBody.amount, status: false);
+                bloc.add(AddUserRefillTransactionEvent(userRefillTransactionDto, state.syberPayGetUrlResponseBody));
+              }
+              else
+                pushToast("messages.couldNotGetSyberPayUrl");
+            }
+            else
+              pushToast("messages.couldNotGetSyberPayUrl");
+
+          }
         },
         bloc: bloc,
         child: BlocBuilder(
@@ -153,6 +271,7 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
 
   final searchController = TextEditingController();
   final searchFocusNode = FocusNode();
+
 
   @override
   void initState() {
@@ -255,7 +374,18 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
     return Scaffold(
         resizeToAvoidBottomInset: true,
         backgroundColor: backgroundColor1,
-        body: SingleChildScrollView(
+        body:
+
+        RefreshIndicator(onRefresh: () async {
+      widget.bloc.add(InitStationEvent());
+    },
+    color: Colors.white,
+    backgroundColor: buttonColor1,
+    triggerMode: RefreshIndicatorTriggerMode.anywhere,
+    child:
+
+        SingleChildScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
             child: Column(
               children: [
                 Align(
@@ -273,7 +403,7 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
                           top: SizeConfig().h(10))),
                   alignment: AlignmentDirectional.topStart,
                 ),
-                Stack(
+                /*Stack(
                   children: [
                     (isArabic())
                         ? Transform(
@@ -293,10 +423,11 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
                               children: [
                                 Align(
                                   child: Padding(
-                                    child: Text(
+                                    child: AutoSizeText(
                                       userName,
+                                      maxLines: 1,
                                       style: TextStyle(
-                                          color: Colors.white,
+                                          color: Colors.black,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 20),
                                     ),
@@ -309,14 +440,14 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
                                 ),
                                 Align(
                                   child: Padding(
-                                    child: Text(
+                                    child: (widget.state is LoadingStationState) ? CustomLoading() : Text(
                                       translate("labels.balance") +
                                           " : " +
-                                          formatter.format(0) +
+                                          formatter.format(userBalance) +
                                           " " +
                                           translate("labels.sdg"),
                                       style: TextStyle(
-                                          color: Colors.white, fontSize: 20),
+                                          color: Colors.black, fontSize: 20),
                                     ),
                                     padding: EdgeInsetsDirectional.only(
                                         start: SizeConfig().w(50),
@@ -325,24 +456,37 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
                                   ),
                                   alignment: AlignmentDirectional.topStart,
                                 ),
-                                Align(
-                                  child: Padding(
-                                    child: CustomButton(
-                                      title: translate("buttons.fastfill"),
-                                      borderColor: Colors.white,
-                                      titleColor: Colors.white,
-                                      backColor: buttonColor1,
-                                      onTap: () {
-                                        hideKeyboard(context);
-                                      },
-                                    ),
-                                    padding: EdgeInsetsDirectional.only(
-                                        start: SizeConfig().w(120),
-                                        end: SizeConfig().w(120),
-                                        top: SizeConfig().h(40)),
+
+
+                                Padding(child:
+                                Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: radiusAll10,
+                                      border: Border.all(color: Colors.white, width: 0.5),
+                                      color: Colors.white30,),
+                                  margin: EdgeInsets.fromLTRB(SizeConfig().w(115),  0, SizeConfig().w(115), 0),
+                                  child:
+                                      Padding(child:
+                                      (widget.state is LoadingStationState) ? CustomLoading() : InkWell(child:
+
+                                      Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                  Image.asset(
+                                    'assets/syber_pay_icon.png',
+                                    width: SizeConfig().w(40),
+                                    height: SizeConfig().h(40),
                                   ),
-                                  alignment: AlignmentDirectional.centerStart,
-                                ),
+                                  Text(
+                                    translate("labels.refillAccount"),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                        color: Colors.black),
+                                  ),
+                                ],), onTap: (){
+                                        _topUp();
+                                      },),padding: EdgeInsetsDirectional.fromSTEB(0, 5, 0, 5)),),padding: EdgeInsetsDirectional.fromSTEB(0, 20, 0, 0),)
                               ],
                             ));
                           } else {
@@ -350,7 +494,8 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
                           }
                         })
                   ],
-                ),
+                ), */
+                HomeBoxWidget(stationBloc: widget.bloc, stationState: widget.state, userBalance: userBalance,),
                 (widget.state is LoadingStationState)
                     ? CustomLoading()
                     : Container(
@@ -370,6 +515,8 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
                               children: [
                                 Padding(
                                     child: CustomTextFieldWidget(
+                                      hintStyle: smallCustomGreyColor6(),
+                                      style: largeMediumPrimaryColor4(),
                                       icon: Icon(Icons.search),
                                       focusNode: searchFocusNode,
                                       controller: searchController,
@@ -415,7 +562,7 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
                                             ? Column(
                                                 children: searchResult
                                                     .map((i) =>
-                                                        StationWidget(
+                                                        NewStationWidget(
                                                             station: i,
                                                             stationBloc:
                                                                 widget.bloc,
@@ -465,7 +612,7 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
                                 (favoriteStations.length > 0)
                                     ? Column(
                                         children: favoriteStations
-                                            .map((i) => StationWidget(
+                                            .map((i) => NewStationWidget(
                                                   station: i,
                                                   stationBloc: widget.bloc,
                                                   stationState: widget.state,
@@ -533,7 +680,7 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
                         ),
                       )
               ],
-            )));
+            ))));
   }
 
   @override
@@ -542,6 +689,99 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
       setState(() {
         hideKeyboard(context);
       });
+    }
+  }
+
+
+  _topUp()
+  {
+    final amountToRefillController = TextEditingController();
+    final amountToRefillFocusNode = FocusNode();
+
+    Widget cancelButton = TextButton(
+      child: Text(translate("buttons.cancel"), style: TextStyle(color: Colors.black),),
+      onPressed:  () {
+        hideKeyboard(context);
+        Navigator.pop(context);
+      },
+    );
+
+    Widget okButton = TextButton(
+      child: Text(translate("buttons.ok"), style: TextStyle(color: Colors.black),),
+      onPressed:  () async {
+        hideKeyboard(context);
+        Navigator.pop(context);
+        await calcHashAndGetSyberPayUrl(double.parse(amountToRefillController.text));
+      },
+    );
+
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text(translate("labels.refillPopupTitle")),
+      content: Padding(
+          child: CustomTextFieldWidget(
+            hintStyle: smallCustomGreyColor6(),
+            style: largeMediumPrimaryColor4(),
+            focusNode: amountToRefillFocusNode,
+            controller: amountToRefillController,
+            hintText:
+            translate("labels.amount"),
+            textInputType: TextInputType.numberWithOptions(signed: false, decimal: true),
+            textInputAction: TextInputAction.done,
+            onFieldSubmitted: (_) async {
+              hideKeyboard(context);
+              if (amountToRefillController.text.trim() != "")
+                await calcHashAndGetSyberPayUrl(double.parse(amountToRefillController.text));
+            },
+          ),
+          padding: EdgeInsetsDirectional.only(
+            start: SizeConfig().w(30),
+            end: SizeConfig().w(30),
+            top: SizeConfig().h(15),
+            bottom: SizeConfig().h(0),)),
+      actions: [
+        okButton,
+        cancelButton
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+
+
+  }
+
+  calcHashAndGetSyberPayUrl(double topUpAmount)
+  async {
+    if (topUpAmount > 0) {
+      User u = await LocalData().getCurrentUserValue();
+      String key = r"f@$tf!llK3y";
+      String salt = r"f@$tf!ll$@lt";
+      String applicationId = r'f@$tf!llApp';//"0000000361";
+      String serviceId = r"f@$tf!ll267";
+      String amount = topUpAmount.toString();
+      String currency = "SDG";
+      String customerRef = u.firstName!;
+      String all = key + "|" + applicationId + "|" + serviceId + "|" + amount +
+          "|" + currency + "|" + customerRef + "|" + salt;
+      var AllInBytes = utf8.encode(all);
+      String value = sha256.convert(AllInBytes).toString();
+
+      SyberPayGetUrlBody spgub = SyberPayGetUrlBody(
+          applicationId: applicationId,
+          serviceId: serviceId,
+          amount: topUpAmount,
+          currency: currency,
+          customerRef: customerRef,
+          hash: value);
+
+      widget.bloc.add(Station_GetSyberPayUrlEvent(spgub));
     }
   }
 

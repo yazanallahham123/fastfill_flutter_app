@@ -1,5 +1,7 @@
 {"labels" : {
-"loading" : "Loading",
+  "previousTransaction": "Previous Transaction",
+  "exit": "Exit",
+  "loading" : "Loading",
   "select" : "Select",
   "note":  "Note",
   "phoneNumber" : "Phone Number",
@@ -66,7 +68,18 @@
   "noSearchResult": "Nothing matches your search criteria",
   "newPassword": "New password",
   "confirmNewPassword": "Confirm new password",
-  "logoutAlertTitle": "Logout"
+  "logoutAlertTitle": "Logout",
+  "syberPay": "Syber Pay",
+  "cards": "Cards",
+  "bankName": "Bank name:",
+  "cardNumber": "Card number:",
+  "refillTitle": "Refill result",
+  "refillAccount": "Refill account",
+  "refillPopupTitle": "Please enter amount to refill",
+  "accountRefill": "Account refill",
+  "noEnoughBalance": "Not enough balance, Please refill your account and try again",
+  "noBalance": "Not enough balance",
+  "failAccountRefill": "Failed account refill"
 },
 "buttons" : {
   "search": "Search",
@@ -90,7 +103,9 @@
   "validate": "Validate",
   "back": "Back",
   "yes": "Yes",
-  "no": "No"
+  "no": "No",
+  "topUp": "Top Up",
+  "add": "+ Add card"
 },
 "messages" : {
   "couldNotUploadProfilePhoto": "Could not upload profile photo",
@@ -129,7 +144,19 @@
   "confirmAmountPlease": "Confirm amount please",
   "couldNotAddTransaction": "Could not process your transaction, Please try again",
   "couldNotLoadTransaction": "Could not load your transactions, Please try again",
-  "couldNotLoadNotifications": "Could not load notifications, Please try again"
+  "couldNotLoadNotifications": "Could not load notifications, Please try again",
+  "couldNotGetSyberPayUrl": "Could not get SyberPay Url",
+  "bankCardNumberIsCopied": "Bank card number copied to clipboard",
+  "successRefillMessage": "Refill is being processed please wait confirmation or refresh balance page",
+  "unsuccessRefillMessage": "Could not refill account!",
+  "couldNotGetBankCards": "Could not get bank cards",
+  "couldNotAddBankCard": "Could not add bank card",
+  "couldNotDeleteBankCard": "Could not delete bank card",
+  "couldAddUserRefillTransaction": "Could not add user refill transaction",
+  "minimumPaymentAmount": "Minimum allowed payment amount must be 200 SDG and more.",
+  "couldNotClearUserNotifications": "Could not clear user notifications",
+  "couldNotUpdateUserLanguage": "Could not update user language",
+  "exit": "Are you sure want to exit?"
 },
   "titles" : {
     "welcome": "Welcome"

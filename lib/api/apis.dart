@@ -43,5 +43,15 @@ class Apis{
   static const String addCompanyBranchToFavorite = "Company/AddBranchToFavorite";
   static const String removeCompanyBranchFromFavorite = "Company/RemoveBranchFromFavorite";
 
+  static const String syberGetUrl = "https://syberpay.sybertechnology.com/syberpay/getUrl";
+  static const String syberCheckStatus = "https://syberpay.sybertechnology.com/syberpay/payment_status";
 
+  static const String getBankCards = "User/GetBankCards";
+  static const String addBankCard = "User/AddBankCard";
+  static const String deleteBankCard = "User/DeleteBankCard/{id}";
+  static const String addUserRefillTransaction = "User/addUserRefillTransaction";
+
+  static const String updateUserLanguage = "User/UpdateUserLanguage";
+  static const String getUserBalance = "User/GetUserBalance";
+  static const String clearUserNotifications = "User/ClearNotifications";
 }

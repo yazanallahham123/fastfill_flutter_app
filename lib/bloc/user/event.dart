@@ -2,9 +2,13 @@ import 'dart:io';
 
 import 'package:equatable/equatable.dart';
 import 'package:fastfill/model/login/login_body.dart';
+import 'package:fastfill/model/user/add_bank_card_body.dart';
 import 'package:fastfill/model/user/reset_password_body.dart';
 import 'package:fastfill/model/user/signup_body.dart';
 import 'package:fastfill/model/user/update_profile_body.dart';
+import 'package:fastfill/model/user/user_refill_transaction_dto.dart';
+
+import '../../model/syberPay/syber_pay_get_url_body.dart';
 
 abstract class UserEvent extends Equatable{
 
@@ -68,7 +72,11 @@ class UpdateProfileEvent extends UserEvent{
 }
 
 class GetNotificationsEvent extends UserEvent{
-  const GetNotificationsEvent();
+  final int page;
+  const GetNotificationsEvent(this.page);
+
+  @override
+  List<Object?> get props => [this.page];
 }
 
 class UploadProfileImageEvent extends UserEvent{
@@ -78,5 +86,55 @@ class UploadProfileImageEvent extends UserEvent{
 
   @override
   List<Object?> get props => [this.imageFile];
+}
+
+class GetSyberPayUrlEvent extends UserEvent {
+  final SyberPayGetUrlBody syberPayGetUrlBody;
+
+  const GetSyberPayUrlEvent(this.syberPayGetUrlBody);
+
+  @override
+  List<Object?> get props => [this.syberPayGetUrlBody];
+}
+
+
+
+class GetBankCardsEvent extends UserEvent {
+  const GetBankCardsEvent();
+}
+
+class AddBankCardEvent extends UserEvent {
+  final AddBankCardBody addBankCardBody;
+
+  const AddBankCardEvent(this.addBankCardBody);
+
+  @override
+  List<Object?> get props => [this.addBankCardBody];
+}
+
+class DeleteBankCardEvent extends UserEvent {
+  final int bankCardId;
+  const DeleteBankCardEvent(this.bankCardId);
+
+  @override
+  List<Object?> get props => [this.bankCardId];
+
+}
+
+class GetUserBalanceEvent extends UserEvent {
+  const GetUserBalanceEvent();
+}
+
+class UpdateUserLanguageEvent extends UserEvent {
+  final int languageId;
+
+  const UpdateUserLanguageEvent(this.languageId);
+
+  @override
+  List<Object?> get props => [this.languageId];
+}
+
+class ClearUserNotificationsEvent extends UserEvent {
+  const ClearUserNotificationsEvent();
 }
 

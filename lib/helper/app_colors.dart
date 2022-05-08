@@ -6,6 +6,7 @@ const Color notActiveTabColor = Color(0xff4C4C4C);
 const Color backgroundColor2 = Color(0xff1f1f21);
 const Color backgroundColor1 = Color(0xff3a3a3f);
 const Color backgroundColor3 = Color(0xff4b4b50);
+const Color backgroundColor4 = Color(0xff353535);
 
 const Color hintColor2 = Color(0xffa5a5a7);
 const Color textColor2 = Color(0xffa5a5a7);

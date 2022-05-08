@@ -7,8 +7,9 @@ part 'login_body.g.dart';
 class LoginBody extends Equatable {
   final String? password;
   final String? mobileNumber;
+  final int? language;
 
-  const LoginBody({this.password, this.mobileNumber});
+  const LoginBody({this.password, this.mobileNumber, this.language});
 
   factory LoginBody.fromJson(Map<String, dynamic> json) =>
       _$LoginBodyFromJson(json);
@@ -17,5 +18,5 @@ class LoginBody extends Equatable {
 
   @override
   List<Object?> get props =>
-      [this.password, this.mobileNumber];
+      [this.password, this.mobileNumber, this.language];
 }

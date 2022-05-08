@@ -1,4 +1,6 @@
 {"labels" : {
+  "previousTransaction": "عملية سابقة",
+  "exit": "اغلاق التطبيق",
   "loading" : "تحميل",
   "select" : "اختيار",
   "note":  "ملاحظات",
@@ -66,7 +68,18 @@
   "noSearchResult": "لا يوجد آي نتائج للبحث",
   "newPassword": "كلمة المرور الجديدة",
   "confirmNewPassword": "تآكيد كلمة المرور الجديدة",
-  "logoutAlertTitle": "تسجيل خروج"
+  "logoutAlertTitle": "تسجيل خروج",
+  "syberPay": "سايبر بي",
+  "cards": "البطاقات البنكية",
+  "bankName": "اسم البنك:",
+  "cardNumber": "رقم البطاقة:",
+  "refillTitle": "شحن المحفظة",
+  "refillAccount": "شحن الرصيد",
+  "refillPopupTitle": "يرجى ادخال القيمة المراد شحنها في المحفظة",
+  "accountRefill": "عملية شحن رصيد",
+  "noEnoughBalance": "الرصيد غير كافي يرجى اعادة شحن الرصيد",
+  "noBalance": "الرصيد غير كافي",
+  "failAccountRefill": "عملية شحن خطآ"
 },
   "buttons" : {
     "search": "بحث",
@@ -90,7 +103,9 @@
     "validate": "تحقق",
     "back": "عودة",
     "yes": "نعم",
-    "no": "لا"
+    "no": "لا",
+    "topUp": "ملى المحفظة",
+    "add": "+ اضافة بطاقة"
   },
   "messages" : {
     "couldNotUploadProfilePhoto": "خطآ عند رفع الصورة",
@@ -128,7 +143,19 @@
     "amountMustBeMoreThanZero": "الكمية يجب ان تكون آكبر من صفر",
     "confirmAmountPlease": "يرجى مطابقة الكمية",
     "couldNotAddTransaction": "لم تتم عملية التحميل بنجاح، يرجى اعادة المحاولة",
-    "couldNotLoadNotifications": "لم يتم تحميل الاشعارات"
+    "couldNotLoadNotifications": "لم يتم تحميل الاشعارات",
+    "couldNotGetSyberPayUrl": "لم استطع الحصول على رابط الدفع من سايبر بي",
+    "bankCardNumberIsCopied": "تم نسخ رقم البطاقة",
+    "successRefillMessage": "جاري اتمام عملية الشحن يرجى انتظار رسالة التآكيد او تحديث نافذة الرصيد من خلال السحب و الافلات",
+    "unsuccessRefillMessage": "لم استطع ملى المحفطة!",
+    "couldNotGetBankCards": "لم استطع تحميل بطاقات البنك",
+    "couldNotAddBankCard": "لم استطع اضافة بطاقة البنك",
+    "couldNotDeleteBankCard": "لم استطع حذف بطاقة البنك",
+    "couldAddUserRefillTransaction": "لم استطع اضافة دفعة في المحفظة",
+    "minimumPaymentAmount": "اقل قيمة يمكن ادخالها هي ٢٠٠ جنيه او اكثر",
+    "couldNotClearUserNotifications": "لم استطع مسح الاشعارات",
+    "couldNotUpdateUserLanguage": "لم استطع تحديث لغة التطبيق",
+    "exit": "هل انت متآكد من اغلاق التطبيق؟"
   },
   "titles" : {
     "welcome": "اهلا و سهلاً"

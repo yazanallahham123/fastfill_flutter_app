@@ -17,6 +17,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 
+import '../../common_widgets/app_widgets/account_refill_notification_widget.dart';
+import '../../common_widgets/app_widgets/normal_notification_widget.dart';
 import '../../utils/misc.dart';
 
 class NotificationsTabPage extends StatefulWidget {
@@ -42,7 +44,7 @@ class _NotificationsTabPageState extends State<NotificationsTabPage> {
     return BlocListener<UserBloc, UserState>(
         listener: (context, state) async {
           if (state is InitUserState)
-            bloc.add(GetNotificationsEvent());
+            bloc.add(GetNotificationsEvent(1));
             else
           if (state is ErrorUserState)
             pushToast(state.error);
@@ -87,7 +89,18 @@ class _BuildUIState extends State<_BuildUI> {
     return Scaffold(
         resizeToAvoidBottomInset: true,
         backgroundColor: backgroundColor1,
-        body: SingleChildScrollView(
+        body:
+        RefreshIndicator(onRefresh: () async {
+          notifications.clear();
+      widget.bloc.add(GetNotificationsEvent(0));
+    },
+    color: Colors.white,
+    backgroundColor: buttonColor1,
+    triggerMode: RefreshIndicatorTriggerMode.anywhere,
+    child:
+
+        SingleChildScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
             child:
 
             Column(
@@ -126,64 +139,16 @@ class _BuildUIState extends State<_BuildUI> {
                 Column(children: notifications.map((i) =>
                     Padding(child:
 
-                    Container(
-                        decoration: BoxDecoration(
-                            color: Colors.white, borderRadius: radiusAll16),
+                    ((i.typeId == "3") || (i.typeId == "4")) ?
 
-                      padding: EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
-                        child:
-                        Column(children: [
-                          Padding(child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(((i.liters != null) ? (translate("labels.youBought")+" " + i.liters! + " "+translate("labels.litersOf")+" "+translate("labels."+((i.material != null) ? i.material! : ""))) : "")),
-                              Text((i.time != null) ? i.time! : "")
-                            ],),padding: EdgeInsetsDirectional.fromSTEB(5, 10, 5, 2),),
-                    Divider(color: Colors.black45, thickness: 0.3,),
+                    AccountRefillNotificationWidget(notification: i,)
 
-                    Row(children: [
 
-                      SvgPicture.asset("assets/svg/refuel.svg", width: 50, height: 50,),
+                        :
+                    NormalNotificationWidget(notification: i)
 
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width - 120,
-                            child:
-                            Padding(child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(child:
-                                Text(translate("labels.fuelRefueling"), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),),
 
-                                Text(((i.liters != null) ? i.liters!+' L.' : ""), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
-                              ],), padding: EdgeInsetsDirectional.fromSTEB(20, 0, 10, 0)),),
-
-                          Container(
-                            width: MediaQuery.of(context).size.width - 120,
-                            child:
-                            Padding(child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(child:
-                                Text(((i.date != null) ? i.date! : "") + " / " + ((i.time != null) ? i.time! : ""), style: TextStyle(color: Colors.black),),),
-
-                                Text(((i.price != null) ? (i.price != "") ? formatter.format(double.parse(i.price!)) +' '+translate("labels.sdg") : "" : ""), style: TextStyle(color: Colors.black),),
-                              ],), padding: EdgeInsetsDirectional.fromSTEB(20, 0, 10, 0)),),
-
-                          Container(
-                            width: MediaQuery.of(context).size.width - 120,
-                            child:
-                            Padding(child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(child:
-                                Text(((i.address != null) ? i.address! : ""), style: TextStyle(color: Colors.black),),),
-
-                              ],), padding: EdgeInsetsDirectional.fromSTEB(20, 0, 10, 0)),),
-                        ],)
-                    ],)],)), padding: EdgeInsetsDirectional.fromSTEB(20, 0, 20, 10),)
+                      , padding: EdgeInsetsDirectional.fromSTEB(20, 0, 20, 10),)
                 ).toList(),),padding: EdgeInsetsDirectional.fromSTEB(0, 20, 0, 0),) :
 
                     Container(
@@ -195,6 +160,6 @@ class _BuildUIState extends State<_BuildUI> {
                     ],)
                       ,)
               ],
-            )));
+            ))));
   }
 }

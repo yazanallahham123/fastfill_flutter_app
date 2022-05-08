@@ -5,6 +5,7 @@ import 'package:fastfill/bloc/station/bloc.dart';
 import 'package:fastfill/bloc/station/event.dart';
 import 'package:fastfill/bloc/station/state.dart';
 import 'package:fastfill/common_widgets/app_widgets/custom_loading.dart';
+import 'package:fastfill/common_widgets/app_widgets/transaction_widget.dart';
 import 'package:fastfill/helper/app_colors.dart';
 import 'package:fastfill/helper/size_config.dart';
 import 'package:fastfill/helper/toast.dart';
@@ -47,7 +48,7 @@ class _TransactionsTabPageState extends State<TransactionsTabPage> {
         listener: (context, state) async {
           if (state is ErrorStationState)
             pushToast(state.error);
-          else if (state is GotPaymentTransactions) {
+          else if (state is GotPaymentTransactionsState) {
             if (mounted) {
               setState(() {
                 allPaymentTransactions = state.paymentTransactionsWithPagination.paymentTransactions!;
@@ -55,7 +56,7 @@ class _TransactionsTabPageState extends State<TransactionsTabPage> {
             }
           }
           else if (state is InitStationState){
-            bloc.add(GetPaymentTransactions());
+            bloc.add(GetPaymentTransactionsEvent(1));
           }
         },
         bloc: bloc,
@@ -81,7 +82,17 @@ class _BuildUI extends StatelessWidget {
     return Scaffold(
         resizeToAvoidBottomInset: true,
         backgroundColor: backgroundColor1,
-        body: SingleChildScrollView(
+        body:
+
+        RefreshIndicator(onRefresh: () async {
+          bloc.add(GetPaymentTransactionsEvent(1));
+    },
+    color: Colors.white,
+    backgroundColor: buttonColor1,
+    triggerMode: RefreshIndicatorTriggerMode.anywhere,
+    child:
+        SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
             child:
 
             Column(
@@ -102,54 +113,29 @@ class _BuildUI extends StatelessWidget {
                   alignment: AlignmentDirectional.topStart,
                 ),
 
-                Padding(child:
+
                 (state is LoadingStationState) ? CustomLoading() : (allPaymentTransactions.length > 0) ?
                 Column(children: allPaymentTransactions.map((i) =>
-                Padding(child:
-
-                    InkWell(child:
-                Row(children: [
-
-                  SvgPicture.asset("assets/svg/refuel.svg", width: 50, height: 50,),
-
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width - 100,
-                      child:
-                    Padding(child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                      Expanded(child:
-                      Text((isArabic()) ? i.company!.arabicName! : i.company!.englishName! + " - " + i.company!.code!, style: TextStyle(fontWeight: FontWeight.bold, color: textColor2),),),
-
-                      Text(formatter.format(i.amount!-i.fastfill!)+' '+translate("labels.sdg"), style: TextStyle(color: Colors.white),),
-                    ],), padding: EdgeInsetsDirectional.fromSTEB(20, 0, 0, 0)),),
-
-                      Container(
-                        width: MediaQuery.of(context).size.width - 100,
-                        child:
-                        Padding(child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(child:
-                            Text(DateFormat('yyyy-MM-dd - hh:mm a').format(DateTime.parse(i.date!)), style: TextStyle(color: textColor2),),),
-                          ],), padding: EdgeInsetsDirectional.fromSTEB(20, 0, 0, 0)),),
-
-
-                  ],)
-                ],), onTap: () {
-                      hideKeyboard(context);
-                      PaymentResultBody prb = PaymentResultBody(date: DateFormat('yyyy-MM-dd - hh:mm a').format(DateTime.parse(i.date!)), stationName: (isArabic()) ? i.company!.arabicName! : i.company!.englishName!, fuelTypeId: i.fuelTypeId!, amount: i.amount!, value: i.fastfill!, status: i.status!, fromList: true);
-                      Navigator.pushNamed(context, PaymentResultPage.route, arguments: prb);
-                    },)
-
-                  , padding: EdgeInsetsDirectional.fromSTEB(20, 0, 20, 15),)
+                TransactionWidget(transaction: i)
                 ).toList(),)
-                  : Text(translate("labels.noTransactions"), style: TextStyle(color: Colors.white),)
-                  ,padding: EdgeInsetsDirectional.fromSTEB(0, 20, 0, 0),)
+                  :
+
+                Container(
+                  //padding: EdgeInsetsDirectional.fromSTEB(0, 200, 0, 0),
+                  height: MediaQuery.of(context).size.height-SizeConfig().h(250),
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        translate("labels.noTransactions"),
+                        style: TextStyle(color: Colors.white),
+                      )
+                    ],
+                  ),
+                )
               ],
-            )));
+            ))));
   }
 }

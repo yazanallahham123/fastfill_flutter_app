@@ -8,6 +8,7 @@ import 'package:fastfill/model/station/station_branches_with_pagination.dart';
 import '../../model/station/payment_transaction_result.dart';
 import '../../model/station/station.dart';
 import '../../model/station/stations_with_pagination.dart';
+import '../../model/syberPay/syber_pay_get_url_response_body.dart';
 
 abstract class StationState extends Equatable{
 
@@ -170,18 +171,48 @@ class AddingRemovingStationToFavorite extends StationState{
 
 class AddedPaymentTransaction extends StationState{
   final bool addPaymentTransactionResult;
+  final bool balanceNotEnough;
 
-  const AddedPaymentTransaction(this.addPaymentTransactionResult);
+  const AddedPaymentTransaction(this.addPaymentTransactionResult, this.balanceNotEnough);
 
   @override
-  List<Object?> get props => [this.addPaymentTransactionResult];
+  List<Object?> get props => [this.addPaymentTransactionResult, this.balanceNotEnough];
 }
 
-class GotPaymentTransactions extends StationState{
+class GotPaymentTransactionsState extends StationState{
   final PaymentTransactionsWithPagination paymentTransactionsWithPagination;
 
-  const GotPaymentTransactions(this.paymentTransactionsWithPagination);
+  const GotPaymentTransactionsState(this.paymentTransactionsWithPagination);
 
   @override
   List<Object?> get props => [this.paymentTransactionsWithPagination];
+}
+
+class Station_GotSyberPayUrlState extends StationState{
+  final SyberPayGetUrlResponseBody syberPayGetUrlResponseBody;
+
+  const Station_GotSyberPayUrlState(this.syberPayGetUrlResponseBody);
+
+  @override
+  List<Object?> get props => [this.syberPayGetUrlResponseBody];
+}
+
+
+class AddedUserRefillTransactionState extends StationState{
+  final bool result;
+  final SyberPayGetUrlResponseBody syberPayGetUrlResponseBody;
+
+  const AddedUserRefillTransactionState(this.result, this.syberPayGetUrlResponseBody);
+
+  @override
+  List<Object?> get props => [this.result, this.syberPayGetUrlResponseBody];
+}
+
+class GotUserBalanceInStationState extends StationState{
+  final double balance;
+
+  const GotUserBalanceInStationState(this.balance);
+
+  @override
+  List<Object?> get props => [this.balance];
 }

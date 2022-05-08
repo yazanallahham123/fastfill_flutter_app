@@ -10,6 +10,7 @@ import 'package:fastfill/bloc/station/state.dart';
 import 'package:fastfill/common_widgets/app_widgets/back_button_widget.dart';
 import 'package:fastfill/common_widgets/app_widgets/custom_loading.dart';
 import 'package:fastfill/common_widgets/app_widgets/favorite_button.dart';
+import 'package:fastfill/common_widgets/app_widgets/new_station_widget.dart';
 import 'package:fastfill/common_widgets/buttons/custom_button.dart';
 import 'package:fastfill/common_widgets/custom_text_field_widgets/custom_textfield_widget.dart';
 import 'package:fastfill/common_widgets/custom_text_field_widgets/methods.dart';
@@ -24,6 +25,7 @@ import 'package:fastfill/helper/toast.dart';
 import 'package:fastfill/model/login/login_body.dart';
 import 'package:fastfill/model/station/add_remove_station_favorite_body.dart';
 import 'package:fastfill/model/station/payment_transaction_body.dart';
+import 'package:fastfill/model/station/payment_transaction_result.dart';
 import 'package:fastfill/model/station/station_branch.dart';
 import 'package:fastfill/streams/add_remove_favorite_stream.dart';
 import 'package:fastfill/ui/auth/reset_password_phone_number_page.dart';
@@ -61,12 +63,15 @@ class PurchasePage extends StatefulWidget {
 
 bool isAddedToFavorite = false;
 PaymentResultBody? prb = null;
+bool paying = false;
+double userBalance = 0.0;
 
 class _PurchasePage extends State<PurchasePage> {
 
   final Station station;
   _PurchasePage(this.station){
     isAddedToFavorite = this.station.isFavorite ?? false;
+    paying = false;
   }
 
   @override
@@ -128,7 +133,57 @@ class _PurchasePage extends State<PurchasePage> {
             }
           else if (state is AddedPaymentTransaction)
             {
-              Navigator.pushNamed(context, PaymentResultPage.route, arguments: prb);
+              if (!state.balanceNotEnough) {
+                PaymentResultBody p = PaymentResultBody(
+                    date: prb!.date,
+                    stationName: prb!.stationName,
+                    fuelTypeId: prb!.fuelTypeId,
+                    amount: prb!.amount,
+                    status: state.addPaymentTransactionResult,
+                    fromList: false,
+                    value: prb!.value
+                );
+                if (mounted) {
+                  setState(() {
+                    paying = false;
+                  });
+                }
+                Navigator.pushNamed(
+                    context, PaymentResultPage.route, arguments: p);
+              }
+              else
+                {
+                  if (mounted) {
+                    setState(() {
+                      paying = false;
+                    });
+                  }
+                  Widget okButton = TextButton(
+                    child: Text(translate("buttons.ok"), style: TextStyle(color: Colors.black),),
+                    onPressed:  () {
+                      hideKeyboard(context);
+                      Navigator.pop(context);
+                    },
+                  );
+
+
+                  // set up the AlertDialog
+                  AlertDialog alert = AlertDialog(
+                    title: Text(translate("labels.noBalance")),
+                    content: Text(translate("labels.noEnoughBalance")),
+                    actions: [
+                      okButton,
+                    ],
+                  );
+
+                  // show the dialog
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return alert;
+                    },
+                  );
+                }
             }
         }
 
@@ -203,35 +258,7 @@ class _BuildUI extends State<BuildUI> {
                   alignment: AlignmentDirectional.topStart,
                 ),
 
-                Stack(children: [
-                  (isArabic()) ? Transform(
-                      alignment: Alignment.center,
-                      transform: Matrix4.rotationY(pi),
-                      child: Image(
-                          image: AssetImage("assets/station_row.png"))) :
-                  Image(image: AssetImage("assets/station_row.png")),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                    Padding(child: Text((isArabic()) ? station.arabicName! : station.englishName!, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),), padding:
-                    EdgeInsetsDirectional.only(
-                        start: SizeConfig().w(40),
-                        end: SizeConfig().w(40),
-                        top: SizeConfig().w(20))
-                      ,),
-                    Padding(child: Text(station.code!, style: TextStyle(fontSize: 16),), padding:
-                    EdgeInsetsDirectional.only(
-                      start: SizeConfig().w(40),
-                      end: SizeConfig().w(40),
-                    )
-                      ,),
-                    Padding(child: Text((isArabic()) ? station.arabicAddress! : station.englishAddress!, style: TextStyle(fontSize: 16),), padding:
-                    EdgeInsetsDirectional.only(
-                      start: SizeConfig().w(40),
-                      end: SizeConfig().w(40),
-                    )
-                      ,),
-                  ],)],),
+                NewStationWidget(station: station, hideFavorite: true, openPurchaseOnClick: false,),
 
                 Align(child: Padding(child: Text(translate("labels.choose"), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),), padding: EdgeInsetsDirectional.only(top: SizeConfig().h(20),
                 start:SizeConfig().w(20),
@@ -335,6 +362,8 @@ class _BuildUI extends State<BuildUI> {
                     EdgeInsetsDirectional.only(
                         start: SizeConfig().w(20), end: SizeConfig().w(20)),
                     child: CustomTextFieldWidget(
+                        style: largeMediumPrimaryColor4(),
+                        hintStyle: smallCustomGreyColor6(),
                         textFormatter: ThousandsSeparatorInputFormatter(),
                         color: backgroundColor3,
                         controller: amountController,
@@ -357,6 +386,8 @@ class _BuildUI extends State<BuildUI> {
                     padding:
                     EdgeInsetsDirectional.only(start: SizeConfig().w(20), end: SizeConfig().w(20)),
                     child: CustomTextFieldWidget(
+                        style: largeMediumPrimaryColor4(),
+                        hintStyle: smallCustomGreyColor6(),
                         textFormatter: ThousandsSeparatorInputFormatter(),
                         color: backgroundColor3,
                         controller: confirmAmountController,
@@ -392,7 +423,7 @@ class _BuildUI extends State<BuildUI> {
                       start: SizeConfig().w(20),
                         end: SizeConfig().w(20),
                         top: SizeConfig().h(10), bottom: SizeConfig().h(35)),
-                    child: (state is LoadingStationState) ? CustomLoading() : CustomButton(
+                    child: (paying) ? CustomLoading() : CustomButton(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
                       height: SizeConfig().h(60),
@@ -401,11 +432,9 @@ class _BuildUI extends State<BuildUI> {
                         borderColor: buttonColor1,
                         title: translate("buttons.pay"),
                         onTap: () {
-                          pay();
+
+                            pay();
                         })),
-
-
-
 
               ],),),
 
@@ -421,37 +450,48 @@ class _BuildUI extends State<BuildUI> {
     if (amountController.text == confirmAmountController.text) {
       if (double.tryParse(amountController.text.replaceAll(",", "")) != null) {
         if (double.parse(amountController.text.replaceAll(",", "")) > 0.0) {
+          if (double.parse(amountController.text.replaceAll(",", "")) >= 100) {
+            if (mounted) {
+              setState(() {
+                paying = true;
+              });
+            }
+            hideKeyboard(context);
 
-          hideKeyboard(context);
+            prb = PaymentResultBody(
+                date: DateFormat('yyyy-MM-dd - hh:mm a').format(DateTime.now()),
+                stationName: (isArabic())
+                    ? widget.station.arabicName!
+                    : widget
+                    .station.englishName!,
+                status: true,
+                fuelTypeId: (_fuelTypeValue == FuelType.Gasoline) ? 1 : 2,
+                amount: (double.tryParse(
+                    amountController.text.replaceAll(",", "")) ?? 0.0),
+                value: 100.0,
+                fromList: false
+            );
 
-          prb = PaymentResultBody(
-              date: DateFormat('yyyy-MM-dd - hh:mm a').format(DateTime.now()),
-              stationName: (isArabic())
-                  ? widget.station.arabicName!
-                  : widget
-                  .station.englishName!,
-              status: true,
-              fuelTypeId: (_fuelTypeValue == FuelType.Gasoline) ? 1 : 2,
-              amount: (double.tryParse(amountController.text.replaceAll(",", "")) ?? 0.0),
-              value: 100.0,
-              fromList: false
-          );
+            User user = await LocalData().getCurrentUserValue();
 
-          User user = await LocalData().getCurrentUserValue();
-
-          PaymentTransactionBody paymentTransactionBody = PaymentTransactionBody(
-            userId: user.id,
-            amount: (double.tryParse(amountController.text.replaceAll(",", "")) ?? 0.0),
-            fastfill: 100.0,
-            fuelTypeId: (_fuelTypeValue == FuelType.Gasoline) ? 1 : 2,
-            status: true,
-            date: DateFormat('yyyy-MM-dd hh:mm a').format(DateTime.now()),
-            companyId: widget.station.id
-          );
+            PaymentTransactionBody paymentTransactionBody = PaymentTransactionBody(
+                userId: user.id,
+                amount: (double.tryParse(
+                    amountController.text.replaceAll(",", "")) ?? 0.0),
+                fastfill: 100.0,
+                fuelTypeId: (_fuelTypeValue == FuelType.Gasoline) ? 1 : 2,
+                status: true,
+                date: DateFormat('yyyy-MM-dd hh:mm a').format(DateTime.now()),
+                companyId: widget.station.id
+            );
 
 
-
-          bloc.add(AddPaymentTransaction(paymentTransactionBody));
+            bloc.add(AddPaymentTransaction(paymentTransactionBody));
+          }
+          else
+            {
+              pushToast(translate("messages.minimumPaymentAmount"));
+            }
         }
         else
           {

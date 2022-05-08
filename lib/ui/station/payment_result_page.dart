@@ -37,7 +37,7 @@ class PaymentResultPage extends StatelessWidget {
                   Container(
                     decoration:
                     BoxDecoration(color: Colors.white, borderRadius: radiusAll20),
-                    margin: EdgeInsetsDirectional.fromSTEB(25, 150, 25, 0),
+                    margin: EdgeInsetsDirectional.fromSTEB(25, 170, 25, 0),
                     child: Column(children: [
                     Align(
                       child: Padding(
@@ -91,11 +91,19 @@ class PaymentResultPage extends StatelessWidget {
                     Container(
                       padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
                       child:
+                      Stack(children: [
+                        (paymentResultBody.fromList) ? Container(
+                            padding: EdgeInsetsDirectional.fromSTEB(0, 40, 0, 0),
+                            child: Align(child: Text(translate("labels.previousTransaction"), style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            color: buttonColor1) ), alignment: AlignmentDirectional.topCenter,)) : Container(),
                     Image(
                       image: AssetImage(
-                          (paymentResultBody.status) ? "assets/checkmark.gif" : "assets/checkmark.gif",),),
+                          (paymentResultBody.status) ? "assets/checkmark.gif" : "assets/fail.png",),),
+                    ],),),
                     alignment: AlignmentDirectional.topCenter,
-                  )),
+                  ),
                 ],),
 
 

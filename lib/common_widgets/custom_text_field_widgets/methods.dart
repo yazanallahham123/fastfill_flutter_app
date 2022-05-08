@@ -41,6 +41,12 @@ bool validateName(String? value) {
   return true;
 }
 
+bool validatePassword(String? value) {
+  if (value==null|| value.length == 0 || !isStrongPassword(value) || value.contains(" "))
+    return false;
+  return true;
+}
+
 
 bool isStrongPassword(String password)=>(password.length > 7);
 

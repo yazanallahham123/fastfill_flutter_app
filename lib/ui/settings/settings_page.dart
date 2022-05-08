@@ -102,7 +102,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     Switch(
                       activeColor: buttonColor1,
                       inactiveTrackColor: textColor2,
-                      onChanged: (bool value) {
+                      onChanged: (bool value) async {
                         hideKeyboard(context);
                         if (receiveNotifications) {
                           if (mounted) {
@@ -118,7 +118,8 @@ class _SettingsPageState extends State<SettingsPage> {
                           }
                         }
 
-                        LocalData().setReceiveNotifications(receiveNotifications);
+                        await LocalData().setReceiveNotifications(receiveNotifications);
+
                       }
 
                       , value: receiveNotifications,)

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:fastfill/bloc/login/bloc.dart';
@@ -20,6 +21,7 @@ import 'package:fastfill/helper/font_styles.dart';
 import 'package:fastfill/helper/size_config.dart';
 import 'package:fastfill/helper/toast.dart';
 import 'package:fastfill/model/login/login_body.dart';
+import 'package:fastfill/model/syberPay/syber_pay_get_url_body.dart';
 import 'package:fastfill/model/user/update_profile_body.dart';
 import 'package:fastfill/model/user/user.dart' as UserModel;
 import 'package:fastfill/streams/update_profile_stream.dart';
@@ -28,6 +30,7 @@ import 'package:fastfill/ui/auth/otp_validation_page.dart';
 import 'package:fastfill/ui/auth/reset_password_phone_number_page.dart';
 import 'package:fastfill/ui/auth/signup_page.dart';
 import 'package:fastfill/ui/home/home_page.dart';
+import 'package:fastfill/ui/profile/top_up_page.dart';
 import 'package:fastfill/utils/local_data.dart';
 import 'package:fastfill/utils/misc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -39,7 +42,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:keyboard_actions/keyboard_actions_config.dart';
-
+import 'package:crypto/crypto.dart';
 
 class ProfilePage extends StatefulWidget {
   static const route = "/profile_page";
@@ -67,7 +70,7 @@ class _ProfilePageState extends State<ProfilePage> {
         listener: (context, state) async {
           if (state is ErrorUserState)
             pushToast(state.error);
-          else if (state is UploadedProfilePhoto)
+          else if (state is UploadedProfilePhotoState)
             {
               if (mounted) {
                 setState(() {
@@ -75,6 +78,81 @@ class _ProfilePageState extends State<ProfilePage> {
                 });
               }
             }
+          else if (state is GotSyberPayUrlState){
+            pushToast(state.syberPayGetUrlResponseBody.paymentUrl!);
+
+            if (state.syberPayGetUrlResponseBody.responseCode != null)
+              {
+                if (state.syberPayGetUrlResponseBody.responseCode == 1)
+                  {
+                    bool result = await Navigator.pushNamed(
+                        context, TopUpPage.route, arguments: state.syberPayGetUrlResponseBody.paymentUrl!) as bool;
+                    if (result)
+                      {
+
+                        Widget okButton = TextButton(
+                          child: Text(translate("buttons.ok"), style: TextStyle(color: Colors.black),),
+                          onPressed:  () {
+                            hideKeyboard(context);
+                            Navigator.pop(context);
+                          },
+                        );
+
+
+                        // set up the AlertDialog
+                        AlertDialog alert = AlertDialog(
+                          title: Text(translate("labels.refillTitle")),
+                          content: Text(translate("messages.successRefillMessage")),
+                          actions: [
+                            okButton,
+                          ],
+                        );
+
+                        // show the dialog
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return alert;
+                          },
+                        );
+
+                      }
+                    else
+                      {
+                        Widget okButton = TextButton(
+                          child: Text(translate("buttons.ok"), style: TextStyle(color: Colors.black),),
+                          onPressed:  () {
+                            hideKeyboard(context);
+                            Navigator.pop(context);
+                          },
+                        );
+
+
+                        // set up the AlertDialog
+                        AlertDialog alert = AlertDialog(
+                          title: Text(translate("labels.refillTitle")),
+                          content: Text(translate("messages.unsuccessRefillMessage")),
+                          actions: [
+                            okButton,
+                          ],
+                        );
+
+                        // show the dialog
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return alert;
+                          },
+                        );
+                      }
+                  }
+                else
+                  pushToast("messages.couldNotGetSyberPayUrl");
+              }
+            else
+              pushToast("messages.couldNotGetSyberPayUrl");
+
+          }
           else if (state is UserProfileUpdated) {
             if (phoneIsChanged) {
               UserModel.User user = UserModel.User(lastName: null, firstName: null, disabled: null, id: null, mobileNumber: null, roleId: null, username: null);
@@ -154,10 +232,16 @@ class _BuildUIState extends State<_BuildUI> {
 
                 Align(child:
 
-                InkWell(child: (profilePhotoURL != "") ? Image.network(profilePhotoURL, width: 100, height: 100,) : (imageFile != null) ? Image.file(File(imageFile!.path), width: 100, height: 100,) : SvgPicture.asset("assets/svg/profile_logo.svg"),
+                InkWell(child: (profilePhotoURL != "") ? Image.network(
+                  profilePhotoURL, width: 100, height: 100,
+                  loadingBuilder:(BuildContext context, Widget child,ImageChunkEvent? loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return CustomLoading();
+                  },
+                ) : (imageFile != null) ? Image.file(File(imageFile!.path), width: 100, height: 100,) : SvgPicture.asset("assets/svg/profile_logo.svg"),
                 onTap: () async {
                   hideKeyboard(context);
-                  ImagePicker _picker = ImagePicker();
+                  /*ImagePicker _picker = ImagePicker();
                   final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
                   if (image != null) {
                     setState(()  {
@@ -170,7 +254,7 @@ class _BuildUIState extends State<_BuildUI> {
                       File f = File(imageFile!.path);
                       widget.bloc.add(UploadProfileImageEvent(f));
                     }
-                  }
+                  }*/
                 },
                 ),
 
@@ -202,6 +286,7 @@ class _BuildUIState extends State<_BuildUI> {
                 ),
                 ),
 
+
                 if (widget.state is LoadingUserState)
                   Padding(child: const CustomLoading(),
                     padding: EdgeInsetsDirectional.only(top: SizeConfig().h(72), bottom:SizeConfig().h(92)),)
@@ -227,6 +312,28 @@ class _BuildUIState extends State<_BuildUI> {
         )));
   }
 
+  _topUp()
+  {
+    calcHashAndGetSyberPayUrl();
+  }
+  calcHashAndGetSyberPayUrl()
+  {
+    String key = "3L0ez5y7";
+    String salt = "Ko9f3r0b4";
+    String applicationId = "0000000361";
+    String serviceId = "009001000454";
+    String amount = "1.0";
+    String currency = "SDG";
+    String customerRef = "yazan";
+    String all = key+"|"+applicationId+"|"+serviceId+"|"+amount+"|"+currency+"|"+customerRef+"|"+salt;
+    var AllInBytes = utf8.encode(all);
+    String value = sha256.convert(AllInBytes).toString();
+
+    SyberPayGetUrlBody spgub = SyberPayGetUrlBody(applicationId: applicationId, serviceId: serviceId,
+        amount: 1.0, currency: currency, customerRef: customerRef, hash: value);
+
+    widget.bloc.add(GetSyberPayUrlEvent(spgub));
+  }
   _updateProfile() async {
     if ((phoneController.text.isNotEmpty) && (nameController.text.isNotEmpty)){
       if (!validateMobile(phoneController.text))
@@ -329,6 +436,8 @@ class _BuildUIState extends State<_BuildUI> {
     }
     else {}
   }
+
+
 
 
   @override

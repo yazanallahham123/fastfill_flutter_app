@@ -60,8 +60,6 @@ class _LoginPageState extends State<LoginPage> {
                 .setCurrentUserValue(state.loginUser.value!.userDetails!);
             await LocalData().setTokenValue(state.loginUser.value!.token!);
             pushToast(translate("messages.youLoggedSuccessfully"));
-
-
             Navigator.pushNamedAndRemoveUntil(
                 context, HomePage.route, (Route<dynamic> route) => false);
           }
@@ -258,9 +256,12 @@ class _BuildUIState extends State<_BuildUI> {
           }
         }
 
+        int languageId = (languageCode=="en") ? 1 : 2;
+
         bloc.add(LoginUserEvent(LoginBody(
             mobileNumber: pn,
-            password: passController.text)));
+            password: passController.text,
+            language: languageId)));
       }
     } else
       pushToast(translate("messages.theseFieldsMustBeFilledIn"));

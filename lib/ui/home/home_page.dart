@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fastfill/common_widgets/custom_app_bar/home_appbar_widget.dart';
 import 'package:fastfill/helper/app_colors.dart';
 import 'package:fastfill/helper/size_config.dart';
@@ -6,10 +8,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 
 import '../../utils/misc.dart';
 import 'favorites_tab_page.dart';
 import 'home_tab_page.dart';
+import 'new_notifications_tab_page.dart';
+import 'new_transactions_tab_page.dart';
 import 'notifications_tab_page.dart';
 
 
@@ -28,13 +33,14 @@ class _HomePageState extends State<HomePage> {
 
   final pages = [
     const HomeTabPage(),
-    const TransactionsTabPage(),
-    const NotificationsTabPage(),
+    const NewTransactionsTabPage(),
+    const NewNotificationsTabPage(),
     const FavoritesTabPage(),
   ];
 
-  Widget build(BuildContext context) {
 
+
+  Widget build(BuildContext context) {
 
     SizeConfig().init(context);
     return Scaffold(

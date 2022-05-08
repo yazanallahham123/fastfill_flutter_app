@@ -21,6 +21,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 
+import '../../common_widgets/app_widgets/new_station_widget.dart';
 import '../../common_widgets/app_widgets/station_widget.dart';
 import '../../model/station/station.dart';
 
@@ -153,7 +154,17 @@ class _BuildUIState extends State<_BuildUI> {
     return Scaffold(
         resizeToAvoidBottomInset: true,
         backgroundColor: backgroundColor1,
-        body: SingleChildScrollView(
+        body:
+
+        RefreshIndicator(onRefresh: () async {
+        widget.bloc.add(InitStationEvent());
+    },
+    color: Colors.white,
+    backgroundColor: buttonColor1,
+    triggerMode: RefreshIndicatorTriggerMode.anywhere,
+    child:
+        SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
             child: Column(
           children: [
             Align(
@@ -183,7 +194,7 @@ class _BuildUIState extends State<_BuildUI> {
                     ? Padding(
                         child: Column(
                             children: favoriteStations
-                                .map((i) => StationWidget(
+                                .map((i) => NewStationWidget(
                                       station: i,
                                       stationBloc: widget.bloc,
                                       stationState: widget.state,
@@ -191,18 +202,23 @@ class _BuildUIState extends State<_BuildUI> {
                                 .toList()),
                         padding: EdgeInsetsDirectional.fromSTEB(0, 20, 0, 0),
                       )
-                    : Container(
-                        padding: EdgeInsetsDirectional.fromSTEB(0, 200, 0, 0),
-                        child: Column(
-                          children: [
-                            Text(
-                              translate("labels.noFavorites"),
-                              style: TextStyle(color: Colors.white),
-                            )
-                          ],
-                        ),
-                      )
+                    :                Container(
+              //padding: EdgeInsetsDirectional.fromSTEB(0, 200, 0, 0),
+              height: MediaQuery.of(context).size.height-SizeConfig().h(250),
+              width: MediaQuery.of(context).size.width,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    translate("labels.noFavorites"),
+                    style: TextStyle(color: Colors.white),
+                  )
+                ],
+              ),
+            )
+
           ],
-        )));
+        ))));
   }
 }

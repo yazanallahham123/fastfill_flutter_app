@@ -1,5 +1,4 @@
 import 'package:fastfill/model/payment/payment_result_body.dart';
-import 'package:fastfill/model/station/station_branch.dart';
 import 'package:fastfill/model/user/reset_password_body.dart';
 import 'package:fastfill/ui/auth/login_page.dart';
 import 'package:fastfill/ui/auth/otp_validation_page.dart';
@@ -12,32 +11,18 @@ import 'package:fastfill/ui/language/language_page.dart';
 import 'package:fastfill/ui/profile/profile_page.dart';
 import 'package:fastfill/ui/search/search_page.dart';
 import 'package:fastfill/ui/settings/settings_page.dart';
-import 'package:fastfill/ui/splash_screen/splash_screen.dart';
 import 'package:fastfill/ui/station/payment_result_page.dart';
 import 'package:fastfill/ui/station/purchase_page.dart';
 import 'package:fastfill/ui/terms/terms_page.dart';
 import 'package:flutter/material.dart';
 
 import '../model/station/station.dart';
+import '../ui/profile/top_up_page.dart';
 
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
 
     switch (settings.name) {
-      case SplashScreen.route:
-        return PageRouteBuilder(
-             pageBuilder: (context, animation, secondaryAnimation) => SplashScreen(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            const begin = Offset(0.0, 1.0);
-            const end = Offset.zero;
-            final tween = Tween(begin: begin, end: end);
-            final offsetAnimation = animation.drive(tween);
-            return SlideTransition(
-              position: offsetAnimation,
-              child: child,
-            );
-          }
-        );
       case ProfilePage.route:
         return PageRouteBuilder( pageBuilder: (context, animation, secondaryAnimation) => ProfilePage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -163,6 +148,20 @@ class AppRouter {
         );
       case PaymentResultPage.route:
         return PageRouteBuilder( pageBuilder: (context, animation, secondaryAnimation) => PaymentResultPage(paymentResultBody: settings.arguments as PaymentResultBody,),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(0.0, 1.0);
+            const end = Offset.zero;
+            final tween = Tween(begin: begin, end: end);
+            final offsetAnimation = animation.drive(tween);
+            return SlideTransition(
+              position: offsetAnimation,
+              child: child,
+            );
+          },
+        );
+
+      case TopUpPage.route:
+        return PageRouteBuilder( pageBuilder: (context, animation, secondaryAnimation) => TopUpPage(paymentUrl: settings.arguments as String,),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             const begin = Offset(0.0, 1.0);
             const end = Offset.zero;

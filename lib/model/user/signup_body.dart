@@ -10,6 +10,7 @@ class SignupBody extends Equatable {
   final String? username;
   final String? password;
   final String? mobileNumber;
+  final int? language;
 
   const SignupBody(
       {
@@ -17,7 +18,8 @@ class SignupBody extends Equatable {
         this.lastName,
         this.username,
         this.password,
-        this.mobileNumber});
+        this.mobileNumber,
+      this.language});
 
   factory SignupBody.fromJson(Map<String, dynamic> json) => _$SignupBodyFromJson(json);
 
@@ -29,6 +31,7 @@ class SignupBody extends Equatable {
     this.lastName,
     this.username,
     this.password,
-    this.mobileNumber
+    this.mobileNumber,
+    this.language
   ];
 }

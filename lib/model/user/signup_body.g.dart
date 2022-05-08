@@ -12,6 +12,7 @@ SignupBody _$SignupBodyFromJson(Map<String, dynamic> json) => SignupBody(
       username: json['username'] as String?,
       password: json['password'] as String?,
       mobileNumber: json['mobileNumber'] as String?,
+      language: json['language'] as int?,
     );
 
 Map<String, dynamic> _$SignupBodyToJson(SignupBody instance) =>
@@ -21,4 +22,5 @@ Map<String, dynamic> _$SignupBodyToJson(SignupBody instance) =>
       'username': instance.username,
       'password': instance.password,
       'mobileNumber': instance.mobileNumber,
+      'language': instance.language,
     };

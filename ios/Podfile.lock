@@ -1,55 +1,53 @@
 PODS:
-  - awesome_notifications (0.0.3):
-    - Flutter
-  - Firebase/Auth (8.10.0):
+  - Firebase/Auth (8.15.0):
     - Firebase/CoreOnly
-    - FirebaseAuth (~> 8.10.0)
-  - Firebase/CoreOnly (8.10.0):
-    - FirebaseCore (= 8.10.0)
-  - Firebase/Messaging (8.10.0):
+    - FirebaseAuth (~> 8.15.0)
+  - Firebase/CoreOnly (8.15.0):
+    - FirebaseCore (= 8.15.0)
+  - Firebase/Messaging (8.15.0):
     - Firebase/CoreOnly
-    - FirebaseMessaging (~> 8.10.0)
-  - firebase_auth (3.3.5):
-    - Firebase/Auth (= 8.10.0)
+    - FirebaseMessaging (~> 8.15.0)
+  - firebase_auth (3.3.15):
+    - Firebase/Auth (= 8.15.0)
     - firebase_core
     - Flutter
-  - firebase_core (1.11.0):
-    - Firebase/CoreOnly (= 8.10.0)
+  - firebase_core (1.15.0):
+    - Firebase/CoreOnly (= 8.15.0)
     - Flutter
-  - firebase_messaging (11.2.5):
-    - Firebase/Messaging (= 8.10.0)
+  - firebase_messaging (11.2.14):
+    - Firebase/Messaging (= 8.15.0)
     - firebase_core
     - Flutter
-  - FirebaseAuth (8.10.0):
+  - FirebaseAuth (8.15.0):
     - FirebaseCore (~> 8.0)
-    - GoogleUtilities/AppDelegateSwizzler (~> 7.6)
-    - GoogleUtilities/Environment (~> 7.6)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.7)
+    - GoogleUtilities/Environment (~> 7.7)
     - GTMSessionFetcher/Core (~> 1.5)
-  - FirebaseCore (8.10.0):
+  - FirebaseCore (8.15.0):
     - FirebaseCoreDiagnostics (~> 8.0)
-    - GoogleUtilities/Environment (~> 7.6)
-    - GoogleUtilities/Logger (~> 7.6)
-  - FirebaseCoreDiagnostics (8.12.0):
+    - GoogleUtilities/Environment (~> 7.7)
+    - GoogleUtilities/Logger (~> 7.7)
+  - FirebaseCoreDiagnostics (8.15.0):
     - GoogleDataTransport (~> 9.1)
     - GoogleUtilities/Environment (~> 7.7)
     - GoogleUtilities/Logger (~> 7.7)
     - nanopb (~> 2.30908.0)
-  - FirebaseInstallations (8.12.0):
+  - FirebaseInstallations (8.15.0):
     - FirebaseCore (~> 8.0)
     - GoogleUtilities/Environment (~> 7.7)
     - GoogleUtilities/UserDefaults (~> 7.7)
     - PromisesObjC (< 3.0, >= 1.2)
-  - FirebaseMessaging (8.10.0):
+  - FirebaseMessaging (8.15.0):
     - FirebaseCore (~> 8.0)
     - FirebaseInstallations (~> 8.0)
     - GoogleDataTransport (~> 9.1)
-    - GoogleUtilities/AppDelegateSwizzler (~> 7.6)
-    - GoogleUtilities/Environment (~> 7.6)
-    - GoogleUtilities/Reachability (~> 7.6)
-    - GoogleUtilities/UserDefaults (~> 7.6)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.7)
+    - GoogleUtilities/Environment (~> 7.7)
+    - GoogleUtilities/Reachability (~> 7.7)
+    - GoogleUtilities/UserDefaults (~> 7.7)
     - nanopb (~> 2.30908.0)
   - Flutter (1.0.0)
-  - flutter_local_notifications (0.0.1):
+  - flutter_webview_plugin (0.0.1):
     - Flutter
   - fluttertoast (0.0.2):
     - Flutter
@@ -61,10 +59,10 @@ PODS:
     - GoogleUtilities/Environment (~> 7.2)
     - nanopb (~> 2.30908.0)
     - PromisesObjC (< 3.0, >= 1.2)
-  - GoogleMaps (4.2.0):
-    - GoogleMaps/Maps (= 4.2.0)
-  - GoogleMaps/Base (4.2.0)
-  - GoogleMaps/Maps (4.2.0):
+  - GoogleMaps (6.2.0):
+    - GoogleMaps/Maps (= 6.2.0)
+  - GoogleMaps/Base (6.2.0)
+  - GoogleMaps/Maps (6.2.0):
     - GoogleMaps/Base
   - GoogleUtilities/AppDelegateSwizzler (7.7.0):
     - GoogleUtilities/Environment
@@ -83,15 +81,15 @@ PODS:
     - GoogleUtilities/Logger
   - GoogleUtilities/UserDefaults (7.7.0):
     - GoogleUtilities/Logger
-  - GTMSessionFetcher/Core (1.7.0)
-  - image_picker (0.0.1):
+  - GTMSessionFetcher/Core (1.7.1)
+  - image_picker_ios (0.0.1):
     - Flutter
   - nanopb (2.30908.0):
     - nanopb/decode (= 2.30908.0)
     - nanopb/encode (= 2.30908.0)
   - nanopb/decode (2.30908.0)
   - nanopb/encode (2.30908.0)
-  - PromisesObjC (2.0.0)
+  - PromisesObjC (2.1.0)
   - shared_preferences_ios (0.0.1):
     - Flutter
   - Toast (4.0.0)
@@ -99,15 +97,14 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
-  - awesome_notifications (from `.symlinks/plugins/awesome_notifications/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
   - Flutter (from `Flutter`)
-  - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
+  - flutter_webview_plugin (from `.symlinks/plugins/flutter_webview_plugin/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - google_maps_flutter (from `.symlinks/plugins/google_maps_flutter/ios`)
-  - image_picker (from `.symlinks/plugins/image_picker/ios`)
+  - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - shared_preferences_ios (from `.symlinks/plugins/shared_preferences_ios/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
@@ -128,8 +125,6 @@ SPEC REPOS:
     - Toast
 
 EXTERNAL SOURCES:
-  awesome_notifications:
-    :path: ".symlinks/plugins/awesome_notifications/ios"
   firebase_auth:
     :path: ".symlinks/plugins/firebase_auth/ios"
   firebase_core:
@@ -138,45 +133,44 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_messaging/ios"
   Flutter:
     :path: Flutter
-  flutter_local_notifications:
-    :path: ".symlinks/plugins/flutter_local_notifications/ios"
+  flutter_webview_plugin:
+    :path: ".symlinks/plugins/flutter_webview_plugin/ios"
   fluttertoast:
     :path: ".symlinks/plugins/fluttertoast/ios"
   google_maps_flutter:
     :path: ".symlinks/plugins/google_maps_flutter/ios"
-  image_picker:
-    :path: ".symlinks/plugins/image_picker/ios"
+  image_picker_ios:
+    :path: ".symlinks/plugins/image_picker_ios/ios"
   shared_preferences_ios:
     :path: ".symlinks/plugins/shared_preferences_ios/ios"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
-  awesome_notifications: 04530aafec8dac4635244ed4b4072f4aea6cc938
-  Firebase: 44213362f1dcc52555b935dc925ed35ac55f1b20
-  firebase_auth: 9d959bddc3b255ddfb67cf630a5bbb6186964356
-  firebase_core: 2ca2d6cc8a11693e701b37126afae4800be5dbac
-  firebase_messaging: c616c3449770c7e9f4db1ceb3fd2612b0b4d9283
-  FirebaseAuth: 59a2d2b933b5b79e18fb1e6ad230c6abdaa73d26
-  FirebaseCore: 04186597c095da37d90ff9fd3e53bc61a1ff2440
-  FirebaseCoreDiagnostics: 3b40dfadef5b90433a60ae01f01e90fe87aa76aa
-  FirebaseInstallations: 25764cf322e77f99449395870a65b2bef88e1545
-  FirebaseMessaging: b0aeba17332ee1ee610662b4d1e02a86db82f08f
+  Firebase: 5f8193dff4b5b7c5d5ef72ae54bb76c08e2b841d
+  firebase_auth: 0624c0e2e1c0732209286f99cdacfe2b985a3c61
+  firebase_core: fa19947d8db1c0a62d8872c45039b3113829cd2e
+  firebase_messaging: 16a1bcf72818ff3cb9d77c1bbfabb67997fbda47
+  FirebaseAuth: 3e73bf8abf4fbb40f8b421f361f4cc48ee57388c
+  FirebaseCore: 5743c5785c074a794d35f2fff7ecc254a91e08b1
+  FirebaseCoreDiagnostics: 92e07a649aeb66352b319d43bdd2ee3942af84cb
+  FirebaseInstallations: 40bd9054049b2eae9a2c38ef1c3dd213df3605cd
+  FirebaseMessaging: 5e5118a2383b3531e730d974680954c679ca0a13
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
-  flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
-  fluttertoast: 6122fa75143e992b1d3470f61000f591a798cc58
-  google_maps_flutter: abdb8dee6c52d4be36ad131ee6ebfacd14417c5a
+  flutter_webview_plugin: ed9e8a6a96baf0c867e90e1bce2673913eeac694
+  fluttertoast: 16fbe6039d06a763f3533670197d01fc73459037
+  google_maps_flutter: c59fc576c0d0c7f4dc4bd63832c862d22d5a7c6d
   GoogleDataTransport: 629c20a4d363167143f30ea78320d5a7eb8bd940
-  GoogleMaps: eb03e327edfd70b06de1e6e321653f73712df7ad
+  GoogleMaps: c1b9de14cecc940b2d334dd4e6dfa116bff4a40e
   GoogleUtilities: e0913149f6b0625b553d70dae12b49fc62914fd1
-  GTMSessionFetcher: 43748f93435c2aa068b1cbe39655aaf600652e91
-  image_picker: 0d37d1cb66231c2473a0e3ccb8d062d0c2b3d297
+  GTMSessionFetcher: 4577a4cc914a5a07c40a8a0ad0acc22080418c2d
+  image_picker_ios: b786a5dcf033a8336a657191401bfdf12017dabb
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
-  PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
-  shared_preferences_ios: aef470a42dc4675a1cdd50e3158b42e3d1232b32
+  PromisesObjC: 99b6f43f9e1044bd87a95a60beff28c2c44ddb72
+  shared_preferences_ios: 548a61f8053b9b8a49ac19c1ffbc8b92c50d68ad
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
-  url_launcher_ios: 02f1989d4e14e998335b02b67a7590fa34f971af
+  url_launcher_ios: 839c58cdb4279282219f5e248c3321761ff3c4de
 
-PODFILE CHECKSUM: fe0e1ee7f3d1f7d00b11b474b62dd62134535aea
+PODFILE CHECKSUM: c2600164af3d50cd7dd677599730895bc8490921
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.11.3

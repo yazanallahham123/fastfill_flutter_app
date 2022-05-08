@@ -17,6 +17,8 @@ class CustomTextFieldWidget extends StatelessWidget {
   final Widget? icon;
   final Color? color;
   final TextInputFormatter? textFormatter;
+  final TextStyle? style;
+  final TextStyle? hintStyle;
 
   final bool Function(String? value)? validator;
 
@@ -31,7 +33,9 @@ class CustomTextFieldWidget extends StatelessWidget {
       this.textInputType,
       this.icon,
       this.color,
-      this.textFormatter})
+      this.textFormatter,
+      this.style,
+      this.hintStyle})
       : super(key: key);
 
   @override
@@ -59,7 +63,7 @@ class CustomTextFieldWidget extends StatelessWidget {
                             focusNode: focusNode,
                             textInputAction: textInputAction,
                             keyboardType: textInputType,
-                            style: largeMediumPrimaryColor3(),
+                            style: (style != null) ? style : largeMediumPrimaryColor3(),
                             maxLines: 1,
                             onFieldSubmitted: onFieldSubmitted,
                             decoration: new InputDecoration(
@@ -88,7 +92,7 @@ class CustomTextFieldWidget extends StatelessWidget {
                                                 : Colors.green,
                                         width: width1),
                                     borderRadius: radiusAll10),
-                                hintStyle: smallCustomGreyColor5(),
+                                hintStyle: (hintStyle != null) ? hintStyle : smallCustomGreyColor5(),
                                 contentPadding: EdgeInsetsDirectional.fromSTEB(
                                     SizeConfig().w(20),
                                     0,
