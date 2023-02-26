@@ -8,42 +8,6 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:893991898029:android:8303d80a5070d0408daf24",
-        "android_client_info": {
-          "package_name": "com.akelbety.akelbety_delivery_app"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "893991898029-eff4egdstj2ap0mh1o2l2iumnvoujtsk.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyC_4_qY_mNZDu9L-jkKn6FPJvfCsP3WvtQ"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "893991898029-eff4egdstj2ap0mh1o2l2iumnvoujtsk.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "893991898029-05dfd88v01s1lejgcduf3fl8834tapln.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.developitech.tbzgroup"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:893991898029:android:e348c0d4ad39b60c8daf24",
         "android_client_info": {
           "package_name": "com.developitech.alanwar"
@@ -152,130 +116,6 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:893991898029:android:2d3a188f1c9ba2ed8daf24",
-        "android_client_info": {
-          "package_name": "com.developitech.fastfill"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "893991898029-3h6hg924vr7petioeuu67hiareh44saf.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.developitech.fastfill",
-            "certificate_hash": "da4c324b19580422a346854e0413060dfba73b50"
-          }
-        },
-        {
-          "client_id": "893991898029-h1vi9f7jodei7hkfu8d4sllnp0g86hfr.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.developitech.fastfill",
-            "certificate_hash": "e799f68aa0dfb10a978f66b8e61791ae3ad9d1e3"
-          }
-        },
-        {
-          "client_id": "893991898029-eff4egdstj2ap0mh1o2l2iumnvoujtsk.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyC_4_qY_mNZDu9L-jkKn6FPJvfCsP3WvtQ"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "893991898029-eff4egdstj2ap0mh1o2l2iumnvoujtsk.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "893991898029-05dfd88v01s1lejgcduf3fl8834tapln.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.developitech.tbzgroup"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:893991898029:android:f1862212ed455c2b8daf24",
-        "android_client_info": {
-          "package_name": "com.developitech.fastfillstation"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "893991898029-eff4egdstj2ap0mh1o2l2iumnvoujtsk.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyC_4_qY_mNZDu9L-jkKn6FPJvfCsP3WvtQ"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "893991898029-eff4egdstj2ap0mh1o2l2iumnvoujtsk.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "893991898029-05dfd88v01s1lejgcduf3fl8834tapln.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.developitech.tbzgroup"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:893991898029:android:a6edd9f1038e47ab8daf24",
-        "android_client_info": {
-          "package_name": "com.developitech.fedra"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "893991898029-eff4egdstj2ap0mh1o2l2iumnvoujtsk.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyC_4_qY_mNZDu9L-jkKn6FPJvfCsP3WvtQ"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "893991898029-eff4egdstj2ap0mh1o2l2iumnvoujtsk.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "893991898029-05dfd88v01s1lejgcduf3fl8834tapln.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.developitech.tbzgroup"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:893991898029:android:514a1194b1951d238daf24",
         "android_client_info": {
           "package_name": "com.developitech.fourhundred"
@@ -348,26 +188,130 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:893991898029:android:a342e5ff6ddfdad38daf24",
+        "mobilesdk_app_id": "1:893991898029:android:dabfabfb6ec558468daf24",
         "android_client_info": {
-          "package_name": "com.developitech.prestigak"
+          "package_name": "com.fastfill.fastfill"
         }
       },
       "oauth_client": [
         {
-          "client_id": "893991898029-c0ipg471aoapgr2npnt0gdn388c60uct.apps.googleusercontent.com",
+          "client_id": "893991898029-f0frlqb51cu8qjp76tirsujkot6ha5uc.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.developitech.prestigak",
-            "certificate_hash": "da4c324b19580422a346854e0413060dfba73b50"
+            "package_name": "com.fastfill.fastfill",
+            "certificate_hash": "e799f68aa0dfb10a978f66b8e61791ae3ad9d1e3"
           }
         },
         {
-          "client_id": "893991898029-ital4dtpnkbrpo0fasre0cj3lhupjdri.apps.googleusercontent.com",
+          "client_id": "893991898029-mc5o7a683i5jrot1aea3buq92omc24pa.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.developitech.prestigak",
-            "certificate_hash": "6428062d1e3c0f6fccf434acd0051017fb1d9e6e"
+            "package_name": "com.fastfill.fastfill",
+            "certificate_hash": "3bc62ca8e2bcb956f98a5d839a74500b5faf871c"
+          }
+        },
+        {
+          "client_id": "893991898029-vfvbe8hbp8shui011o7mqmiu7hu40rs2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fastfill.fastfill",
+            "certificate_hash": "678920b379deda1544bb391f4aa76a10c46f2a44"
+          }
+        },
+        {
+          "client_id": "893991898029-eff4egdstj2ap0mh1o2l2iumnvoujtsk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_4_qY_mNZDu9L-jkKn6FPJvfCsP3WvtQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "893991898029-eff4egdstj2ap0mh1o2l2iumnvoujtsk.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "893991898029-05dfd88v01s1lejgcduf3fl8834tapln.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.developitech.tbzgroup"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:893991898029:android:d434f85e3d370a608daf24",
+        "android_client_info": {
+          "package_name": "com.fastfill.fastfilldashboard"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "893991898029-eff4egdstj2ap0mh1o2l2iumnvoujtsk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_4_qY_mNZDu9L-jkKn6FPJvfCsP3WvtQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "893991898029-eff4egdstj2ap0mh1o2l2iumnvoujtsk.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "893991898029-05dfd88v01s1lejgcduf3fl8834tapln.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.developitech.tbzgroup"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:893991898029:android:54ad0af8c3dd49268daf24",
+        "android_client_info": {
+          "package_name": "com.fastfill.fastfillstation"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "893991898029-0bsph7o4nafvsegjnaup1jt5833dljp1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fastfill.fastfillstation",
+            "certificate_hash": "2d98bf8647528b5312cb1758f214ec392cdd429b"
+          }
+        },
+        {
+          "client_id": "893991898029-ifqi4jvscmulea39i2goeqlnnck3pck0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fastfill.fastfillstation",
+            "certificate_hash": "c2e0fb62a2f02db620b35586f2b29871e3a45b04"
+          }
+        },
+        {
+          "client_id": "893991898029-mje6t9pk9l6lidsl52b4jtbqlg0l8tjn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fastfill.fastfillstation",
+            "certificate_hash": "3bc62ca8e2bcb956f98a5d839a74500b5faf871c"
           }
         },
         {

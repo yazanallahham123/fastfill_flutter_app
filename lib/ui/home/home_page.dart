@@ -21,26 +21,36 @@ import 'notifications_tab_page.dart';
 class HomePage extends StatefulWidget {
   static const route = "/home_page";
 
-  const HomePage({Key? key}) : super(key: key);
+  final int? tabId;
+  const HomePage(this.tabId);
 
   @override
   _HomePageState createState() => _HomePageState();
 }
 
+const pages = [
+  const HomeTabPage(),
+  const NewTransactionsTabPage(),
+  const NewNotificationsTabPage(),
+  const FavoritesTabPage(),
+];
+
 class _HomePageState extends State<HomePage> {
+
 
   int pageIndex = 0;
 
-  final pages = [
-    const HomeTabPage(),
-    const NewTransactionsTabPage(),
-    const NewNotificationsTabPage(),
-    const FavoritesTabPage(),
-  ];
 
+  @override
+  void initState() {
+    pageIndex = widget.tabId??0;
+    super.initState();
+  }
 
 
   Widget build(BuildContext context) {
+
+
 
     SizeConfig().init(context);
     return Scaffold(
@@ -70,10 +80,10 @@ class _HomePageState extends State<HomePage> {
                       border: BorderDirectional(end: BorderSide(color: Colors.white, width: 0.05, style: BorderStyle.solid))
 
                   ),
-                  padding: EdgeInsetsDirectional.fromSTEB(25, 5, 10, 15),
+                  padding: EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
                 //alignment: Alignment.topLeft,
-                  height: SizeConfig().h(45),
-                  width: SizeConfig().w(25),
+                  height: 42,//SizeConfig().h(53),
+                  width: 25,//SizeConfig().w(25),
                   child: SvgPicture.asset(
                     'assets/svg/homebutton.svg',
                     width: SizeConfig().w(25),
@@ -83,10 +93,13 @@ class _HomePageState extends State<HomePage> {
 
             Expanded(child: InkWell(
               onTap: () {
-                setState(() {
-                  hideKeyboard(context);
-                  pageIndex = 1;
-                });
+                if (mounted) {
+                  setState(() {
+                    hideKeyboard(context);
+
+                    pageIndex = 1;
+                  });
+                }
               },
               child: Container(
                 //alignment: Alignment.topLeft,
@@ -95,9 +108,9 @@ class _HomePageState extends State<HomePage> {
 
                   ),
 
-                  padding: EdgeInsetsDirectional.fromSTEB(10, 5, 10, 15),
-                  height: SizeConfig().h(45),
-                  width: SizeConfig().w(25),
+                  padding: EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
+                  height: 42,//SizeConfig().h(53),
+                  width: 25,//SizeConfig().w(25),
                   child: SvgPicture.asset(
                     'assets/svg/transactionsbutton.svg',
                     width: SizeConfig().w(25),
@@ -107,21 +120,23 @@ class _HomePageState extends State<HomePage> {
 
             Expanded(child: InkWell(
               onTap: () {
-                setState(() {
-                  hideKeyboard(context);
-                  pageIndex = 2;
-                });
+                if (mounted) {
+                  setState(() {
+                    hideKeyboard(context);
+                    pageIndex = 2;
+                  });
+                }
               },
               child: Container(
-                  padding: EdgeInsetsDirectional.fromSTEB(10, 5, 10, 15),
+                  padding: EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
                 //alignment: Alignment.topLeft,
                   decoration: BoxDecoration(
                       border: BorderDirectional(end: BorderSide(color: Colors.white, width: 0.05, style: BorderStyle.solid))
 
                   ),
 
-                  height: SizeConfig().h(55),
-                  width: SizeConfig().w(25),
+                  height: 49,//SizeConfig().h(53),
+                  width: 25,//SizeConfig().w(25),
                   child: SvgPicture.asset(
                     'assets/svg/notificationsbutton.svg',
                     width: SizeConfig().w(25),
@@ -131,16 +146,18 @@ class _HomePageState extends State<HomePage> {
 
             Expanded(child: InkWell(
               onTap: () {
-                setState(() {
-                  hideKeyboard(context);
-                  pageIndex = 3;
-                });
+                if (mounted) {
+                  setState(() {
+                    hideKeyboard(context);
+                    pageIndex = 3;
+                  });
+                }
               },
               child: Container(
-                  padding: EdgeInsetsDirectional.fromSTEB(10, 5, 10, 15),
+                  padding: EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
                 //alignment: Alignment.topLeft,
-                  height: SizeConfig().h(45),
-                  width: SizeConfig().w(25),
+                  height: 42,//SizeConfig().h(53),
+                  width: 25,//SizeConfig().w(25),
                   child: SvgPicture.asset(
                     'assets/svg/favoritesbutton.svg',
                     width: SizeConfig().w(25),

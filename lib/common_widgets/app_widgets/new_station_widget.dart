@@ -60,7 +60,7 @@ class _NewStationWidgetState extends State<NewStationWidget> {
                 (isArabic()) ? widget.station.arabicName! : widget.station.englishName!,
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 18),
+                    fontSize: 16),
               ),
             alignment: AlignmentDirectional.topStart,),
             Align(child: Text(

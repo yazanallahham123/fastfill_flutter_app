@@ -41,7 +41,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyC_4_qY_mNZDu9L-jkKn6FPJvfCsP3WvtQ',
-    appId: '1:893991898029:android:2d3a188f1c9ba2ed8daf24',
+    appId: '1:893991898029:android:dabfabfb6ec558468daf24',
     messagingSenderId: '893991898029',
     projectId: 'developistore',
     databaseURL: 'https://developistore.firebaseio.com',
@@ -49,14 +49,14 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyD776ibAkhS8WWCZhtAmnvGwtZNqD6ZPwk',
-    appId: '1:893991898029:ios:94f8047923097ed98daf24',
+    apiKey: 'AIzaSyDh4itZRiGqkp-TW1k6073PWFhg5pWYWmQ',
+    appId: '1:893991898029:ios:4c5fffd12b9000068daf24',
     messagingSenderId: '893991898029',
     projectId: 'developistore',
     databaseURL: 'https://developistore.firebaseio.com',
     storageBucket: 'developistore.appspot.com',
-    androidClientId: '893991898029-3h6hg924vr7petioeuu67hiareh44saf.apps.googleusercontent.com',
-    iosClientId: '893991898029-5kb230smqqomos239srs1l07s7elch7s.apps.googleusercontent.com',
-    iosBundleId: 'com.developitech.fastfill',
+    androidClientId: '893991898029-0bsph7o4nafvsegjnaup1jt5833dljp1.apps.googleusercontent.com',
+    iosClientId: '893991898029-f8qriaim2mu16aioc3qunugo90sde0ve.apps.googleusercontent.com',
+    iosBundleId: 'com.fastfill.fastfill',
   );
 }

@@ -48,6 +48,6 @@ bool validatePassword(String? value) {
 }
 
 
-bool isStrongPassword(String password)=>(password.length > 7);
+bool isStrongPassword(String password)=>(password.length >= 7);
 
 bool isFilled(String? value)=>(value != "");

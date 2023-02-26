@@ -1,6 +1,8 @@
 import 'package:fastfill/bloc/otp/bloc.dart';
 import 'package:fastfill/bloc/otp/event.dart';
 import 'package:fastfill/bloc/otp/state.dart';
+import 'package:fastfill/bloc/user/event.dart';
+import 'package:fastfill/bloc/user/state.dart';
 import 'package:fastfill/common_widgets/app_widgets/back_button_widget.dart';
 import 'package:fastfill/common_widgets/app_widgets/custom_loading.dart';
 import 'package:fastfill/common_widgets/buttons/custom_button.dart';
@@ -8,22 +10,24 @@ import 'package:fastfill/helper/app_colors.dart';
 import 'package:fastfill/helper/const_styles.dart';
 import 'package:fastfill/helper/size_config.dart';
 import 'package:fastfill/helper/toast.dart';
+import 'package:fastfill/model/otp/otp_code_verification_body.dart';
+import 'package:fastfill/model/otp/otp_verification_phone_body.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
-import 'package:otp_text_field/otp_field.dart';
-import 'package:otp_text_field/otp_field_style.dart';
-import 'package:otp_text_field/style.dart';
+import 'package:pinput/pinput.dart';
 
+import '../../bloc/user/bloc.dart';
+import '../../common_widgets/custom_text_field_widgets/custom_textfield_widget.dart';
 import '../../utils/misc.dart';
 
 class OTPValidationPage extends StatelessWidget {
   static const route = "/otp_validation_page";
 
-  final String verificationId;
+  final OTPVerificationPhoneBody otpVerificationPhoneBody;
 
-  const OTPValidationPage({Key? key, required this.verificationId})
+  const OTPValidationPage({Key? key, required this.otpVerificationPhoneBody})
       : super(key: key);
 
   @override
@@ -39,126 +43,236 @@ class OTPValidationPage extends StatelessWidget {
 
     return BlocListener<OTPBloc, OTPState>(
       listener: (context, state) async {
+        if (state is OTPResendCodeState)
+          {
+            registerId = state.registerId;
+            resendingCode = false;
+          } else
         if (state is InitOTPState) {
-          otpBloc.add(OTPInitEvent());
+          if (!otpBloc.isClosed)
+            otpBloc.add(OTPInitEvent());
         }
-        if (state is ErrorOTPState)
+        if (state is ErrorOTPState) {
           pushToast(state.error);
+          resendingCode = false;
+        }
       },
       child: BlocBuilder(
           bloc: otpBloc,
           builder: (context, OTPState otpState) {
-            return _BuildUI(otpBloc: otpBloc, otpState: otpState, verificationId: verificationId);
+            return _BuildUI(otpBloc: otpBloc, otpState: otpState, registerId: otpVerificationPhoneBody.registerId, phoneNumber: otpVerificationPhoneBody.phoneNumber,);
           }),
     );
   }
 }
 
 String code = "";
+String registerId = "";
+bool resendingCode = false;
 
-class _BuildUI extends StatelessWidget {
+class _BuildUI extends StatefulWidget {
   final OTPBloc otpBloc;
   final OTPState otpState;
-  final String verificationId;
+  final String registerId;
+  final String phoneNumber;
 
-  _BuildUI({required this.otpBloc, required this.otpState, required this.verificationId});
+  _BuildUI({required this.otpBloc, required this.otpState, required this.registerId, required this.phoneNumber});
 
-  final otpCodeController = TextEditingController();
+  @override
+  State<_BuildUI> createState() => _BuildUIState();
+}
+
+class _BuildUIState extends State<_BuildUI> {
+  final pinController = TextEditingController();
+  final focusNode = FocusNode();
+
+
+  String convertArabicToEnglishNumbers(String input)
+  {
+    const english = ['0','1','2','3','4','5','6','7','8','9'];
+    const arabic = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+
+    for (int i = 0; i < arabic.length; i++) {
+      input = input.replaceAll(arabic[i], english[i]);
+    }
+    return input;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    registerId = widget.registerId;
+    focusNode.requestFocus();
+  }
+
+  @override
+  void dispose() {
+    pinController.dispose();
+    focusNode.dispose();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
 
+    const focusedBorderColor = Color.fromRGBO(23, 171, 144, 1);
+    const fillColor = Color.fromRGBO(243, 246, 249, 0);
+    const borderColor = Color.fromRGBO(23, 171, 144, 0.4);
+
+    final defaultPinTheme = PinTheme(
+      width: 56,
+      height: 56,
+      textStyle: TextStyle(
+        fontSize: 22,
+        color: Color.fromRGBO(30, 60, 87, 1),
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(19),
+        border: Border.all(color: borderColor),
+      ),
+    );
+
     SizeConfig().init(context);
-
-
 
     return Scaffold(
         resizeToAvoidBottomInset: true,
         backgroundColor: backgroundColor1,
         body: SingleChildScrollView(
             child: Stack(children: [
-          Container(
-            margin: EdgeInsetsDirectional.only(
-                top: SizeConfig().h(175),
-                start: SizeConfig().w(20),
-                end: SizeConfig().w(20)),
-            padding: EdgeInsets.symmetric(horizontal: SizeConfig().w(24)),
-            decoration:
+              Container(
+                margin: EdgeInsetsDirectional.only(
+                    top: SizeConfig().h(175),
+                    start: SizeConfig().w(20),
+                    end: SizeConfig().w(20)),
+                padding: EdgeInsets.symmetric(horizontal: SizeConfig().w(13)),
+                decoration:
                 BoxDecoration(color: Colors.white, borderRadius: radiusAll20),
-            child: Column(
-              children: [
-                Align(
-                  child: Padding(
-                    padding: EdgeInsetsDirectional.only(top: SizeConfig().h(30)),
-                    child: Text(
-                      translate("labels.verifyAccount"),
-                      style:
+                child: Column(
+                  children: [
+                    Align(
+                      child: Padding(
+                        padding: EdgeInsetsDirectional.only(top: SizeConfig().h(30)),
+                        child: Text(
+                          translate("labels.verifyAccount"),
+                          style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                        ),
+                      ),
+                      alignment: AlignmentDirectional.topStart,
                     ),
-                  ),
-                  alignment: AlignmentDirectional.topStart,
+                    Text(translate("labels.verifyAccountDesc")
+                      //+ ": " + ((otpArguments.otpForType == OtpForType.Signup) ? otpArguments.signupBody!.mobileNumber! :
+                      //(otpArguments.otpForType == OtpForType.ResetPassword) ? otpArguments.resetPasswordBody!.mobileNumber! : "")
+                    ),
+                    Align(
+                      child: Padding(
+                          padding: EdgeInsetsDirectional.only(top: SizeConfig().h(25)),
+                          child: Text(translate("labels.yourCodeHere"))),
+                      alignment: AlignmentDirectional.topStart,
+                    ),
+                    Padding(
+                        padding: EdgeInsetsDirectional.only(top: SizeConfig().h(0)),
+                        child:
+                        Directionality(
+                          // Specify direction if desired
+                          textDirection: TextDirection.ltr,
+                          child: Pinput(
+                            length: 6,
+                            controller: pinController,
+                            focusNode: focusNode,
+                            androidSmsAutofillMethod:
+                            AndroidSmsAutofillMethod.smsUserConsentApi,
+                            listenForMultipleSmsOnAndroid: true,
+                            defaultPinTheme: defaultPinTheme,
+                             onClipboardFound: (value) {
+                               debugPrint('onClipboardFound: $value');
+                               pinController.setText(value);
+                             },
+                            hapticFeedbackType: HapticFeedbackType.lightImpact,
+                            onCompleted: (pin) {
+                              code = pin;
+                            },
+                            onChanged: (value) {
+                              code = value;
+                            },
+                            cursor: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(bottom: 9),
+                                  width: 22,
+                                  height: 1,
+                                  color: focusedBorderColor,
+                                ),
+                              ],
+                            ),
+                            focusedPinTheme: defaultPinTheme.copyWith(
+                              decoration: defaultPinTheme.decoration!.copyWith(
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: focusedBorderColor),
+                              ),
+                            ),
+                            submittedPinTheme: defaultPinTheme.copyWith(
+                              decoration: defaultPinTheme.decoration!.copyWith(
+                                color: fillColor,
+                                borderRadius: BorderRadius.circular(19),
+                                border: Border.all(color: focusedBorderColor),
+                              ),
+                            ),
+                            errorPinTheme: defaultPinTheme.copyBorderWith(
+                              border: Border.all(color: Colors.redAccent),
+                            ),
+                          ),
+                        ),
+
+
+                    ),
+
+                    Align(
+                      child: (!resendingCode) ?
+                      Padding(
+                          padding: EdgeInsetsDirectional.only(top: SizeConfig().h(25)),
+                          child: InkWell(
+                            child: Text(translate("labels.resendCode"), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
+                            onTap: () async {
+                              setState(() {
+                                resendingCode = true;
+                                widget.otpBloc.add(OTPResendCodeEvent(widget.phoneNumber));
+                              });
+
+                            },
+                          )) : Container(child: CustomLoading(),
+                      width: 25,
+                        height: 25,
+                      ),
+                      alignment: AlignmentDirectional.bottomEnd,
+                    ),
+
+                    if (widget.otpState is LoadingOTPState)
+                      const CustomLoading()
+                    else
+                      Padding(
+                          padding: EdgeInsetsDirectional.only(
+                              top: SizeConfig().h(10), bottom: SizeConfig().h(25)),
+                          child: CustomButton(
+                              backColor: buttonColor1,
+                              titleColor: Colors.white,
+                              borderColor: buttonColor1,
+                              title: translate("buttons.validate"),
+                              onTap: () {
+                                if (code.length == 6) {
+                                  hideKeyboard(context);
+                                  if (code.isNotEmpty) {
+                                    OTPCodeVerificationBody otpCodeVerification = OTPCodeVerificationBody(code: code, registerId: registerId);
+                                    Navigator.pop(context, otpCodeVerification);
+                                  }
+                                }
+                              })),
+                  ],
                 ),
-                Text(translate("labels.verifyAccountDesc")
-                    //+ ": " + ((otpArguments.otpForType == OtpForType.Signup) ? otpArguments.signupBody!.mobileNumber! :
-                    //(otpArguments.otpForType == OtpForType.ResetPassword) ? otpArguments.resetPasswordBody!.mobileNumber! : "")
-                ),
-                Align(
-                  child: Padding(
-                      padding: EdgeInsetsDirectional.only(top: SizeConfig().h(25)),
-                      child: Text(translate("labels.yourCodeHere"))),
-                  alignment: AlignmentDirectional.topStart,
-                ),
-                Padding(
-                  padding: EdgeInsetsDirectional.only(top: SizeConfig().h(0)),
-                  child: OTPTextField(
-                    length: 6,
-                    width: MediaQuery.of(context).size.width,
-                    textFieldAlignment: MainAxisAlignment.center,
-                    fieldWidth: SizeConfig().w(40),
-                    fieldStyle: FieldStyle.underline,
-                    outlineBorderRadius: 15,
-                    otpFieldStyle: OtpFieldStyle(borderColor: Colors.red),
-                    style: TextStyle(fontSize: 20),
-                    onChanged: (pin) {
-                      print("Changed: " + pin);
-                      code = pin;
-                    },
-                    onCompleted: (pin) {
-                      code = pin;
-                    },
-                  ),
-                ),
-                Align(
-                  child: Padding(
-                      padding: EdgeInsetsDirectional.only(top: SizeConfig().h(25)),
-                      child: InkWell(
-                        child: Text(translate("labels.resendCode"), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
-                        onTap: () {
-                          hideKeyboard(context);
-                        },
-                      )),
-                  alignment: AlignmentDirectional.bottomEnd,
-                ),
-                if (otpState is LoadingOTPState)
-                  const CustomLoading()
-                else
-                  Padding(
-                      padding: EdgeInsetsDirectional.only(
-                          top: SizeConfig().h(10), bottom: SizeConfig().h(25)),
-                      child: CustomButton(
-                          backColor: buttonColor1,
-                          titleColor: Colors.white,
-                          borderColor: buttonColor1,
-                          title: translate("buttons.validate"),
-                          onTap: () {
-                            hideKeyboard(context);
-                            if (code.isNotEmpty)
-                              Navigator.pop(context, code);
-                          })),
-              ],
-            ),
-          ),
+              ),
               BackButtonWidget(context)
-        ])));
+            ])));
   }
 }

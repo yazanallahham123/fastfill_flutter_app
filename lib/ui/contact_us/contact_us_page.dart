@@ -8,15 +8,42 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../utils/misc.dart';
 
 
-class ContactUsPage extends StatelessWidget {
+class ContactUsPage extends StatefulWidget {
   static const route = "/contactus_page";
-  static const whatsappNumber = "+15157085882";
-  static const phoneNumber = "+249912267239";
+  static const whatsappNumber = "+249111200690";
+
+  @override
+  State<ContactUsPage> createState() => _ContactUsPageState();
+}
+
+class _ContactUsPageState extends State<ContactUsPage> {
+  PackageInfo _packageInfo = PackageInfo(
+    appName: 'Unknown',
+    packageName: 'Unknown',
+    version: 'Unknown',
+    buildNumber: 'Unknown',
+    buildSignature: 'Unknown',
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _initPackageInfo();
+  }
+
+  Future<void> _initPackageInfo() async {
+    final info = await PackageInfo.fromPlatform();
+    setState(() {
+      _packageInfo = info;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -59,10 +86,13 @@ class ContactUsPage extends StatelessWidget {
 
                 Align(
                   child: Padding(
-                      child:  SvgPicture.asset(
-                        "assets/svg/contact_us.svg",
+                      child:  Container(
                         width: 100,
-                        height: 100,),
+                      height: 100,
+                      decoration: BoxDecoration(
+    shape: BoxShape.circle,
+    image: DecorationImage(image: AssetImage("assets/logo.png")),),
+                      ),
                       padding: EdgeInsetsDirectional.only(
                           start: SizeConfig().w(25),
                           end: SizeConfig().w(25),
@@ -70,23 +100,11 @@ class ContactUsPage extends StatelessWidget {
                       )),
                   alignment: AlignmentDirectional.topCenter,
                 ),
+                Align(child: Text(_packageInfo.buildNumber, style: TextStyle(color: Colors.white),),alignment: AlignmentDirectional.topCenter,),
+
 
                 Padding(child:
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                  Row(children: [
-                    SvgPicture.asset(
-                      "assets/svg/founder_icon.svg", width: 20, height: 20,),
-                    Padding(child: Text(translate("labels.founder"), style: TextStyle(fontSize: 10, color: textColor2),), padding: EdgeInsetsDirectional.fromSTEB(13, 0, 0, 0),)
-                  ],),
-                  Padding(child: Text("Amr Mohammed Osman", style: TextStyle(color: Colors.white),), padding: EdgeInsetsDirectional.fromSTEB(30, 0, 0, 0),)
-                    ,Divider(color: textColor2, thickness: 0.1,)
-                ],), padding: EdgeInsetsDirectional.fromSTEB(SizeConfig().w(25), SizeConfig().h(10),
-                    SizeConfig().w(25), SizeConfig().h(10)),),
-
-                Padding(child:
-                Column(
+    InkWell(child:Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(children: [
@@ -94,36 +112,14 @@ class ContactUsPage extends StatelessWidget {
                         "assets/svg/email_icon.svg", width: 20, height: 20,),
                       Padding(child: Text(translate("labels.email"), style: TextStyle(fontSize: 10, color: textColor2),), padding: EdgeInsetsDirectional.fromSTEB(13, 0, 0, 0),)
                     ],),
-                    Padding(child: Text("Amr Mohammed Osman", style: TextStyle(color: Colors.white),), padding: EdgeInsetsDirectional.fromSTEB(30, 0, 0, 0),)
+                    Padding(child: Text("fastffillsudan@gmail.com", style: TextStyle(color: Colors.white),), padding: EdgeInsetsDirectional.fromSTEB(30, 0, 0, 0),)
                     ,Divider(color: textColor2, thickness: 0.1,)
-                  ],), padding: EdgeInsetsDirectional.fromSTEB(SizeConfig().w(25), SizeConfig().h(10),
-                    SizeConfig().w(25), SizeConfig().h(10)),),
-                
-
-                Padding(child:
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(children: [
-                      SvgPicture.asset(
-                        "assets/svg/email_icon.svg", width: 20, height: 20,),
-                      Padding(child: Text(translate("labels.phone"), style: TextStyle(fontSize: 10, color: textColor2),), padding: EdgeInsetsDirectional.fromSTEB(13, 0, 0, 0),)
-                    ],),
-                    Padding(child:
-                    InkWell(child:
-
-                    Text("+249 91 226 7239", style: TextStyle(color: Colors.white),)
-                    ,onTap: (){
-                        hideKeyboard(context);
-                        callNumber(phoneNumber);
-                      },)
-                      , padding: EdgeInsetsDirectional.fromSTEB(30, 0, 0, 0),)
-                    ,Divider(color: textColor2, thickness: 0.1,)
-                  ],), padding: EdgeInsetsDirectional.fromSTEB(SizeConfig().w(25), SizeConfig().h(10),
+                  ],),onTap: () { openEmail("fastffillsudan@gmail.com"); },), padding: EdgeInsetsDirectional.fromSTEB(SizeConfig().w(25), SizeConfig().h(10),
                     SizeConfig().w(25), SizeConfig().h(10)),),
 
+
                 Padding(child:
-                Column(
+                InkWell(child:Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(children: [
@@ -132,17 +128,20 @@ class ContactUsPage extends StatelessWidget {
                       Padding(child: Text(translate("labels.whatsapp"), style: TextStyle(fontSize: 10, color: textColor2),), padding: EdgeInsetsDirectional.fromSTEB(13, 0, 0, 0),)
                     ],),
                     Padding(child:
-    InkWell(child:
-                    Text("+1 (515) 708-5882", style: TextStyle(color: Colors.white),),onTap: (){
-      hideKeyboard(context);
-      openWhatsapp(context, whatsappNumber);
 
-    },)
-
-    , padding: EdgeInsetsDirectional.fromSTEB(30, 0, 0, 0),)
+                    Text("+249111200690", style: TextStyle(color: Colors.white),),
+                      padding: EdgeInsetsDirectional.fromSTEB(30, 0, 0, 0),)
                     ,Divider(color: textColor2, thickness: 0.1,)
-                  ],), padding: EdgeInsetsDirectional.fromSTEB(SizeConfig().w(25), SizeConfig().h(10),
-                    SizeConfig().w(25), SizeConfig().h(10)),)
+                  ],),
+        onTap: (){
+          hideKeyboard(context);
+          openWhatsapp(context, ContactUsPage.whatsappNumber);
+
+        },),
+        padding: EdgeInsetsDirectional.fromSTEB(SizeConfig().w(25), SizeConfig().h(10),
+    SizeConfig().w(25), SizeConfig().h(10))
+              ),
+
               ])),
               BackButtonWidget(context)
             ],)
@@ -150,8 +149,13 @@ class ContactUsPage extends StatelessWidget {
     );
   }
 
+  openEmail(String email) async
+  {
+    await launchUrl(Uri.parse("mailto:<"+email+">?subject=<>&body=<>"));
+  }
+
   callNumber(String number) async {
-    await launch("tel://"+number);
+    await launchUrl(Uri.parse("tel://"+number));
   }
 
   openWhatsapp(BuildContext context, String whatsappNumber) async{
@@ -159,19 +163,20 @@ class ContactUsPage extends StatelessWidget {
     var whatappURL_ios ="https://wa.me/$whatsappNumber?text=${Uri.parse("hello")}";
     if(Platform.isIOS){
       // for iOS phone only
-      if( await canLaunch(whatappURL_ios)){
-        await launch(whatappURL_ios, forceSafariVC: false);
+
+      if( await canLaunchUrl(Uri.parse(whatappURL_ios))){
+        await launchUrl(Uri.parse(whatappURL_ios));
       }else{
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: new Text("whatsapp no installed")));
+            SnackBar(content: new Text("whatsapp not installed")));
       }
     }else{
       // android , web
-      if( await canLaunch(whatsappURl_android)){
-        await launch(whatsappURl_android);
+      if( await canLaunchUrl(Uri.parse(whatsappURl_android))){
+        await launchUrl(Uri.parse(whatsappURl_android));
       }else{
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: new Text("whatsapp no installed")));
+            SnackBar(content: new Text("whatsapp not installed")));
       }
     }
   }

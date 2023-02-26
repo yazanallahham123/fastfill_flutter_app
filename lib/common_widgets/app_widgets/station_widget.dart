@@ -85,7 +85,7 @@ class _StationWidgetState extends State<StationWidget> {
                 (isArabic()) ? widget.station.arabicName! : widget.station.englishName!,
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 18),
+                    fontSize: 16),
               ),
               padding: EdgeInsetsDirectional.only(
                   start: SizeConfig().w(40),

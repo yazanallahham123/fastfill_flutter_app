@@ -25,6 +25,7 @@ class NormalNotificationWidget extends StatelessWidget
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text((notification.title != null ) ? notification.title! : ""),
+              Text((notification.date != null) ? notification.date! : ""),
               Text((notification.time != null) ? notification.time! : "")
             ],),padding: EdgeInsetsDirectional.fromSTEB(5, 10, 5, 2),),
           Divider(color: (notification.typeId == "3") ? Colors.black45 : Colors.red, thickness: 0.3,),
@@ -44,7 +45,8 @@ class NormalNotificationWidget extends StatelessWidget
                   Padding(child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text((notification.content != null) ? notification.content! : "", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
+                      Flexible(child:
+                      Text((notification.content != null) ? notification.content! : "", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),)),
                     ],), padding: EdgeInsetsDirectional.fromSTEB(20, 0, 10, 0)),),
               ],)
           ],)],));

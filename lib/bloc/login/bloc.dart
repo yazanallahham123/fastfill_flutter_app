@@ -25,7 +25,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
          await mClient.loginUser(event.loginBody).then((v) async {
            if (v.statusCode == 200) {
-             String firebaseTokenText = await LocalData().getFTokenValue();
+             String firebaseTokenText = await getFTokenValue();
 
              await mClient.updateFirebaseToken("Bearer "+v.value!.token!, UpdateFirebaseTokenBody(firebaseToken: firebaseTokenText));
 

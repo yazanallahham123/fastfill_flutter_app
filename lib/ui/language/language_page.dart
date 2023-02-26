@@ -1,34 +1,25 @@
-import 'package:fastfill/bloc/login/bloc.dart';
-import 'package:fastfill/bloc/login/event.dart';
-import 'package:fastfill/bloc/login/state.dart';
-import 'package:fastfill/common_widgets/app_widgets/back_button_widget.dart';
-import 'package:fastfill/common_widgets/app_widgets/custom_loading.dart';
-import 'package:fastfill/common_widgets/buttons/custom_button.dart';
-import 'package:fastfill/common_widgets/custom_drop_down_button/custom_drop_down_button.dart';
-import 'package:fastfill/common_widgets/custom_text_field_widgets/custom_textfield_widget.dart';
-import 'package:fastfill/common_widgets/custom_text_field_widgets/methods.dart';
-import 'package:fastfill/common_widgets/custom_text_field_widgets/textfield_password_widget.dart';
-import 'package:fastfill/helper/app_colors.dart';
-import 'package:fastfill/helper/const_sizes.dart';
-import 'package:fastfill/helper/const_styles.dart';
-import 'package:fastfill/helper/font_styles.dart';
-import 'package:fastfill/helper/methods.dart';
-import 'package:fastfill/helper/size_config.dart';
-import 'package:fastfill/helper/toast.dart';
-import 'package:fastfill/main.dart';
-import 'package:fastfill/model/login/login_body.dart';
-import 'package:fastfill/ui/auth/login_page.dart';
-import 'package:fastfill/ui/auth/reset_password_phone_number_page.dart';
-import 'package:fastfill/ui/auth/signup_page.dart';
-import 'package:fastfill/ui/home/home_page.dart';
-import 'package:fastfill/utils/local_data.dart';
+import 'package:fastfill/bloc/user/event.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:get/get.dart';
 
+import '../../bloc/login/bloc.dart';
+import '../../bloc/login/state.dart';
+import '../../bloc/user/bloc.dart';
+import '../../bloc/user/state.dart';
+import '../../common_widgets/app_widgets/back_button_widget.dart';
+import '../../common_widgets/app_widgets/custom_loading.dart';
+import '../../common_widgets/buttons/custom_button.dart';
+import '../../helper/app_colors.dart';
+import '../../helper/const_styles.dart';
+import '../../helper/size_config.dart';
+import '../../helper/toast.dart';
+import '../../main.dart';
+import '../../utils/local_data.dart';
 import '../../utils/misc.dart';
+import '../auth/login_page.dart';
+import '../home/home_page.dart';
 
 class LanguagePage extends StatefulWidget {
   static const route = "/language_page";
@@ -41,43 +32,46 @@ class LanguagePage extends StatefulWidget {
   State<LanguagePage> createState() => _LanguagePageState();
 }
 
+bool loading = false;
+
 class _LanguagePageState extends State<LanguagePage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<LoginBloc>(
-        create: (BuildContext context) => LoginBloc(), //.add(InitEvent()),
+    return BlocProvider<UserBloc>(
+        create: (BuildContext context) => UserBloc(), //.add(InitEvent()),
         child: Builder(builder: (context) => _buildPage(context)));
   }
 
   Widget _buildPage(BuildContext context) {
-    final bloc = BlocProvider.of<LoginBloc>(context);
+    final bloc = BlocProvider.of<UserBloc>(context);
 
-    return BlocListener<LoginBloc, LoginState>(
+    return BlocListener<UserBloc, UserState>(
         listener: (context, state) async {
-          if (state is ErrorLoginState)
-            pushToast(state.error);
-          else if (state is SuccessLoginState) {
-            await LocalData()
-                .setCurrentUserValue(state.loginUser.value!.userDetails!);
-            await LocalData().setTokenValue(state.loginUser.value!.token!);
-            pushToast(translate("messages.youLoggedSuccessfully"));
-            Navigator.pushNamedAndRemoveUntil(
-                context, HomePage.route, (Route<dynamic> route) => false);
+          if (state is ErrorUserState)
+            {
+              if (mounted) {
+                setState(() {
+                  loading = true;
+                });
+              }
+            }
+          else if (state is UpdatedUserLanguageState) {
+            Navigator.pop(context, languageCode);
           }
         },
         bloc: bloc,
-        child: BlocBuilder<LoginBloc, LoginState>(
+        child: BlocBuilder<UserBloc, UserState>(
             bloc: bloc,
-            builder: (context, LoginState state) {
+            builder: (context, UserState state) {
               return _BuildUI(bloc: bloc, state: state, forSettings: widget.forSettings);
             }));
   }
 }
 
 class _BuildUI extends StatefulWidget {
-  final LoginBloc bloc;
-  final LoginState state;
+  final UserBloc bloc;
+  final UserState state;
   final bool forSettings;
 
   _BuildUI({required this.bloc, required this.state, required this.forSettings});
@@ -89,6 +83,15 @@ class _BuildUI extends StatefulWidget {
 class _BuildUIState extends State<_BuildUI> {
   String? currentLanguage = (languageCode == "en") ? "English" : "عربي";
 
+  void initState() {
+    if (mounted) {
+      setState(() {
+        loading = false;
+      });
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -97,70 +100,128 @@ class _BuildUIState extends State<_BuildUI> {
         resizeToAvoidBottomInset: true,
         backgroundColor: backgroundColor1,
         body: SingleChildScrollView(
-          child: Stack(children: [Container(
-            width: MediaQuery.of(context).size.width,
-            margin: EdgeInsetsDirectional.only(
-                top: SizeConfig().h(175),
-                start: SizeConfig().w(20),
-                end: SizeConfig().w(20)),
-            padding: EdgeInsets.symmetric(horizontal: SizeConfig().w(24)),
-            decoration:
+          child: Stack(children: [
+
+            Column(children: [
+
+              Align(
+                child: Padding(
+                    child:  Container(
+                      width: 150,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(image: AssetImage("assets/logo.png")),),
+                    ),
+                    padding: EdgeInsetsDirectional.only(
+                        top: SizeConfig().h(100),
+                        start: SizeConfig().w(25),
+                        end: SizeConfig().w(25),
+                        bottom: SizeConfig().h(25)
+                    )),
+                alignment: AlignmentDirectional.topCenter,
+              ),
+
+
+              Container(
+                width: MediaQuery.of(context).size.width,
+                margin: EdgeInsetsDirectional.only(
+                    top: SizeConfig().h(25),
+                    start: SizeConfig().w(20),
+                    end: SizeConfig().w(20)),
+                padding: EdgeInsets.symmetric(horizontal: SizeConfig().w(24)),
+                decoration:
                 BoxDecoration(color: Colors.white, borderRadius: radiusAll20),
-            child: Column(
-              crossAxisAlignment : CrossAxisAlignment.start,
-              children: [
-                Padding(child:
-                Text(
-                  translate("labels.language"),
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                ),padding: EdgeInsetsDirectional.fromSTEB(0, SizeConfig().h(40), 0, 0),),
-      Padding(child:
-      Text(translate("labels.selectYourLanguage")),padding: EdgeInsetsDirectional.fromSTEB(0, SizeConfig().h(20), 0, 0)),
-      Padding(child:
-                CustomDropDownButton(items: ["English", "عربي"],
-                  icon: Icon(Icons.keyboard_arrow_down_outlined, color: Colors.black12,),
-                  onChanged: (v) async {
+                child:
+                (loading == false) ?
 
-                      currentLanguage = v;
-                      if (currentLanguage == "English") {
-                        await LocalData().setLanguageValue("en");
-                        languageCode = "en";
-                        FastFillApp.setLocale(context, Locale.fromSubtags(languageCode: "en"));
-                        changeLocale(context, "en");
-                        Get.updateLocale(Locale.fromSubtags(languageCode: "en"));
-                      }
-                      else
-                        if (currentLanguage == "عربي") {
-                          await LocalData().setLanguageValue("ar");
-                          languageCode = "ar";
-                          FastFillApp.setLocale(context, Locale.fromSubtags(languageCode: "ar"));
-                          changeLocale(context, "ar");
-                          Get.updateLocale(Locale.fromSubtags(languageCode: "ar"));
-                        }
-                  },
-                  currentValue: currentLanguage,
-                  popupTitle: Text(translate("labels.languages")),
-                ),
-                padding: EdgeInsetsDirectional.fromSTEB(0, SizeConfig().h(40), 0, SizeConfig().h(20)),),
+                Column(
+                  crossAxisAlignment : CrossAxisAlignment.start,
+                  children: [
+                    Padding(child:
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Language", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                        Text("اللغة",style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                      ],), padding: EdgeInsetsDirectional.fromSTEB(0,20, 0, 0),),
 
-                Padding(
-                    padding: EdgeInsetsDirectional.only(top: SizeConfig().h(10), bottom:  SizeConfig().h(40)),
-                    child: CustomButton(
-                        backColor: buttonColor1,
-                        titleColor: Colors.white,
-                        borderColor: buttonColor1,
-                        title: (!widget.forSettings) ? translate("buttons.next") : translate("buttons.apply"),
-                        onTap: () {
-                          hideKeyboard(context);
-                          if (!widget.forSettings) {
-                            Navigator.pushNamed(context, LoginPage.route);
-                          }
-                          else
-                            Navigator.pop(context, languageCode);
-                        })),
-              ],
-            ),
-          ),
+                    Padding(child:
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(child: Padding(
+                            padding: EdgeInsetsDirectional.only(start: 5, end: 5, top: SizeConfig().h(10), bottom:  SizeConfig().h(40)),
+                            child: CustomButton(
+                                backColor: buttonColor1,
+                                titleColor: Colors.white,
+                                borderColor: buttonColor1,
+                                title: "English",
+                                onTap: () async {
+                                  if (mounted) {
+                                    setState(() {
+                                      loading = true;
+                                    });
+                                  }
+                                  hideKeyboard(context);
+
+                                  currentLanguage = "English";
+                                  await setLanguageValue("en");
+                                  languageCode = "en";
+                                  FastFillApp.setLocale(context, Locale.fromSubtags(languageCode: "en"));
+                                  changeLocale(context, "en");
+                                  Get.updateLocale(Locale.fromSubtags(languageCode: "en"));
+
+                                  languageId = 1;
+
+
+                                  if (!widget.forSettings) {
+                                    Navigator.pushNamed(context, LoginPage.route);
+                                  }
+                                  else
+                                    widget.bloc.add(UpdateUserLanguageEvent(languageId));
+                                })), flex: 1,),
+                        Expanded(child: Padding(
+                            padding: EdgeInsetsDirectional.only( start: 5, end: 5, top: SizeConfig().h(10), bottom:  SizeConfig().h(40)),
+                            child: CustomButton(
+                                backColor: buttonColor1,
+                                titleColor: Colors.white,
+                                borderColor: buttonColor1,
+                                title: "عربي",
+                                onTap: () async {
+                                  if (mounted) {
+                                    setState(() {
+                                      loading = true;
+                                    });
+                                  }
+                                  hideKeyboard(context);
+                                  currentLanguage = "عربي";
+                                  await setLanguageValue("ar");
+                                  languageCode = "ar";
+                                  FastFillApp.setLocale(context, Locale.fromSubtags(languageCode: "ar"));
+                                  changeLocale(context, "ar");
+                                  Get.updateLocale(Locale.fromSubtags(languageCode: "ar"));
+
+                                  languageId = 2;
+
+                                  if (!widget.forSettings) {
+                                    Navigator.pushNamed(context, LoginPage.route);
+                                  }
+                                  else
+                                    widget.bloc.add(UpdateUserLanguageEvent(languageId));
+                                })),flex: 1,),
+                      ],), padding: EdgeInsetsDirectional.fromSTEB(0, 30, 0, 20),),
+
+                  ],
+                ) :
+                Container(
+                    height: SizeConfig().h(250),
+                    child:
+                    Center(child: CustomLoading()))
+                ,
+              )
+
+            ],),
 
             (widget.forSettings) ? BackButtonWidget(context) : Container()],),
         ));

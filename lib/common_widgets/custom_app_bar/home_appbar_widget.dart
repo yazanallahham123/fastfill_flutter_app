@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:dio/dio.dart';
+import 'package:fastfill/api/apis.dart';
 import 'package:fastfill/bloc/user/event.dart';
 import 'package:fastfill/bloc/user/state.dart';
 import 'package:fastfill/common_widgets/app_widgets/back_button_widget.dart';
@@ -28,6 +30,7 @@ import '../../bloc/station/state.dart';
 import '../../bloc/user/bloc.dart';
 import '../../helper/const_styles.dart';
 import '../../helper/methods.dart';
+import '../../model/user/edit_bank_card_body.dart';
 import '../../streams/update_profile_stream.dart';
 import '../../utils/misc.dart';
 import '../buttons/custom_button.dart';
@@ -45,12 +48,20 @@ class HomeAppBarWidget extends StatefulWidget implements PreferredSizeWidget{
 
 TextEditingController bankNameController = TextEditingController();
 TextEditingController cardNumberController = TextEditingController();
+TextEditingController monthController = TextEditingController();
+TextEditingController dayController = TextEditingController();
+
 FocusNode bankNameFocusNode = FocusNode();
 FocusNode cardNumberFocusNode = FocusNode();
+FocusNode monthFocusNode = FocusNode();
+FocusNode dayFocusNode = FocusNode();
 
-StreamController<bool> showAddStreamController = StreamController<bool>.broadcast();
+StreamController<FormType> showAddEditStreamController = StreamController<FormType>.broadcast();
 StreamController<List<BankCard>> refreshBankCardListStreamController = StreamController<List<BankCard>>.broadcast();
 StreamController<UserState> stateStreamController = StreamController<UserState>.broadcast();
+BankCard bankCardToEdit = BankCard();
+
+enum FormType {Add, Edit, Close}
 
 class HomeAppBarWidgetState extends State<HomeAppBarWidget> {
   @override
@@ -76,14 +87,31 @@ class HomeAppBarWidgetState extends State<HomeAppBarWidget> {
               refreshBankCardListStreamController.add(state.bankCardsWithPagination.bankCards!);
           } else if (state is AddedBankCardState)
             {
-              showAddStreamController.add(false);
+              showAddEditStreamController.add(FormType.Close);
               bloc.add(GetBankCardsEvent());
               bankNameController.text = "";
               cardNumberController.text = "";
+              monthController.text = "";
+              dayController.text = "";
             }
+          else if (state is EditedBankCardState)
+          {
+            showAddEditStreamController.add(FormType.Close);
+            bloc.add(GetBankCardsEvent());
+            bankNameController.text = "";
+            cardNumberController.text = "";
+            monthController.text = "";
+            dayController.text = "";
+            bankCardToEdit = BankCard();
+          }
           else if (state is DeletedBankCardState)
           {
+            showAddEditStreamController.add(FormType.Close);
             bloc.add(GetBankCardsEvent());
+            bankNameController.text = "";
+            cardNumberController.text = "";
+            monthController.text = "";
+            dayController.text = "";
           }
         },
         bloc: bloc,
@@ -113,6 +141,55 @@ class _BuildUIState extends State<_BuildUI> {
   @override
   void initState() {
     super.initState();
+  }
+  
+  void onEdit(BankCard bankCard)
+  {
+    bankCardToEdit = bankCard;
+    bankNameController.text = bankCard.bankName!;
+    cardNumberController.text = bankCard.cardNumber!;
+    monthController.text = bankCard.expiryDate!.substring(0, bankCard.expiryDate!.indexOf("/"));
+    dayController.text = bankCard.expiryDate!.substring(bankCard.expiryDate!.indexOf("/")+1, 5);
+    showAddEditStreamController.add(FormType.Edit);
+  }
+  
+  void onDelete(BankCard bankCard)
+  {
+    Widget cancelButton = TextButton(
+      child: Text(translate("buttons.cancel"), style: TextStyle(color: Colors.black),),
+      onPressed:  () {
+        hideKeyboard(context);
+        Navigator.pop(context);
+      },
+    );
+
+    Widget okButton = TextButton(
+      child: Text(translate("buttons.ok"), style: TextStyle(color: Colors.black),),
+      onPressed:  () async {
+        Navigator.pop(context);
+        hideKeyboard(context);
+        widget.bloc.add(DeleteBankCardEvent(bankCard.id!));
+      },
+    );
+
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text(translate("labels.delete")),
+      content: Text(translate("messages.deleteBankCard")),
+      actions: [
+        okButton,
+        cancelButton
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   @override
@@ -190,7 +267,7 @@ class _BuildUIState extends State<_BuildUI> {
                 alignment: AlignmentDirectional.topStart,
                 insetPadding: EdgeInsets.fromLTRB(50, 25, 50, 50),
                 backgroundColor: backgroundColor4,
-                title: StreamBuilder(stream: showAddStreamController.stream, builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                title: StreamBuilder(stream: showAddEditStreamController.stream, builder: (BuildContext context, AsyncSnapshot<FormType> snapshot) {
 
                   return Row(
 
@@ -198,10 +275,16 @@ class _BuildUIState extends State<_BuildUI> {
                       InkWell(child:
                       (isArabic()) ? Icon(Icons.arrow_forward, color: buttonColor1,) : Icon(Icons.arrow_back,  color: buttonColor1),
                         onTap: () {
-                          if (!(snapshot.data??false))
+                          if ((snapshot.data??FormType.Close) == FormType.Close)
                             {
                             Navigator.pop(context);
                           }
+                          else
+                            {
+                              if ((snapshot.data??FormType.Close) == FormType.Add) {
+                                showAddEditStreamController.add(FormType.Close);
+                              }
+                            }
                         },
                       ),
 
@@ -234,15 +317,20 @@ class _BuildUIState extends State<_BuildUI> {
                                   backColor: buttonColor1,
                                   titleColor: Colors.black,
                                   borderColor: buttonColor1,
-                                  title: translate(!(snapshot.data??false) ? "buttons.add" : "buttons.save"),
+                                  title: translate((((snapshot.data??FormType.Close) == FormType.Close)) ? "buttons.add" : "buttons.save"),
                                   onTap: () {
-                                    if ((snapshot.data??false))
+                                    if ((snapshot.data??FormType.Close) == FormType.Add)
                                     {
                                       addCard();
                                     }
                                     else
                                       {
-                                        showAddStreamController.add(true);
+                                      if ((snapshot.data??FormType.Close) == FormType.Edit) {
+                                        editCard();
+                                      }
+                                      else
+                                        showAddEditStreamController.add(
+                                            FormType.Add);
                                       }
                                   })))
 
@@ -253,7 +341,7 @@ class _BuildUIState extends State<_BuildUI> {
                 }),
                 titlePadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                 contentPadding: EdgeInsets.all(0),
-                content: StreamBuilder(stream: showAddStreamController.stream, builder: (BuildContext context, AsyncSnapshot<bool> showAddSnapshot) {
+                content: StreamBuilder(stream: showAddEditStreamController.stream, builder: (BuildContext context, AsyncSnapshot<FormType> showAddEditSnapshot) {
                 return
 
                 StreamBuilder(stream: refreshBankCardListStreamController.stream, builder: (BuildContext context, AsyncSnapshot<List<BankCard>> bankCardsSnapshot) {
@@ -266,12 +354,13 @@ class _BuildUIState extends State<_BuildUI> {
                         padding: EdgeInsetsDirectional.fromSTEB(5, 10, 5, 10),
                         child:
 
-                        (!(showAddSnapshot.data??false)) ?
+                        ((showAddEditSnapshot.data??FormType.Close) == FormType.Close)
+                            ?
                         SingleChildScrollView(
                             child: (bankCardsSnapshot.data != null) ?
-                            Column(children: bankCardsSnapshot.data!.map((bc) => BankCardWidget(bankCard: bc)).toList(),) : Container()) :
-                        Padding(child:
-                        Column(
+                            Column(children: bankCardsSnapshot.data!.map((bc) => BankCardWidget(bankCard: bc, onDelete: onDelete, onEdit: onEdit,)).toList(),) : Container())
+                            :
+                        Padding(child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Align(child: Text(translate("labels.bankName"), style: TextStyle(color: buttonColor1),),  alignment: AlignmentDirectional.topStart,),
@@ -291,12 +380,43 @@ class _BuildUIState extends State<_BuildUI> {
                               textInputType: TextInputType.text,
                               textInputAction: TextInputAction.done,
                               onFieldSubmitted: (_) {
-                                hideKeyboard(context);
-                                addCard();
+                                FocusScope.of(context).requestFocus(monthFocusNode);
+
+
                               },
                             ),
+                            Row(
+                                  children: [
+                                    Padding(child: Align(child: Text(translate("labels.expiryDate"), style: TextStyle(color: buttonColor1),), alignment: AlignmentDirectional.topStart,),
+                                      padding: EdgeInsetsDirectional.fromSTEB(0, 0, 10, 0),),
+                                    Flexible(child: CustomTextFieldWidget(
+                                    focusNode: monthFocusNode,
+                                    hintText: translate("labels.month"),
+                                    hintStyle: TextStyle(fontSize: 12),
+                                    controller: monthController,
+                                    textInputType: TextInputType.text,
+                                    textInputAction: TextInputAction.done,
+                                    onFieldSubmitted: (_) {
+                                      FocusScope.of(context).requestFocus(dayFocusNode);
+                                    },
+                                  )),
+                                  Text("-"),
+                                  Flexible(child: CustomTextFieldWidget(
+                                    focusNode: dayFocusNode,
+                                    hintText: translate("labels.year"),
+                                    hintStyle: TextStyle(fontSize: 12),
+                                    controller: dayController,
+                                    textInputType: TextInputType.text,
+                                    textInputAction: TextInputAction.done,
+                                    onFieldSubmitted: (_) {
+                                      hideKeyboard(context);
+                                      addCard();
+                                    },
+                                  )),
+                            ],)
+                          ],),padding: EdgeInsets.all(10),)
 
-                          ],),padding: EdgeInsets.all(10),) );
+                      );
 
                 });
 
@@ -357,10 +477,70 @@ class _BuildUIState extends State<_BuildUI> {
     );
   }
 
+  editCard()
+  {
+    if ((!bankNameController.text.trim().isEmpty) && (!cardNumberController.text.trim().isEmpty)
+        && (!monthController.text.trim().isEmpty) && (!dayController.text.trim().isEmpty)
+    ) {
+      String month;
+      if (monthController.text.length == 1)
+        month = "0"+convertArabicToEnglishNumbers(monthController.text);
+      else
+        month = convertArabicToEnglishNumbers(monthController.text);
+
+      String day;
+      if (dayController.text.length == 1)
+        day = "0"+convertArabicToEnglishNumbers(dayController.text);
+      else
+        day = convertArabicToEnglishNumbers(dayController.text);
+
+      String expiryDate = month + "/" + day;
+      EditBankCardBody editBankCardBody = EditBankCardBody(
+          id: bankCardToEdit.id,
+          bankName: bankNameController.text, cardNumber: convertArabicToEnglishNumbers(cardNumberController.text),
+          expiryDate: expiryDate
+      );
+      widget.bloc.add(EditBankCardEvent(editBankCardBody));
+    }
+    else
+    {
+      pushToast(translate("messages.theseFieldsMustBeFilledIn"));
+    }
+  }
+
+  String convertArabicToEnglishNumbers(String input)
+  {
+    const english = ['0','1','2','3','4','5','6','7','8','9'];
+    const arabic = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+
+    for (int i = 0; i < arabic.length; i++) {
+      input = input.replaceAll(arabic[i], english[i]);
+    }
+    return input;
+  }
+
+
   addCard()
   {
-    if ((!bankNameController.text.trim().isEmpty) && (!cardNumberController.text.trim().isEmpty)) {
-      AddBankCardBody addBankCardBody = AddBankCardBody(bankName: bankNameController.text, cardNumber: cardNumberController.text);
+    if ((!bankNameController.text.trim().isEmpty) && (!cardNumberController.text.trim().isEmpty)
+    && (!monthController.text.trim().isEmpty) && (!dayController.text.trim().isEmpty)
+    ) {
+      String month;
+      if (monthController.text.length == 1)
+        month = "0"+convertArabicToEnglishNumbers(monthController.text);
+      else
+        month = convertArabicToEnglishNumbers(monthController.text);
+
+      String day;
+      if (dayController.text.length == 1)
+        day = "0"+convertArabicToEnglishNumbers(dayController.text);
+      else
+        day = convertArabicToEnglishNumbers(dayController.text);
+
+      String expiryDate = month + "/" + day;
+      AddBankCardBody addBankCardBody = AddBankCardBody(bankName: bankNameController.text, cardNumber: convertArabicToEnglishNumbers(cardNumberController.text),
+      expiryDate: expiryDate
+      );
       widget.bloc.add(AddBankCardEvent(addBankCardBody));
     }
     else

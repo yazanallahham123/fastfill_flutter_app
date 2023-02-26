@@ -13,30 +13,12 @@ class OTPInitEvent extends OTPEvent {
   const OTPInitEvent();
 }
 
-class OTPSendCodeEvent extends OTPEvent{
+
+class OTPResendCodeEvent extends OTPEvent{
   final String mobileNumber;
 
-  const OTPSendCodeEvent(this.mobileNumber);
+  const OTPResendCodeEvent(this.mobileNumber);
 
   @override
   List<Object?> get props => [this.mobileNumber];
-}
-
-class OTPResendCodeEvent extends OTPEvent{
-  final String otp_id;
-
-  const OTPResendCodeEvent(this.otp_id);
-
-  @override
-  List<Object?> get props => [this.otp_id];
-}
-
-class OTPVerifyCodeEvent extends OTPEvent{
-  final String otp_id;
-  final String code;
-
-  const OTPVerifyCodeEvent(this.otp_id, this.code);
-
-  @override
-  List<Object?> get props => [this.otp_id, this.code];
 }

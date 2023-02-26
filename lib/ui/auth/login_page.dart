@@ -56,9 +56,8 @@ class _LoginPageState extends State<LoginPage> {
           if (state is ErrorLoginState)
             pushToast(state.error);
           else if (state is SuccessLoginState) {
-            await LocalData()
-                .setCurrentUserValue(state.loginUser.value!.userDetails!);
-            await LocalData().setTokenValue(state.loginUser.value!.token!);
+            await setCurrentUserValue(state.loginUser.value!.userDetails!);
+            await setTokenValue(state.loginUser.value!.token!);
             pushToast(translate("messages.youLoggedSuccessfully"));
             Navigator.pushNamedAndRemoveUntil(
                 context, HomePage.route, (Route<dynamic> route) => false);
@@ -125,6 +124,7 @@ class _BuildUIState extends State<_BuildUI> {
                         hintText: translate("labels.phoneNumber"),
                         textInputType: TextInputType.phone,
                         textInputAction: TextInputAction.next,
+                        errorText: translate("messages.phoneNumberValidation"),
                         onFieldSubmitted: (_) =>
                             FocusScope.of(context).requestFocus(passNode)),
                   ),
@@ -152,6 +152,8 @@ class _BuildUIState extends State<_BuildUI> {
                                 backColor: buttonColor1,
                                 titleColor: Colors.white,
                                 borderColor: buttonColor1,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
                                 title: translate("buttons.signIn"),
                                 onTap: () {
                                   _login(context);
@@ -172,9 +174,11 @@ class _BuildUIState extends State<_BuildUI> {
                                 top: SizeConfig().h(0),
                                 bottom: SizeConfig().h(20)),
                             child: CustomButton(
-                                backColor: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                backColor: buttonColor1,
+                                titleColor: Colors.white,
                                 borderColor: buttonColor1,
-                                titleColor: buttonColor1,
                                 title: translate("buttons.signUp"),
                                 onTap: () {
                                   hideKeyboard(context);
@@ -202,14 +206,14 @@ class _BuildUIState extends State<_BuildUI> {
             InkWell(
               onTap: () async {
                 if (isArabic()) {
-                  await LocalData().setLanguageValue("en");
+                  await setLanguageValue("en");
                   languageCode = "en";
                   FastFillApp.setLocale(context, Locale.fromSubtags(languageCode: "en"));
                   changeLocale(context, "en");
                 }
                 else
                   {
-                    await LocalData().setLanguageValue("ar");
+                    await setLanguageValue("ar");
                     languageCode = "ar";
                     FastFillApp.setLocale(context, Locale.fromSubtags(languageCode: "ar"));
                     changeLocale(context, "ar");
@@ -229,6 +233,18 @@ class _BuildUIState extends State<_BuildUI> {
           ],
         ))));
   }
+
+  String convertArabicToEnglishNumbers(String input)
+  {
+    const english = ['0','1','2','3','4','5','6','7','8','9'];
+    const arabic = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+
+    for (int i = 0; i < arabic.length; i++) {
+      input = input.replaceAll(arabic[i], english[i]);
+    }
+    return input;
+  }
+
 
   void _login(BuildContext context) async {
     hideKeyboard(context);
@@ -258,7 +274,10 @@ class _BuildUIState extends State<_BuildUI> {
 
         int languageId = (languageCode=="en") ? 1 : 2;
 
-        bloc.add(LoginUserEvent(LoginBody(
+        pn = convertArabicToEnglishNumbers(pn);
+
+        if (!bloc.isClosed)
+          bloc.add(LoginUserEvent(LoginBody(
             mobileNumber: pn,
             password: passController.text,
             language: languageId)));

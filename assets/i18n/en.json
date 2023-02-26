@@ -1,4 +1,7 @@
 {"labels" : {
+  "clearTransactions": "Clear transactions",
+  "delete": "Delete",
+  "expiryDate": "Expiry Date",
   "previousTransaction": "Previous Transaction",
   "exit": "Exit",
   "loading" : "Loading",
@@ -19,7 +22,7 @@
   "accountInfo": "Account Info",
   "balance": "Balance",
   "sdg": "SDG",
-  "stationNumber": "Station number",
+  "stationNumber": "Machine number",
   "frequentlyVisited": "Frequently visited",
   "favorites": "Favorites",
   "terms": "Terms of Service",
@@ -79,7 +82,13 @@
   "accountRefill": "Account refill",
   "noEnoughBalance": "Not enough balance, Please refill your account and try again",
   "noBalance": "Not enough balance",
-  "failAccountRefill": "Failed account refill"
+  "failAccountRefill": "Failed account refill",
+  "customer_id": "Customer Id",
+  "more_gas_stations_coming_soon": "More gas stations coming soon",
+  "currently_available_stations": "Currently available stations",
+  "year": "Year",
+  "month": "Month",
+  "profile": "Profile"
 },
 "buttons" : {
   "search": "Search",
@@ -105,9 +114,12 @@
   "yes": "Yes",
   "no": "No",
   "topUp": "Top Up",
-  "add": "+ Add card"
+  "add": "+ Add card",
+  "removeAccount": "Remove Account"
 },
 "messages" : {
+  "otpCodeResent": "OTP Code resent",
+  "couldNotFindPhoneNumber": "Could not find user registered with this phone number",
   "couldNotUploadProfilePhoto": "Could not upload profile photo",
   "logoutAlertMessage": "Are you sure want to logout?",
   "phoneNumberOrPasswordIncorrect": "Phone number or password are incorrect",
@@ -117,7 +129,8 @@
   "receivedInvalidStatusCode" :  "Received invalid status code",
   "sendTimeout": "Send timeout",
   "thisFieldMustBeFilledIn":  "This field must be filled in",
-  "passContain7Char" :  "Password contain 7 chars",
+  "phoneNumberValidation":  "This field must be filled in with correct phone number",
+  "passContain7Char" :  "Password must contain 7 or more characters",
   "theseFieldsMustBeFilledIn" :  "These fields must be filled in",
   "youLoggedSuccessfully" : "You logged successfully",
   "youSignedupSuccessfully": "You signed up successfully",
@@ -153,12 +166,28 @@
   "couldNotAddBankCard": "Could not add bank card",
   "couldNotDeleteBankCard": "Could not delete bank card",
   "couldAddUserRefillTransaction": "Could not add user refill transaction",
-  "minimumPaymentAmount": "Minimum allowed payment amount must be 200 SDG and more.",
+  "minimumPaymentAmount": "Minimum allowed payment amount must be 1000 SDG.",
   "couldNotClearUserNotifications": "Could not clear user notifications",
   "couldNotUpdateUserLanguage": "Could not update user language",
-  "exit": "Are you sure want to exit?"
+  "exit": "Are you sure want to exit?",
+  "deleteBankCard": "Are you sure want to delete bank card?",
+  "clearTransactions": "Are sure want to clear transactions?",
+  "phoneAlreadyInUse": "Phone is already in use, try to reset password or change the phone number",
+  "confirmPassword": "Please make sure password and confirm password are identical"
 },
   "titles" : {
     "welcome": "Welcome"
+  },
+  "terms": {
+    "youAgreed": "You have agreed to terms and conditions and our privacy policy",
+    "continue": "By continuing to use the app, you confirm to have read ",
+    "agree": " and agree to our ",
+    "termsAndServicesTitle": "FAST FILL TERMS AND SERVICES",
+    "termsAndServicesContent": "1. Our service. Fastfill’s service is to help customers pay for fuel via secure electronic payments. \n2. User’s payment info. FastFill does not save customers payment information or credit card info unless the user grants permission.\n3. Users have the option of saving their payment info whether card or account numbers. By saving their payment info, users will have a faster experience of topping up their accounts. By choosing the add card and save options, users are giving FastFill the permission to save their card number(PAN) in the app for a faster account refilling experience.\n4. The add card and save options does not require the iPIN number, it is only a way to make the credit card number in handy for a better and faster account refilling experience.\n5. Refund policy. FastFill does not offer refunds after users pay a gas station. If the user has topped up their FastFill account with an incorrect amount, the user may contact FastFill through the WhatsApp number provided in the app in order to solve the issue. The user should except FastFill to respond within two business days.\n6. Fees. FastFill takes a fee from every transaction between users and gas stations. That fee is subject to change in the future.\n7. Technical support. In case of technical difficulties experienced by users, users should contact FastFill through the WhatsApp number provided by the app. Users must allow two business days for FastFill to acknowledge the issue and respond.\n8. Account hacking. In the case of a user’s account being hacked, FastFill will do its best to recover the account to its owner but it must be stated that FastFill is not responsible or liable for hacked accounts or the amount of money in those accounts.",
+    "privacyPolicyTitle": "PRIVACY POLICY",
+    "privacyPolicyContent": "1- user’s account info\nFastFill will never share any information of its users and their accounts unless granted permission by the specific user.",
+    "dataTitle": "DATA",
+    "dataContent": "FastFill will never share any of its data or users data to any party. FastFill will also never sell any of its data or users data or information.",
+    "youSuccessfullyAgreedTerms": "You have successfully agreed Fast fill terms and services"
   }
 }

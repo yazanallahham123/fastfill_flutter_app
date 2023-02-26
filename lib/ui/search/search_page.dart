@@ -33,7 +33,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_translate/flutter_translate.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../model/station/station.dart';
 

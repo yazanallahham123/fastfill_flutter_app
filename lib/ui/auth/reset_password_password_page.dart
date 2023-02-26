@@ -9,7 +9,6 @@ import 'package:fastfill/common_widgets/custom_text_field_widgets/methods.dart';
 import 'package:fastfill/common_widgets/custom_text_field_widgets/textfield_password_widget.dart';
 import 'package:fastfill/helper/app_colors.dart';
 import 'package:fastfill/helper/const_styles.dart';
-import 'package:fastfill/helper/firebase_helper.dart';
 import 'package:fastfill/helper/size_config.dart';
 import 'package:fastfill/helper/toast.dart';
 import 'package:fastfill/model/forRouting/enums.dart';
@@ -18,7 +17,6 @@ import 'package:fastfill/model/user/reset_password_body.dart';
 import 'package:fastfill/model/user/signup_body.dart';
 import 'package:fastfill/ui/home/home_page.dart';
 import 'package:fastfill/utils/local_data.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -184,6 +182,7 @@ class _BuildUI extends StatelessWidget {
           }
         }
 
+        if (!userBloc.isClosed)
         userBloc.add(ResetPasswordEvent(ResetPasswordBody(
           newPassword: newPasswordController.text,
           mobileNumber: pn,

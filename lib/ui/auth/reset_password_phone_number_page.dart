@@ -12,18 +12,17 @@ import 'package:fastfill/common_widgets/custom_text_field_widgets/methods.dart';
 import 'package:fastfill/common_widgets/custom_text_field_widgets/textfield_password_widget.dart';
 import 'package:fastfill/helper/app_colors.dart';
 import 'package:fastfill/helper/const_styles.dart';
-import 'package:fastfill/helper/firebase_helper.dart';
 import 'package:fastfill/helper/size_config.dart';
 import 'package:fastfill/helper/toast.dart';
 import 'package:fastfill/model/forRouting/enums.dart';
 import 'package:fastfill/model/forRouting/otp_arguments.dart';
+import 'package:fastfill/model/otp/otp_code_verification_body.dart';
 import 'package:fastfill/model/user/reset_password_body.dart';
 import 'package:fastfill/model/user/signup_body.dart';
 import 'package:fastfill/ui/auth/reset_password_password_page.dart';
 import 'package:fastfill/ui/home/home_page.dart';
 import 'package:fastfill/utils/local_data.dart';
 import 'package:fastfill/utils/misc.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,6 +31,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:keyboard_actions/keyboard_actions_config.dart';
 
+import '../../model/otp/otp_verification_phone_body.dart';
 import 'login_page.dart';
 import 'otp_validation_page.dart';
 
@@ -55,6 +55,64 @@ class _ResetPassword_PhoneNumberPageState extends State<ResetPassword_PhoneNumbe
 
     return BlocListener<UserBloc, UserState>(
         listener: (context, state) async {
+          if (state is VerifiedOTPCode)
+          {
+            if (state.result) {
+              userBloc.add(SuccessfulUserOTPVerificationEvent(
+                  null,
+                  ResetPasswordBody(
+                      verificationId: state.registerId,
+                      newPassword: state.resetPasswordBody!.newPassword,
+                      mobileNumber: state.resetPasswordBody!.mobileNumber), null, false));
+            }
+            else
+            {
+              userBloc.add(ErrorUserOTPVerificationEvent(translate("messages.otpCodeIsIncorrect")));
+            }
+          }
+          else
+          if (state is CalledOTPScreenState)
+            {
+              OTPVerificationPhoneBody otpVerificationPhoneBody = OTPVerificationPhoneBody(registerId: state.registerId, phoneNumber: state.mobileNumber);
+              OTPCodeVerificationBody? otpCodeVerification = await Navigator.pushNamed(
+                  context, OTPValidationPage.route,
+                  arguments: otpVerificationPhoneBody) as OTPCodeVerificationBody?;
+
+              if (otpCodeVerification != null)
+              {
+                if (otpCodeVerification.code != null)
+                {
+                  if (otpCodeVerification.code.isNotEmpty)
+                  {
+                    if (!userBloc.isClosed) {
+                      userBloc.add(VerifyOTPEvent(
+                          otpCodeVerification.registerId,
+                          otpCodeVerification.code,
+                          null,
+                          state.mobileNumber,
+                          null,
+                          state.resetPasswordBody, false));
+                    }
+                  }
+                }
+              }
+            }
+          else
+          if (state is CheckedUserByPhoneState)
+          {
+            if (state.result)
+              {
+                if (!userBloc.isClosed) {
+                  String fullNumber = countryCode+state.mobileNumber;
+                  userBloc.add(CallOTPScreenEvent(fullNumber, null, null, state.resetPasswordBody, false));
+                }
+              }
+            else
+              {
+                pushToast(translate(translate("messages.couldNotFindPhoneNumber")));
+              }
+          }
+          else
           if (state is ErrorUserState)
             pushToast(state.error);
           else if (state is SuccessfulUserOTPVerificationState) {
@@ -120,6 +178,7 @@ class _BuildUIState extends State<_BuildUI> {
                         validator: validateMobile,
                         hintText: translate("labels.phoneNumber"),
                         textInputType: TextInputType.phone,
+                        errorText: translate("messages.phoneNumberValidation"),
                         textInputAction: TextInputAction.go,
                         onFieldSubmitted: (_) {
                           _resetPassword(context);
@@ -150,17 +209,26 @@ class _BuildUIState extends State<_BuildUI> {
         ]))));
   }
 
+
+  String convertArabicToEnglishNumbers(String input)
+  {
+    const english = ['0','1','2','3','4','5','6','7','8','9'];
+    const arabic = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+
+    for (int i = 0; i < arabic.length; i++) {
+      input = input.replaceAll(arabic[i], english[i]);
+    }
+    return input;
+  }
+
   void _resetPassword(BuildContext context) async {
     if (phoneController.text.isNotEmpty) {
       if (!validateMobile(phoneController.text))
         FocusScope.of(context).requestFocus(phoneNode);
       else {
 
-        hideKeyboard(context);
-        widget.userBloc.add(CallOTPScreenEvent());
-
-
         String pn = "";
+
         if (phoneController.text != null) {
           if ((phoneController.text.length == 9) ||
               (phoneController.text.length == 10)) {
@@ -176,81 +244,16 @@ class _BuildUIState extends State<_BuildUI> {
           }
         }
 
+        pn = convertArabicToEnglishNumbers(pn);
 
-        await auth.verifyPhoneNumber(
-            phoneNumber: countryCode + pn,
-            timeout: const Duration(seconds: 5),
-            verificationCompleted: await (PhoneAuthCredential credential) {
+        ResetPasswordBody rpb = ResetPasswordBody(
+            verificationId: "ResetPassword",
+            newPassword: "",
+            mobileNumber: pn);
 
-              auth.signInWithCredential(credential).then((value) {
-                widget.userBloc.add(SuccessfulUserOTPVerificationEvent(
-                    null,
-                    ResetPasswordBody(
-                        verificationId: credential.verificationId,
-                        newPassword: "",
-                        mobileNumber: pn)));
-              }).catchError((e) {
-                widget.userBloc.add(ErrorUserOTPVerificationEvent(
-                    (e.message != null) ? e.message! : e.code));
-              });
+        if (!widget.userBloc.isClosed)
+          widget.userBloc.add(CheckUserByPhoneEvent(pn, null, null, rpb, false));
 
-            },
-            verificationFailed: await (FirebaseAuthException e) async {
-              widget.userBloc.add(ErrorUserOTPVerificationEvent(
-                  (e.message != null)
-                      ? e.message! + " " + e.code + countryCode + pn
-                      : e.code));
-            },
-            codeSent: await (String verificationId, int? resendToken) async {
-              if (Platform.isIOS) {
-
-                String? smsCode = await Navigator.pushNamed(
-                    context, OTPValidationPage.route,
-                    arguments: verificationId) as String?;
-                if (smsCode == null)
-                  smsCode = "";
-                if (smsCode.isNotEmpty) {
-                  PhoneAuthCredential credential = PhoneAuthProvider.credential(
-                      verificationId: verificationId, smsCode: smsCode);
-                  auth.signInWithCredential(credential).then((value) {
-
-
-                    widget.userBloc.add(SuccessfulUserOTPVerificationEvent(
-                        null,
-                        ResetPasswordBody(
-                            verificationId: verificationId,
-                            newPassword: "",
-                            mobileNumber: pn)));
-                  }).catchError((e) {
-                    widget.userBloc.add(ErrorUserOTPVerificationEvent(
-                        (e.message != null) ? e.message! : e.code));
-                  });
-                }
-              }
-            },
-            codeAutoRetrievalTimeout: await (String verificationId) async {
-
-              String? smsCode = await Navigator.pushNamed(
-                  context, OTPValidationPage.route,
-                  arguments: verificationId) as String?;
-              if (smsCode == null)
-                smsCode = "";
-              if (smsCode.isNotEmpty) {
-                PhoneAuthCredential credential = PhoneAuthProvider.credential(
-                    verificationId: verificationId, smsCode: smsCode);
-                auth.signInWithCredential(credential).then((value) {
-                  widget.userBloc.add(SuccessfulUserOTPVerificationEvent(
-                      null,
-                      ResetPasswordBody(
-                          verificationId: verificationId,
-                          newPassword: "",
-                          mobileNumber:pn)));
-                }).catchError((e) {
-                  widget.userBloc.add(ErrorUserOTPVerificationEvent(
-                      (e.message != null) ? e.message! : e.code));
-                });
-              }
-            });
       }
     } else
       pushToast(translate("messages.theseFieldsMustBeFilledIn"));

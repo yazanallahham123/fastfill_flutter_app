@@ -10,14 +10,13 @@ import 'package:fastfill/common_widgets/custom_text_field_widgets/methods.dart';
 import 'package:fastfill/common_widgets/custom_text_field_widgets/textfield_password_widget.dart';
 import 'package:fastfill/helper/app_colors.dart';
 import 'package:fastfill/helper/const_styles.dart';
-import 'package:fastfill/helper/firebase_helper.dart';
 import 'package:fastfill/helper/size_config.dart';
 import 'package:fastfill/helper/toast.dart';
+import 'package:fastfill/model/otp/otp_verification_phone_body.dart';
 import 'package:fastfill/model/user/signup_body.dart';
 import 'package:fastfill/ui/home/home_page.dart';
 import 'package:fastfill/utils/local_data.dart';
 import 'package:fastfill/utils/misc.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,6 +25,8 @@ import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:keyboard_actions/keyboard_actions_config.dart';
 
 import '../../main.dart';
+import '../../model/otp/otp_code_verification_body.dart';
+import '../terms/terms_page.dart';
 import 'otp_validation_page.dart';
 
 class SignupPage extends StatefulWidget {
@@ -48,17 +49,181 @@ class _SignupPageState extends State<SignupPage> {
 
     return BlocListener<UserBloc, UserState>(
         listener: (context, state) async {
-          if (state is ErrorUserState)
+          if (state is VerifiedOTPCode)
+            {
+              if (state.result) {
+                userBloc.add(SuccessfulUserOTPVerificationEvent(
+                    state.signupBody,
+                    null,
+                    null, false));
+              }
+              else
+                {
+                  userBloc.add(ErrorUserOTPVerificationEvent(translate("messages.otpCodeIsIncorrect")));
+                }
+            }
+          else
+          if (state is CalledOTPScreenState)
+            {
+              OTPVerificationPhoneBody otpVerificationPhoneBody = OTPVerificationPhoneBody(registerId: state.registerId, phoneNumber: state.mobileNumber);
+              OTPCodeVerificationBody? otpCodeVerification = await Navigator.pushNamed(
+                  context, OTPValidationPage.route,
+                  arguments: otpVerificationPhoneBody) as OTPCodeVerificationBody?;
+
+              if (otpCodeVerification != null)
+                {
+                  if (otpCodeVerification.code != null)
+                    {
+                      if (otpCodeVerification.code.isNotEmpty)
+                        {
+                          if (!userBloc.isClosed) {
+                              userBloc.add(VerifyOTPEvent(
+                                otpCodeVerification.registerId,
+                                otpCodeVerification.code,
+                                state.signupBody,
+                                state.mobileNumber,
+                                null,
+                                null, false));
+                          }
+                        }
+                    }
+                }
+
+            } else
+          if (state is CheckedUserByPhoneState) {
+            if (state.result)
+              pushToast(translate("messages.phoneAlreadyInUse"));
+            else {
+              if (!userBloc.isClosed) {
+                String fullNumber = countryCode + state.mobileNumber;
+                userBloc.add(CallOTPScreenEvent(fullNumber, state.signupBody!, null, null, false));
+              }
+              /*
+              await auth.verifyPhoneNumber(
+                  phoneNumber: countryCode + state.mobileNumber,
+                  timeout: const Duration(seconds: 5),
+                  verificationCompleted:
+                  await (PhoneAuthCredential credential) async {
+                    auth.signInWithCredential(credential).then((value) {
+                      print("signInWithCredential");
+                      if (!userBloc.isClosed)
+                        userBloc.add(SuccessfulUserOTPVerificationEvent(
+                            state.signupBody,
+                            null));
+                    }).catchError((e) {
+                      print("Error signInWithCredential");
+                      if (!userBloc.isClosed)
+                        userBloc.add(ErrorUserOTPVerificationEvent(
+                            (e.message != null) ? e.message! : e.code));
+                    });
+                  },
+                  verificationFailed: await (FirebaseAuthException e) async {
+                    print("verificationFailed");
+                    print(e);
+                    userBloc.add(ErrorUserOTPVerificationEvent(
+                        (e.message != null)
+                            ? e.message! + " " + e.code + countryCode +
+                            state.mobileNumber
+                            : e.code));
+                  },
+                  codeSent: await (String verificationId,
+                      int? resendToken) async {
+
+                    String verId = verificationId;
+                    String smsCode = "";
+
+                    OTPVerificationPhoneBody otpVerificationPhoneBody = OTPVerificationPhoneBody(verificationId: verId, phoneNumber: fullNumber);
+
+                    print("codeSent");
+                    if (Platform.isIOS) {
+                      OTPCodeVerificationBody? otpCodeVerification = await Navigator.pushNamed(
+                          context, OTPValidationPage.route,
+                          arguments: otpVerificationPhoneBody) as OTPCodeVerificationBody?;
+
+                      if (otpCodeVerification != null) {
+                        smsCode = otpCodeVerification.code;
+                        verId = otpCodeVerification.verificationId;
+                      }
+
+                      if (smsCode.isNotEmpty) {
+                        PhoneAuthCredential credential = PhoneAuthProvider
+                            .credential(
+                            verificationId: verId, smsCode: smsCode);
+                        auth.signInWithCredential(credential).then((value) {
+                          print("signInWithCredential 2");
+                          if (!userBloc.isClosed)
+                            userBloc.add(SuccessfulUserOTPVerificationEvent(
+                                state.signupBody,
+                                null));
+                        }).catchError((e) {
+                          print("Error signInWithCredential 2");
+                          if (!userBloc.isClosed)
+                            userBloc.add(ErrorUserOTPVerificationEvent(
+                                (e.message != null) ? e.message! : e.code));
+                        });
+                      } else {
+                        if (!userBloc.isClosed)
+                          userBloc.add(ErrorUserOTPVerificationEvent(
+                              translate("messages.emptyCode")));
+                      }
+                    }
+                  },
+                  codeAutoRetrievalTimeout: await (
+                      String verificationId) async {
+
+                    String verId = verificationId;
+                    String smsCode = "";
+
+                    OTPVerificationPhoneBody otpVerificationPhoneBody = OTPVerificationPhoneBody(verificationId: verId, phoneNumber: fullNumber);
+
+                    OTPCodeVerificationBody? otpCodeVerification = await Navigator.pushNamed(
+                        context, OTPValidationPage.route,
+                        arguments: otpVerificationPhoneBody) as OTPCodeVerificationBody?;
+
+                    if (otpCodeVerification != null) {
+                      smsCode = otpCodeVerification.code;
+                      verId = otpCodeVerification.verificationId;
+                    }
+
+                    if (smsCode.isNotEmpty) {
+                      PhoneAuthCredential credential = PhoneAuthProvider
+                          .credential(
+                          verificationId: verId, smsCode: smsCode);
+                      auth.signInWithCredential(credential).then((value) {
+                        print("signInWithCredential 3");
+                        if (!userBloc.isClosed)
+                          userBloc.add(SuccessfulUserOTPVerificationEvent(
+                              state.signupBody,
+                              null));
+                      }).catchError((e) {
+                        print("Error signInWithCredential 3");
+                        if (!userBloc.isClosed)
+                          userBloc.add(ErrorUserOTPVerificationEvent(
+                              (e.message != null) ? e.message! : e.code));
+                      });
+                    } else {
+                      if (!userBloc.isClosed)
+                        userBloc.add(ErrorUserOTPVerificationEvent(
+                            translate("messages.emptyCode")));
+                    }
+                  }).catchError((x){
+                    print("detailed error");
+                    print(x);
+                 });
+              */
+            }
+          } else if (state is ErrorUserState) {
+
             pushToast(state.error);
+          }
           else if (state is SuccessfulUserOTPVerificationState) {
             pushToast(translate(translate("messages.otpCodeIsVerified")));
-            userBloc.add(SignupEvent(state.signupBody));
+            if (!userBloc.isClosed)
+              userBloc.add(SignupEvent(state.signupBody));
           } else if (state is SignedUpState) {
-            await LocalData()
-                .setCurrentUserValue(state.signedUpUser.userDetails!);
-            await LocalData().setTokenValue(state.signedUpUser.token!);
+            await setCurrentUserValue(state.signedUpUser.userDetails!);
+            await setTokenValue(state.signedUpUser.token!);
             pushToast(translate("messages.youSignedupSuccessfully"));
-
             Navigator.pushNamedAndRemoveUntil(
                 context, HomePage.route, (Route<dynamic> route) => false);
           }
@@ -94,107 +259,157 @@ class _BuildUIState extends State<_BuildUI> {
 
   @override
   Widget build(BuildContext context) {
-
     SizeConfig().init(context);
     return Scaffold(
         resizeToAvoidBottomInset: true,
         backgroundColor: backgroundColor1,
-        body:
-        KeyboardActions(
-        config: _buildConfig(context),
-    child:
-
-        SingleChildScrollView(
-            child: Stack(children: [
-          Container(
-            margin: EdgeInsetsDirectional.only(
-                top: SizeConfig().h(175),
-                start: SizeConfig().w(20),
-                end: SizeConfig().w(20)),
-            padding: EdgeInsets.symmetric(horizontal: SizeConfig().w(24)),
-            decoration:
-                BoxDecoration(color: Colors.white, borderRadius: radiusAll20),
-            child: Column(
-              children: [
-                Padding(
-                  padding: EdgeInsetsDirectional.only(top: SizeConfig().h(40)),
-                  child: CustomTextFieldWidget(
-                      controller: firstNameController,
-                      focusNode: firstNameNode,
-                      validator: validateName,
-                      hintText: translate("labels.name"),
-                      textInputType: TextInputType.text,
-                      textInputAction: TextInputAction.next,
-                      onFieldSubmitted: (_) =>
-                          FocusScope.of(context).requestFocus(phoneNode)),
-                ),
-                CustomTextFieldWidget(
-                    controller: phoneController,
-                    focusNode: phoneNode,
-                    validator: validateMobile,
-                    hintText: translate("labels.phoneNumber"),
-                    textInputType: TextInputType.phone,
-                    textInputAction: TextInputAction.next,
-                    onFieldSubmitted: (_) =>
-                        FocusScope.of(context).requestFocus(passNode)),
-                TextFieldPasswordWidget(
-                    controller: passController,
-                    focusNode: passNode,
-                    hintText: translate("labels.password"),
-                    textInputAction: TextInputAction.next,
-                    onFieldSubmitted: (_) =>
-                        FocusScope.of(context).requestFocus(confirmPassNode)),
-                TextFieldPasswordWidget(
-                    controller: confirmPassController,
-                    textInputAction: TextInputAction.go,
-                    focusNode: confirmPassNode,
-                    hintText: translate("labels.confirmPassword"),
-                    onFieldSubmitted: (_) {
-                      _signUp(context);
-                    }),
-                if (widget.userState is LoadingUserState)
-                  Padding(
-                    child: const CustomLoading(),
-                    padding: EdgeInsetsDirectional.only(
-                        top: SizeConfig().h(20), bottom: SizeConfig().h(50)),
-                  )
-                else
-                  Padding(
-                      padding: EdgeInsetsDirectional.only(
-                          top: SizeConfig().h(10), bottom: SizeConfig().h(35)),
-                      child: CustomButton(
-                          backColor: buttonColor1,
-                          titleColor: Colors.white,
-                          borderColor: buttonColor1,
-                          title: translate("buttons.signUp"),
-                          onTap: () {
-                            _signUp(context);
-                            //Navigator.pushNamed(context, OTPValidationPage.route);
-                          })),
-              ],
-            ),
-          ),
-          // Back Button
-          /*InkWell(
-                onTap: () => Navigator.pop(context),
+        body: KeyboardActions(
+            config: _buildConfig(context),
+            child: SingleChildScrollView(
                 child: Container(
-                    alignment: Alignment.topLeft,
-                    height: SizeConfig().h(50),
-                    width: SizeConfig().h(50),
-                    margin: EdgeInsets.symmetric(
-                        horizontal: SizeConfig().w(12),
-                        vertical: SizeConfig().h(55)),
-                    child: Transform(
-                        alignment: Alignment.center,
-                        transform: Matrix4.rotationY(pi),
-                        child: SvgPicture.asset(
-                          'assets/svg/backarrow.svg',
-                          width: SizeConfig().w(50),
-                        ))),
-              )*/
-          BackButtonWidget(context)
-        ]))));
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                Align(
+                  child: BackButtonWidget(context),
+                  alignment: AlignmentDirectional.topStart,
+                ),
+                Container(
+                  margin: EdgeInsetsDirectional.only(
+                      start: SizeConfig().w(20), end: SizeConfig().w(20)),
+                  padding: EdgeInsets.symmetric(horizontal: SizeConfig().w(24)),
+                  decoration: BoxDecoration(
+                      color: Colors.white, borderRadius: radiusAll20),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding:
+                            EdgeInsetsDirectional.only(top: SizeConfig().h(40)),
+                        child: CustomTextFieldWidget(
+                            errorText: translate("messages.thisFieldMustBeFilledIn"),
+                            controller: firstNameController,
+                            focusNode: firstNameNode,
+                            validator: validateName,
+                            hintText: translate("labels.name"),
+                            textInputType: TextInputType.text,
+                            textInputAction: TextInputAction.next,
+                            onFieldSubmitted: (_) =>
+                                FocusScope.of(context).requestFocus(phoneNode)),
+                      ),
+                      CustomTextFieldWidget(
+                          errorText: translate("messages.phoneNumberValidation"),
+                          controller: phoneController,
+                          focusNode: phoneNode,
+                          validator: validateMobile,
+                          hintText: translate("labels.phoneNumber"),
+                          textInputType: TextInputType.phone,
+                          textInputAction: TextInputAction.next,
+                          onFieldSubmitted: (_) =>
+                              FocusScope.of(context).requestFocus(passNode)),
+                      TextFieldPasswordWidget(
+                          errorText: translate("messages.passContain7Char"),
+
+                          controller: passController,
+                          focusNode: passNode,
+                          validator: validatePassword,
+                          hintText: translate("labels.password"),
+                          textInputAction: TextInputAction.next,
+                          onFieldSubmitted: (_) => FocusScope.of(context)
+                              .requestFocus(confirmPassNode)),
+                      TextFieldPasswordWidget(
+                          errorText: translate("messages.confirmPassword"),
+                          controller: confirmPassController,
+                          textInputAction: TextInputAction.go,
+                          focusNode: confirmPassNode,
+                          validator: (x){
+                            if (confirmPassController.text != passController.text)
+                              return false;
+                            else
+                              return true;
+                          },
+                          hintText: translate("labels.confirmPassword"),
+                          onFieldSubmitted: (_) {
+                            _signUp(context);
+                          }),
+                      if (widget.userState is LoadingUserState)
+                        Padding(
+                          child: const CustomLoading(),
+                          padding: EdgeInsetsDirectional.only(
+                              top: SizeConfig().h(20),
+                              bottom: SizeConfig().h(50)),
+                        )
+                      else
+                        Padding(
+                            padding: EdgeInsetsDirectional.only(
+                                top: SizeConfig().h(10),
+                                bottom: SizeConfig().h(35)),
+                            child: CustomButton(
+                                backColor: buttonColor1,
+                                titleColor: Colors.white,
+                                borderColor: buttonColor1,
+                                title: translate("buttons.signUp"),
+                                onTap: () {
+                                  _signUp(context);
+                                  //Navigator.pushNamed(context, OTPValidationPage.route);
+                                }))
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: InkWell(
+                    child: Align(
+                      child: Padding(
+                        child:
+                            Column(mainAxisSize: MainAxisSize.min, children: [
+                          Divider(
+                            color: buttonColor1,
+                            thickness: 0.5,
+                          ),
+                          RichText(
+                            text: TextSpan(
+                                text: translate("terms.continue"),
+                                children: <TextSpan>[
+                                  TextSpan(
+                                      text: translate(
+                                          "terms.termsAndServicesTitle"),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)),
+                                  TextSpan(
+                                    text: translate("terms.agree"),
+                                  ),
+                                  TextSpan(
+                                      text:
+                                          translate("terms.privacyPolicyTitle"),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold))
+                                ],
+                                style: TextStyle(
+                                    color: buttonColor1, fontSize: 11)),
+                          )
+                        ]),
+                        padding: EdgeInsetsDirectional.fromSTEB(10, 0, 10, 25),
+                      ),
+                      alignment: AlignmentDirectional.bottomStart,
+                    ),
+                    onTap: () {
+                      Navigator.pushNamed(context, TermsPage.route);
+                    },
+                  ),
+                )
+              ]),
+              height: MediaQuery.of(context).size.height,
+            ))));
   }
+
+  String convertArabicToEnglishNumbers(String input)
+  {
+    const english = ['0','1','2','3','4','5','6','7','8','9'];
+    const arabic = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+
+    for (int i = 0; i < arabic.length; i++) {
+      input = input.replaceAll(arabic[i], english[i]);
+    }
+    return input;
+  }
+
 
   void _signUp(BuildContext context) async {
     if (phoneController.text.isNotEmpty &&
@@ -212,7 +427,6 @@ class _BuildUIState extends State<_BuildUI> {
       else if (confirmPassController.text != passController.text)
         FocusScope.of(context).requestFocus(confirmPassNode);
       else {
-
         hideKeyboard(context);
 
         String pn = "";
@@ -231,95 +445,21 @@ class _BuildUIState extends State<_BuildUI> {
           }
         }
 
+        pn = convertArabicToEnglishNumbers(pn);
 
-        widget.userBloc.add(CallOTPScreenEvent());
-        await auth.verifyPhoneNumber(
-            phoneNumber: countryCode + pn,
-            timeout: const Duration(seconds: 5),
-            verificationCompleted:
-                await (PhoneAuthCredential credential) async {
-              auth.signInWithCredential(credential).then((value) {
-                widget.userBloc.add(SuccessfulUserOTPVerificationEvent(
-                    SignupBody(
-                        firstName: firstNameController.text,
-                        lastName: firstNameController.text,
-                        username: pn,
-                        mobileNumber: pn,
-                        password: passController.text),
-                    null));
-              }).catchError((e) {
-                widget.userBloc.add(ErrorUserOTPVerificationEvent(
-                    (e.message != null) ? e.message! : e.code));
-              });
-            },
-            verificationFailed: await (FirebaseAuthException e) async {
-              widget.userBloc.add(ErrorUserOTPVerificationEvent(
-                  (e.message != null)
-                      ? e.message! + " " + e.code + countryCode + pn
-                      : e.code));
-            },
-            codeSent: await (String verificationId, int? resendToken) async {
-              if (Platform.isIOS)
-                {
+        int languageId = (languageCode == "en") ? 1 : 2;
+        SignupBody signupBody =
+        SignupBody(
+            firstName: firstNameController.text,
+            lastName: firstNameController.text,
+            username: pn,
+            mobileNumber: pn,
+            password: passController.text,
+            language: languageId);
 
-                  String? smsCode = await Navigator.pushNamed(
-                      context, OTPValidationPage.route,
-                      arguments: verificationId) as String?;
-                  if (smsCode == null)
-                    smsCode = "";
-                  if (smsCode.isNotEmpty) {
-                    PhoneAuthCredential credential = PhoneAuthProvider.credential(
-                        verificationId: verificationId, smsCode: smsCode);
-                    auth.signInWithCredential(credential).then((value) {
-                      widget.userBloc.add(SuccessfulUserOTPVerificationEvent(
-                          SignupBody(
-                              firstName: firstNameController.text,
-                              lastName: firstNameController.text,
-                              username: pn,
-                              mobileNumber: pn,
-                              password: passController.text),
-                          null));
-                    }).catchError((e) {
-                      widget.userBloc.add(ErrorUserOTPVerificationEvent(
-                          (e.message != null) ? e.message! : e.code));
-                    });
-                  } else {
-                    widget.userBloc.add(ErrorUserOTPVerificationEvent(
-                        translate("messages.emptyCode")));
-                  }
-                }
-            },
-            codeAutoRetrievalTimeout: await (String verificationId) async {
+        if (!widget.userBloc.isClosed)
+        widget.userBloc.add(CheckUserByPhoneEvent(pn, signupBody, null, null, false));
 
-              String? smsCode = await Navigator.pushNamed(
-                  context, OTPValidationPage.route,
-                  arguments: verificationId) as String?;
-              if (smsCode == null)
-                smsCode = "";
-              if (smsCode.isNotEmpty) {
-                PhoneAuthCredential credential = PhoneAuthProvider.credential(
-                    verificationId: verificationId, smsCode: smsCode);
-                auth.signInWithCredential(credential).then((value) {
-
-                  int languageId = (languageCode=="en") ? 1 : 2;
-                  widget.userBloc.add(SuccessfulUserOTPVerificationEvent(
-                      SignupBody(
-                          firstName: firstNameController.text,
-                          lastName: firstNameController.text,
-                          username: pn,
-                          mobileNumber: pn,
-                          password: passController.text,
-                          language: languageId),
-                      null));
-                }).catchError((e) {
-                  widget.userBloc.add(ErrorUserOTPVerificationEvent(
-                      (e.message != null) ? e.message! : e.code));
-                });
-              } else {
-                widget.userBloc.add(ErrorUserOTPVerificationEvent(
-                    translate("messages.emptyCode")));
-              }
-            });
       }
     } else
       pushToast(translate("messages.theseFieldsMustBeFilledIn"));
@@ -339,67 +479,72 @@ class _BuildUIState extends State<_BuildUI> {
     phoneNode.dispose();
   }
 
-  KeyboardActionsConfig _buildConfig(BuildContext context){
+  KeyboardActionsConfig _buildConfig(BuildContext context) {
     return KeyboardActionsConfig(
         keyboardActionsPlatform: KeyboardActionsPlatform.ALL,
         keyboardBarColor: Colors.grey[200],
         nextFocus: true,
         actions: [
           KeyboardActionsItem(focusNode: firstNameNode, toolbarButtons: [
-                (node) {
+            (node) {
               return GestureDetector(
                 onTap: () {
                   FocusScope.of(context).requestFocus(phoneNode);
-                }
-                ,
+                },
                 child: Padding(
                   padding: EdgeInsets.all(8.0),
-                  child: Text(translate("buttons.next"), style: TextStyle(fontWeight: FontWeight.bold),),
+                  child: Text(
+                    translate("buttons.next"),
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
               );
             }
           ]),
-
           KeyboardActionsItem(focusNode: phoneNode, toolbarButtons: [
-                (node) {
+            (node) {
               return GestureDetector(
                 onTap: () {
                   FocusScope.of(context).requestFocus(passNode);
-                }
-                ,
+                },
                 child: Padding(
                   padding: EdgeInsets.all(8.0),
-                  child: Text(translate("buttons.next"), style: TextStyle(fontWeight: FontWeight.bold),),
+                  child: Text(
+                    translate("buttons.next"),
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
               );
             }
           ]),
-
           KeyboardActionsItem(focusNode: passNode, toolbarButtons: [
-                (node) {
+            (node) {
               return GestureDetector(
                 onTap: () {
                   FocusScope.of(context).requestFocus(confirmPassNode);
-                }
-                ,
+                },
                 child: Padding(
                   padding: EdgeInsets.all(8.0),
-                  child: Text(translate("buttons.next"), style: TextStyle(fontWeight: FontWeight.bold),),
+                  child: Text(
+                    translate("buttons.next"),
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
               );
             }
           ]),
-
           KeyboardActionsItem(focusNode: confirmPassNode, toolbarButtons: [
-                (node) {
+            (node) {
               return GestureDetector(
                 onTap: () {
                   _signUp(context);
-                }
-                ,
+                },
                 child: Padding(
                   padding: EdgeInsets.all(8.0),
-                  child: Text(translate("buttons.signUp"), style: TextStyle(fontWeight: FontWeight.bold),),
+                  child: Text(
+                    translate("buttons.signUp"),
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
               );
             }

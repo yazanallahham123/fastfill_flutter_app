@@ -63,8 +63,9 @@ class PurchasePage extends StatefulWidget {
 
 bool isAddedToFavorite = false;
 PaymentResultBody? prb = null;
-bool paying = false;
+bool paying = true;
 double userBalance = 0.0;
+double fastFillFees = 0.0;
 
 class _PurchasePage extends State<PurchasePage> {
 
@@ -77,7 +78,7 @@ class _PurchasePage extends State<PurchasePage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<StationBloc>(
-        create: (BuildContext context) => StationBloc(),//.add(InitEvent()),
+        create: (BuildContext context) => StationBloc()..add(InitStationEvent()),//.add(InitEvent()),
         child: Builder(builder: (context) => _buildPage(context)));
   }
 
@@ -86,6 +87,21 @@ class _PurchasePage extends State<PurchasePage> {
 
     return BlocListener<StationBloc, StationState>(
         listener: (context, state) async {
+          if (state is GotFastFillFeesState)
+            {
+              setState((){
+                paying = false;
+                fastFillFees = state.fastfillFees;
+              });
+            }
+          if (state is InitStationState)
+            {
+              setState((){
+                paying = true;
+                bloc.add(GetFastFillFeesEvent());
+              });
+            }
+          else
           if (state is ErrorStationState)
             pushToast(state.error);
           else if (state is AddedStationToFavorite)
@@ -104,7 +120,8 @@ class _PurchasePage extends State<PurchasePage> {
                       isFavorite: isAddedToFavorite
                   );
 
-                  addRemoveFavoriteStreamController.sink.add(s);
+                  if (!addRemoveFavoriteStreamController.isClosed)
+                    addRemoveFavoriteStreamController.sink.add(s);
 
                 });
               }
@@ -126,7 +143,8 @@ class _PurchasePage extends State<PurchasePage> {
                       isFavorite: isAddedToFavorite
                   );
 
-                  addRemoveFavoriteStreamController.sink.add(s);
+                  if (!addRemoveFavoriteStreamController.isClosed)
+                    addRemoveFavoriteStreamController.sink.add(s);
                 });
               }
 
@@ -161,7 +179,8 @@ class _PurchasePage extends State<PurchasePage> {
                   Widget okButton = TextButton(
                     child: Text(translate("buttons.ok"), style: TextStyle(color: Colors.black),),
                     onPressed:  () {
-                      hideKeyboard(context);
+                      if (mounted)
+                        hideKeyboard(context);
                       Navigator.pop(context);
                     },
                   );
@@ -239,7 +258,7 @@ class _BuildUI extends State<BuildUI> {
                   child:
           Stack(children: [
             Padding(padding: EdgeInsetsDirectional.fromSTEB(0, SizeConfig().h(110), 0, 0),
-            child: 
+            child:
             Column(
               children: [
                 Align(
@@ -410,7 +429,7 @@ class _BuildUI extends State<BuildUI> {
 
                       )),
 
-                  Padding(child: Text(formatter.format(100.0)+" "+translate("labels.sdg"),
+                  Padding(child: Text(formatter.format(fastFillFees)+" "+translate("labels.sdg"),
                     style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),),
                       padding: EdgeInsetsDirectional.only(bottom: SizeConfig().h(10),
 
@@ -432,8 +451,15 @@ class _BuildUI extends State<BuildUI> {
                         borderColor: buttonColor1,
                         title: translate("buttons.pay"),
                         onTap: () {
-
+                          try {
                             pay();
+                          } catch(x)
+                          {
+                            setState(() {
+                              paying = false;
+                            });
+                            ErrorStationState(translate("messages.couldNotAddTransaction"));
+                          }
                         })),
 
               ],),),
@@ -445,12 +471,25 @@ class _BuildUI extends State<BuildUI> {
         );
   }
 
+
+  String convertArabicToEnglishNumbers(String input)
+  {
+    const english = ['0','1','2','3','4','5','6','7','8','9'];
+    const arabic = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+
+    for (int i = 0; i < arabic.length; i++) {
+      input = input.replaceAll(arabic[i], english[i]);
+    }
+    return input;
+  }
+
+
   pay()
   async {
     if (amountController.text == confirmAmountController.text) {
       if (double.tryParse(amountController.text.replaceAll(",", "")) != null) {
         if (double.parse(amountController.text.replaceAll(",", "")) > 0.0) {
-          if (double.parse(amountController.text.replaceAll(",", "")) >= 100) {
+          if (double.parse(amountController.text.replaceAll(",", "")) >= fastFillFees) {
             if (mounted) {
               setState(() {
                 paying = true;
@@ -458,35 +497,35 @@ class _BuildUI extends State<BuildUI> {
             }
             hideKeyboard(context);
 
+            String valuePaid = convertArabicToEnglishNumbers(amountController.text.replaceAll(",", ""));
+
             prb = PaymentResultBody(
-                date: DateFormat('yyyy-MM-dd - hh:mm a').format(DateTime.now()),
+                date: convertArabicToEnglishNumbers(DateFormat('yyyy-MM-dd - hh:mm a').format(DateTime.now())),
                 stationName: (isArabic())
                     ? widget.station.arabicName!
                     : widget
                     .station.englishName!,
                 status: true,
                 fuelTypeId: (_fuelTypeValue == FuelType.Gasoline) ? 1 : 2,
-                amount: (double.tryParse(
-                    amountController.text.replaceAll(",", "")) ?? 0.0),
-                value: 100.0,
+                amount: (double.tryParse(valuePaid) ?? 0.0),
+                value: fastFillFees,
                 fromList: false
             );
 
-            User user = await LocalData().getCurrentUserValue();
+            User user = await getCurrentUserValue();
 
             PaymentTransactionBody paymentTransactionBody = PaymentTransactionBody(
                 userId: user.id,
-                amount: (double.tryParse(
-                    amountController.text.replaceAll(",", "")) ?? 0.0),
-                fastfill: 100.0,
+                amount: (double.tryParse(valuePaid) ?? 0.0),
+                fastfill: fastFillFees,
                 fuelTypeId: (_fuelTypeValue == FuelType.Gasoline) ? 1 : 2,
                 status: true,
-                date: DateFormat('yyyy-MM-dd hh:mm a').format(DateTime.now()),
+                date: convertArabicToEnglishNumbers(DateFormat('yyyy-MM-dd hh:mm a').format(DateTime.now())),
                 companyId: widget.station.id
             );
 
-
-            bloc.add(AddPaymentTransaction(paymentTransactionBody));
+            if (!bloc.isClosed)
+              bloc.add(AddPaymentTransaction(paymentTransactionBody));
           }
           else
             {

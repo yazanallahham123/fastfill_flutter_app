@@ -12,5 +12,5 @@
     <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
         <item name="android:windowBackground">@drawable/launch_background</item>
     </style>
-    <color name="splashscreencolor">#3a3a3f</color>
+    <color name="splashscreencolor">#ffffff</color>
 </resources>

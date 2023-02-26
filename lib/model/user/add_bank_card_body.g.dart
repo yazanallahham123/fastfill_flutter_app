@@ -10,10 +10,12 @@ AddBankCardBody _$AddBankCardBodyFromJson(Map<String, dynamic> json) =>
     AddBankCardBody(
       bankName: json['bankName'] as String?,
       cardNumber: json['cardNumber'] as String?,
+      expiryDate: json['expiryDate'] as String?,
     );
 
 Map<String, dynamic> _$AddBankCardBodyToJson(AddBankCardBody instance) =>
     <String, dynamic>{
       'bankName': instance.bankName,
       'cardNumber': instance.cardNumber,
+      'expiryDate': instance.expiryDate,
     };

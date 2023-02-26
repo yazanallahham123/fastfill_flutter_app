@@ -13,22 +13,30 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:logger/logger.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'firebase_options.dart';
 import 'helper/app_colors.dart';
 import 'helper/methods.dart';
 import 'package:firebase_core/firebase_core.dart';
 
+import 'model/notification/notification_body.dart';
+
 final logger = Logger();
 bool isSigned= false;
 String languageCode = "en";
+int languageId = 2;
+
+GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SharedPreferences.getInstance();
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
 
   await SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp],
@@ -52,19 +60,23 @@ void main() async {
       sound: true
   );
 
-  notifications.init(notificationsController);
+
+  notifications.init();
 
   var delegate = await LocalizationDelegate.create(
       fallbackLocale: 'en', supportedLocales: ['en', 'ar']);
 
-  LocalData().getCurrentUserValue().then((v) {
+  getCurrentUserValue().then((v) {
     if (v != null)
       if (v.id != null)
         if (v.id != 0)
           isSigned = true;
   });
 
-  LocalData().getLanguage().then((l) {
+
+
+
+  getLanguage().then((l) {
     if (l != null) {
       if (l.isNotEmpty)
         {
@@ -87,14 +99,36 @@ class FastFillApp extends StatefulWidget {
 
   static Locale? getLocale(BuildContext context) {
     _FastFillApp? state = context.findAncestorStateOfType<_FastFillApp>();
-    return state?.getLanguage();
+    return state?.getLanguageFromLocale();
   }
 
   //static _FastFillApp? of(BuildContext context) => context.findAncestorStateOfType<_FastFillApp>();
 }
 
-class _FastFillApp extends State<FastFillApp> {
+class _FastFillApp extends State<FastFillApp> with WidgetsBindingObserver{
   Locale _locale = Locale.fromSubtags(languageCode: languageCode);
+
+  @override
+  void initState() {
+    WidgetsBinding.instance?.addObserver(this);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance?.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed)
+    {
+      print("app state is resumed");
+      //NotificationBody n = NotificationBody(typeId: "1");
+      //notificationsController.sink.add(n);
+    }
+  }
 
   changeLanguage(Locale value) {
     if (mounted) {
@@ -104,7 +138,7 @@ class _FastFillApp extends State<FastFillApp> {
     }
   }
 
-  Locale getLanguage()
+  Locale getLanguageFromLocale()
   {
     return _locale;
   }
@@ -112,14 +146,14 @@ class _FastFillApp extends State<FastFillApp> {
     @override
     Widget build(BuildContext context) {
 
-      LocalData().getCurrentUserValue().then((v) {
+      getCurrentUserValue().then((v) {
         if (v != null)
           if (v.id != null)
             if (v.id != 0)
               isSigned = true;
       });
 
-      LocalData().getLanguage().then((l) {
+      getLanguage().then((l) {
         if (l != null) {
           if (l.isNotEmpty)
           {
@@ -132,6 +166,7 @@ class _FastFillApp extends State<FastFillApp> {
       return LocalizationProvider(
           state: LocalizationProvider.of(context).state,
           child: DismissKeyboard(child: GetMaterialApp(
+            navigatorKey: navigatorKey,
             onGenerateInitialRoutes:
                 (String initialRouteName) {
                   return [

@@ -33,6 +33,7 @@ import 'package:dio/dio.dart' hide Headers;
 import '../model/station/add_remove_station_branch_favorite_body.dart';
 import '../model/station/stations_with_pagination.dart';
 import '../model/syberPay/syber_pay_check_status_response_body.dart';
+import '../model/user/edit_bank_card_body.dart';
 import '../model/user/update_user_language_body.dart';
 import '../model/user/user_refill_transaction_dto.dart';
 import 'apis.dart';
@@ -55,24 +56,6 @@ abstract class ApiClient {
 
   @PUT(Apis.user+"/resetPassword")
   Future<String> resetPassword(@Body() ResetPasswordBody? resetPasswordBody);
-
-  //SMS
-
-  @POST(Apis.otpSendCode)
-  @MultiPart()
-  @Headers(<String, dynamic>{"Content-Type": "multi-part/form-data", "accept":"*/*", "Authorization":"Token ba7758237f501dcc97cf77292607640a4afd32bb"})
-  Future<OTPSendResponseBody> otpSendCode(@Part(name: "mobile") String mobile, @Part(name: "sender_id") String senderId, @Part(name: "message") String message, @Part(name: "expiry") String expiry);
-
-  @POST(Apis.otpResendCode)
-  @MultiPart()
-  @Headers(<String, dynamic>{"Content-Type": "multi-part/form-data", "accept":"*/*", "Authorization":"Token ba7758237f501dcc97cf77292607640a4afd32bb"})
-  Future<OTPResendResponseBody> otpResendCode(@Part(name: "otp_id") String otp_id);
-
-  @POST(Apis.otpVerifyCode)
-  @MultiPart()
-  @Headers(<String, dynamic>{"Content-Type": "multi-part/form-data", "accept":"*/*", "Authorization":"Token ba7758237f501dcc97cf77292607640a4afd32bb"})
-  Future<OTPVerifyResponseBody> otpVerifyCode(@Part(name: "otp_id") String otp_id, @Part(name: "code") String code);
-
 
   @GET(Apis.frequentlyVisitedCompanies)
   Future<StationsWithPagination> getFrequentlyVisitedStations(@Header("Authorization") String token);
@@ -154,6 +137,9 @@ abstract class ApiClient {
   @POST(Apis.addBankCard)
   Future<bool> addBankCard(@Header("Authorization") String token, @Body() AddBankCardBody addBankCardBody);
 
+  @POST(Apis.editBankCard)
+  Future<bool> editBankCard(@Header("Authorization") String token, @Body() EditBankCardBody editBankCardBody);
+
   @GET(Apis.getBankCards)
   Future<BankCardsWithPagination> getBankCards(@Header("Authorization") String token,  @Query("page") int page, @Query("pageSize") int pageSize);
 
@@ -173,6 +159,27 @@ abstract class ApiClient {
   Future<bool> clearUserNotifications(@Header("Authorization") String token);
 
   @POST(Apis.syberCheckStatus)
-  Future<SyberPayCheckStatusResponseBody> syberCheckStatus(@Body() SyberPayCheckStatusBody syberPayCheckStatusBody);
+  Future<SyberPayCheckStatusResponseBody> syberCheckStatus(@Header("Authorization") String token, @Body() SyberPayCheckStatusBody syberPayCheckStatusBody);
+
+  @GET(Apis.clearUserTransactions)
+  Future<bool> clearUserTransactions(@Header("Authorization") String token);
+
+  @GET(Apis.checkUserByPhone)
+  Future<bool> checkUserByPhone(@Path("mobileNumber") String mobileNumber);
+
+  @GET(Apis.removeAccount)
+  Future<bool> removeAccount(@Header("Authorization") String token);
+
+  @GET(Apis.logout)
+  Future<bool> logout(@Header("Authorization") String token);
+
+  @GET(Apis.getFastfillFees)
+  Future<double> getFastfillFees(@Header("Authorization") String token);
+
+  @GET(Apis.otpSendCode)
+  Future<String> otpSendCode(@Path("mobileNumber") String mobileNumber);
+
+  @GET(Apis.otpVerifyCode)
+  Future<bool> otpVerifyCode(@Path("registerId") String registerId, @Path("otpCode") String otpCode);
 
 }

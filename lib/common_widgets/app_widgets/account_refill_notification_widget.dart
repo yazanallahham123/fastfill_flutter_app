@@ -46,11 +46,10 @@ class AccountRefillNotificationWidget extends StatelessWidget
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(child:
-                      Text(translate("labels.syberPay"), style: TextStyle(color: (notification.typeId == "3") ? Colors.black : Colors.red, fontWeight: FontWeight.bold),),),
-                      Text((notification.price!+' '+translate("labels.sdg")), style: TextStyle(color: (notification.typeId == "3") ? Colors.black : Colors.red, fontWeight: FontWeight.bold),),
+                      Text(notification.content??"", style: TextStyle(color: (notification.typeId == "3") ? Colors.black : Colors.red, fontWeight: FontWeight.bold),),),
+                      //Text((notification.price!+' '+translate("labels.sdg")), style: TextStyle(color: (notification.typeId == "3") ? Colors.black : Colors.red, fontWeight: FontWeight.bold),),
                     ],), padding: EdgeInsetsDirectional.fromSTEB(20, 0, 10, 0)),),
               ],)
           ],)],));
   }
-
 }

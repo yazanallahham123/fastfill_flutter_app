@@ -2,6 +2,7 @@ import 'package:fastfill/helper/const_sizes.dart';
 import 'package:fastfill/helper/const_styles.dart';
 import 'package:fastfill/helper/font_styles.dart';
 import 'package:fastfill/helper/size_config.dart';
+import 'package:fastfill/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_translate/flutter_translate.dart';
@@ -13,12 +14,15 @@ class CustomTextFieldWidget extends StatelessWidget {
   final TextInputAction? textInputAction;
   final FocusNode? focusNode;
   final Function(String)? onFieldSubmitted;
+  final Function(String)? onChanged;
   final TextInputType? textInputType;
   final Widget? icon;
   final Color? color;
   final TextInputFormatter? textFormatter;
   final TextStyle? style;
   final TextStyle? hintStyle;
+  final FocusNode rawFocusNode = new FocusNode();
+  final String? errorText;
 
   final bool Function(String? value)? validator;
 
@@ -35,18 +39,22 @@ class CustomTextFieldWidget extends StatelessWidget {
       this.color,
       this.textFormatter,
       this.style,
-      this.hintStyle})
+      this.hintStyle,
+      this.onChanged,
+      this.errorText})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+
+
 
     ValueNotifier<bool?> showError = ValueNotifier<bool?>(null);
     return  ValueListenableBuilder<bool?>(
             valueListenable: showError,
             builder: (BuildContext context, value, Widget? child) {
               return Container(
-                  height: (value != null && value) ? SizeConfig().h(70) : SizeConfig().h(55),
+                  height: (value != null && value) ? SizeConfig().h(80) : SizeConfig().h(55),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -56,7 +64,7 @@ class CustomTextFieldWidget extends StatelessWidget {
                             borderRadius: radiusAll10,
                             color: (color??Colors.white)),
                         child: TextFormField(
-
+                            textDirection: (languageCode == "ar") ? TextDirection.rtl : TextDirection.ltr,
                             inputFormatters: (textFormatter != null ) ? [textFormatter!] : [],
                             controller: controller,
                             cursorColor: Colors.black,
@@ -99,16 +107,25 @@ class CustomTextFieldWidget extends StatelessWidget {
                                     SizeConfig().w(20),
                                     SizeConfig().h(16)),
                                 hintText: hintText),
+
                             onChanged: (stringValue) {
                               showError.value = (validator != null &&
                                   !validator!(stringValue));
+                              if (onChanged != null)
+                                onChanged!(stringValue);
                             })),
                     if (value != null && value)
                       Padding(
                           padding: EdgeInsets.symmetric(
                               horizontal: SizeConfig().w(10)),
-                          child: Text(translate("messages.thisFieldMustBeFilledIn"),
+                          child:
+
+                          FittedBox(
+                              fit: BoxFit.fitWidth,
+                              child: Text(errorText??"",
                               style: errorStyle()))
+
+                      )
                   ]));
             });
   }

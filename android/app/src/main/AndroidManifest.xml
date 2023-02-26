@@ -1,10 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.developitech.fastfill">
+    package="com.fastfill.fastfill">
    <application
-        android:label="Fast Fuelfill"
+        android:label="Fast Fill"
         android:icon="@mipmap/ic_launcher">
         <activity
-            android:name=".MainActivity"
+            android:name="com.fastfill.fastfill.MainActivity"
+            android:exported="true"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"

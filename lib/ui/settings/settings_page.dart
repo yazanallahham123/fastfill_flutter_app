@@ -36,7 +36,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   void initState() {
     super.initState();
-    LocalData().getReceiveNotifications().then((v){
+    getReceiveNotifications().then((v){
       setState(() {
         receiveNotifications = v;
       });
@@ -118,7 +118,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           }
                         }
 
-                        await LocalData().setReceiveNotifications(receiveNotifications);
+                        await setReceiveNotifications(receiveNotifications);
 
                       }
 

@@ -264,3 +264,9 @@ TextStyle smallCustomGreyColor6() => TextStyle(
     fontSize: isArabic() ? height16 : height12,
     color: hintColor2,
     fontWeight: FontWeight.w500);
+
+TextStyle smallCustomBlackColor6() => TextStyle(
+    fontFamily: isArabic() ? 'Poppins' : 'Poppins',
+    fontSize: isArabic() ? height16 : height12,
+    color: hintColor3,
+    fontWeight: FontWeight.w700);

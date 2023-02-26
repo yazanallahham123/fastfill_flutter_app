@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 
 String dioErrorMessageAdapter(DioError error) {

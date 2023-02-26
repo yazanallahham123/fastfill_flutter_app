@@ -7,11 +7,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:intl/intl.dart';
 
+import '../api/methods.dart';
+import '../api/retrofit.dart';
 import '../model/user/user.dart';
 import '../ui/auth/login_page.dart';
 import 'local_data.dart';
 
-String countryCode = (kDebugMode) ? "+963" : "+249";
+String countryCode =  "249";
 
 NumberFormat formatter = NumberFormat("#,##0", "en_US");
 
@@ -99,10 +101,16 @@ void showLogoutAlertDialog(BuildContext context) {
     child: Text(translate("buttons.yes"), style: TextStyle(color: Colors.black),),
     onPressed:  () async {
       hideKeyboard(context);
-      User user = User(lastName: null, firstName: null, disabled: null, id: null, mobileNumber: null, roleId: null, username: null);
-      await LocalData().setCurrentUserValue(user);
-      Navigator.pop(context);
-      Navigator.pushNamedAndRemoveUntil(context, LoginPage.route, (Route<dynamic> route) => false);
+      ApiClient mClient = ApiClient(certificateClient());
+      var token = await getBearerTokenValue();
+      if (token != null) {
+        await mClient.logout(token).then((v) async {
+          User user = User(lastName: null, firstName: null, disabled: null, id: null, mobileNumber: null, roleId: null, username: null);
+          await setCurrentUserValue(user);
+          Navigator.pop(context);
+          Navigator.pushNamedAndRemoveUntil(context, LoginPage.route, (Route<dynamic> route) => false);
+        });
+      }
     },
   );
 

@@ -32,6 +32,7 @@ class NewNotificationsTabPage extends StatefulWidget {
 List<NotificationBody> notifications = [];
 bool hasNext = false;
 int currentPage = 1;
+bool loadMore = false;
 
 class _NewNotificationsTabPageState extends State<NewNotificationsTabPage> {
   @override
@@ -49,7 +50,9 @@ class _NewNotificationsTabPageState extends State<NewNotificationsTabPage> {
           if (state is InitUserState) {
             notifications = [];
             currentPage = 1;
-            bloc.add(GetNotificationsEvent(1));
+            loadMore = false;
+            if (!bloc.isClosed)
+              bloc.add(GetNotificationsEvent(1));
           }
           else
           if (state is ErrorUserState)
@@ -57,6 +60,7 @@ class _NewNotificationsTabPageState extends State<NewNotificationsTabPage> {
           else if (state is GotNotificationsState) {
             if (mounted) {
               setState(() {
+                loadMore = false;
                 if (state.notifications != null) {
                   if (state.notifications.paginationInfo != null)
                     hasNext = state.notifications.paginationInfo!.hasNext!;
@@ -86,6 +90,7 @@ class _NewNotificationsTabPageState extends State<NewNotificationsTabPage> {
               {
                 if (mounted) {
                   setState(() {
+                    loadMore = false;
                     currentPage = 1;
                     notifications = [];
                   });
@@ -126,14 +131,10 @@ class _BuildUIState extends State<_BuildUI> {
       hideKeyboard(context);
       notifications = [];
       currentPage = 1;
-      widget.bloc.add(GetNotificationsEvent(1));
+      loadMore = false;
+      if (!widget.bloc.isClosed)
+        widget.bloc.add(GetNotificationsEvent(1));
     });
-  }
-
-  @override
-  void dispose() {
-    controller.removeListener(_scrollListener);
-    super.dispose();
   }
 
   @override
@@ -163,7 +164,8 @@ class _BuildUIState extends State<_BuildUI> {
                             Text(translate("buttons.clear"),style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: buttonColor1)), onTap: () {
-                              widget.bloc.add(ClearUserNotificationsEvent());
+                              if (!widget.bloc.isClosed)
+                                widget.bloc.add(ClearUserNotificationsEvent());
                             },) :
 
                         Container()
@@ -175,14 +177,17 @@ class _BuildUIState extends State<_BuildUI> {
                 alignment: AlignmentDirectional.topStart,
               ),
                   Expanded(child:
-                  (widget.state is LoadingUserState) ? Center(child:
+                  ((widget.state is InitUserState) || ((widget.state is LoadingUserState) && (!loadMore))) ?
+                  Center(child:
                   CustomLoading(),) :
 
                   LayoutBuilder(builder: (context, constraints) =>
                       RefreshIndicator(onRefresh: () async {
                         currentPage = 1;
                         notifications = [];
-                        widget.bloc.add(GetNotificationsEvent(1));
+                        loadMore = false;
+                        if (!widget.bloc.isClosed)
+                          widget.bloc.add(GetNotificationsEvent(1));
                       },
                           color: Colors.white,
                           backgroundColor: buttonColor1,
@@ -208,6 +213,7 @@ class _BuildUIState extends State<_BuildUI> {
                                 ],
 
                               )))) :
+                              Stack(children: [
                           ListView.builder(
                             physics: AlwaysScrollableScrollPhysics(),
                             controller: controller,
@@ -219,7 +225,13 @@ class _BuildUIState extends State<_BuildUI> {
                                 return Padding(child: NormalNotificationWidget(notification: notifications[index]), padding: EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10));
                             },
                             itemCount: notifications.length,
-                          ))
+                          ),
+                                (loadMore) ?
+                                Container(
+                                  color: Colors.white38,
+                                  child: Align(child: CustomLoading(), alignment: AlignmentDirectional.center,),) :
+                                Container()
+                              ]))
                   )
                  ),
                 ],)
@@ -227,14 +239,20 @@ class _BuildUIState extends State<_BuildUI> {
   }
 
   void _scrollListener() {
-    print(controller.position.extentAfter);
-    if (hasNext) {
-      if (controller.position.pixels ==
-          (controller.position.maxScrollExtent * .75)) {
-        setState(() {
-          currentPage = currentPage + 1;
-          widget.bloc.add(GetNotificationsEvent(currentPage));
-        });
+    if (mounted) {
+      print(controller.position.extentAfter);
+      if ((!(widget.state is LoadingUserState)) && (!loadMore)) {
+        if (hasNext) {
+          if (controller.position.pixels >
+              (controller.position.maxScrollExtent * .75)) {
+            setState(() {
+              loadMore = true;
+              currentPage = currentPage + 1;
+              if (!widget.bloc.isClosed)
+                widget.bloc.add(GetNotificationsEvent(currentPage));
+            });
+          }
+        }
       }
     }
   }

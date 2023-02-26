@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:equatable/equatable.dart';
 import 'package:fastfill/model/login/login_body.dart';
+import 'package:fastfill/model/syberPay/syber_pay_check_status_body.dart';
 import 'package:fastfill/model/user/add_bank_card_body.dart';
 import 'package:fastfill/model/user/reset_password_body.dart';
 import 'package:fastfill/model/user/signup_body.dart';
@@ -9,6 +10,7 @@ import 'package:fastfill/model/user/update_profile_body.dart';
 import 'package:fastfill/model/user/user_refill_transaction_dto.dart';
 
 import '../../model/syberPay/syber_pay_get_url_body.dart';
+import '../../model/user/edit_bank_card_body.dart';
 
 abstract class UserEvent extends Equatable{
 
@@ -34,11 +36,13 @@ class SignupEvent extends UserEvent{
 class SuccessfulUserOTPVerificationEvent extends UserEvent{
   final SignupBody? signupBody;
   final ResetPasswordBody? resetPasswordBody;
+  final UpdateProfileBody? updateProfileBody;
+  final bool? removeAccount;
 
-  const SuccessfulUserOTPVerificationEvent(this.signupBody, this.resetPasswordBody);
+  const SuccessfulUserOTPVerificationEvent(this.signupBody, this.resetPasswordBody, this.updateProfileBody, this.removeAccount);
 
   @override
-  List<Object?> get props => [this.signupBody, this.resetPasswordBody];
+  List<Object?> get props => [this.signupBody, this.resetPasswordBody, this.updateProfileBody, this.removeAccount];
 }
 
 class ErrorUserOTPVerificationEvent extends UserEvent{
@@ -50,8 +54,33 @@ class ErrorUserOTPVerificationEvent extends UserEvent{
 }
 
 class CallOTPScreenEvent extends UserEvent{
-  const CallOTPScreenEvent();
+  final String mobileNumber;
+  final SignupBody? signupBody;
+  final UpdateProfileBody? updateProfileBody;
+  final ResetPasswordBody? resetPasswordBody;
+  final bool? removeAccount;
+
+  const CallOTPScreenEvent(this.mobileNumber, this.signupBody, this.updateProfileBody, this.resetPasswordBody, this.removeAccount);
+
+  @override
+  List<Object?> get props => [this.mobileNumber, this.signupBody, this.updateProfileBody, this.resetPasswordBody, this.removeAccount];
 }
+
+class VerifyOTPEvent extends UserEvent{
+  final String registerId;
+  final String code;
+  final SignupBody? signupBody;
+  final String mobileNumber;
+  final UpdateProfileBody? updateProfileBody;
+  final ResetPasswordBody? resetPasswordBody;
+  final bool? removeAccount;
+
+  const VerifyOTPEvent(this.registerId, this.code, this.signupBody, this.mobileNumber, this.updateProfileBody, this.resetPasswordBody, this.removeAccount);
+
+  @override
+  List<Object?> get props => [this.registerId, this.code, this.signupBody, this.mobileNumber, this.updateProfileBody, this.resetPasswordBody, this.removeAccount];
+}
+
 
 class ResetPasswordEvent extends UserEvent{
   final ResetPasswordBody? resetPasswordBody;
@@ -98,9 +127,17 @@ class GetSyberPayUrlEvent extends UserEvent {
 }
 
 
-
 class GetBankCardsEvent extends UserEvent {
   const GetBankCardsEvent();
+}
+
+class EditBankCardEvent extends UserEvent {
+  final EditBankCardBody editBankCardBody;
+
+  const EditBankCardEvent(this.editBankCardBody);
+
+  @override
+  List<Object?> get props => [this.editBankCardBody];
 }
 
 class AddBankCardEvent extends UserEvent {
@@ -137,4 +174,26 @@ class UpdateUserLanguageEvent extends UserEvent {
 class ClearUserNotificationsEvent extends UserEvent {
   const ClearUserNotificationsEvent();
 }
+
+class CheckUserByPhoneEvent extends UserEvent {
+  final String mobileNumber;
+  final SignupBody? signupBody;
+  final UpdateProfileBody? updateProfileBody;
+  final ResetPasswordBody? resetPasswordBody;
+  final bool? removeAccount;
+
+  const CheckUserByPhoneEvent(this.mobileNumber, this.signupBody, this.updateProfileBody, this.resetPasswordBody, this.removeAccount);
+
+  @override
+  List<Object?> get props => [this.mobileNumber, this.signupBody, this.updateProfileBody, this.resetPasswordBody, this.removeAccount];
+}
+
+class RemoveAccountEvent extends UserEvent{
+  const RemoveAccountEvent();
+}
+
+class GetFastFillFeesEvent extends UserEvent{
+  const GetFastFillFeesEvent();
+}
+
 

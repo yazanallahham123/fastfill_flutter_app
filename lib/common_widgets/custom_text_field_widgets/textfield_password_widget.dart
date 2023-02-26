@@ -8,7 +8,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'methods.dart';
 
 
-class TextFieldPasswordWidget extends StatelessWidget {
+class TextFieldPasswordWidget extends StatefulWidget {
   final String? hintText;
   final String? errorText;
   final TextEditingController controller;
@@ -16,6 +16,7 @@ class TextFieldPasswordWidget extends StatelessWidget {
   final FocusNode? focusNode;
   final Function(String)? onFieldSubmitted;
   final bool Function(String? value)? validator;
+
 
   TextFieldPasswordWidget(
       {Key? key,
@@ -29,15 +30,18 @@ class TextFieldPasswordWidget extends StatelessWidget {
       : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    ValueNotifier<bool?> showError = ValueNotifier<bool?>(null);
-    ValueNotifier<bool> showPassword = ValueNotifier<bool>(false);
+  State<TextFieldPasswordWidget> createState() => _TextFieldPasswordWidgetState();
+}
 
-    return ValueListenableBuilder<bool?>(
-            valueListenable: showError,
-            builder: (BuildContext context, value, Widget? child) {
+class _TextFieldPasswordWidgetState extends State<TextFieldPasswordWidget> {
+
+  bool showError = false;
+  bool showPassword = true;
+
+  @override
+  Widget build(BuildContext context) {
               return Container(
-                  height: (value != null && value) ? SizeConfig().h(70) : SizeConfig().h(55),
+                  height: SizeConfig().h(80),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -47,30 +51,30 @@ class TextFieldPasswordWidget extends StatelessWidget {
                         borderRadius: radiusAll10,
                         color: Colors.white,
                       ),
-                      child: ValueListenableBuilder<bool>(
-                          valueListenable: showPassword,
-                          builder: (_, hidePassword, ___) {
-                            return TextFormField(
-                                controller: controller,
+                      child: TextFormField(
+                                controller: widget.controller,
                                 cursorColor: Colors.black,
-                                obscureText: hidePassword,
-                                focusNode: focusNode,
-                                textInputAction: textInputAction,
+                                obscureText: showPassword,
+                                focusNode: widget.focusNode,
+                                textInputAction: widget.textInputAction,
                                 maxLines: 1,
-                                onFieldSubmitted: onFieldSubmitted,
+                                onFieldSubmitted: widget.onFieldSubmitted,
                                 style: largeMediumPrimaryColor2(),
                                 decoration: new InputDecoration(
                                     isDense: true,
                                     suffixIcon: InkWell(
                                         onTap: () {
-                                          showPassword.value =
-                                              !showPassword.value;
-                                          print(hidePassword.toString());
+                                          if (mounted) {
+                                            setState(() {
+                                              showPassword =
+                                              !showPassword;
+                                            });
+                                          }
                                         },
                                         child: Container(
                                             width: SizeConfig().w(50),
                                             child: Icon(
-                                                hidePassword
+                                                !showPassword
                                                     ? Icons.visibility
                                                     : Icons.visibility_off,
                                                 color: Color(0xffA4B0BF)))),
@@ -80,9 +84,7 @@ class TextFieldPasswordWidget extends StatelessWidget {
                                     errorStyle: TextStyle(color: Colors.red),
                                     focusedBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
-                                            color: showError.value == null
-                                                ? Colors.amber
-                                                : showError.value == true
+                                            color: showError == true
                                                     ? Colors.red
                                                     : Colors.green,
                                             width: width1),
@@ -93,9 +95,7 @@ class TextFieldPasswordWidget extends StatelessWidget {
                                         borderRadius: radiusAll10),
                                     enabledBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
-                                            color: showError.value == null
-                                                ? Color(0xffd8e0e5)
-                                                : showError.value == true
+                                            color: showError == true
                                                     ? Colors.red
                                                     : Colors.green,
                                             width: width1),
@@ -106,30 +106,36 @@ class TextFieldPasswordWidget extends StatelessWidget {
                                         0,
                                         SizeConfig().w(20),
                                         SizeConfig().h(16)),
-                                    hintText: hintText),
+                                    hintText: widget.hintText),
                                 onChanged: (stringValue) {
-                                  showError.value =
+                                  if (mounted) {
+                                    setState(() {
+                                      showError =
                                       (!isStrongPassword(stringValue) ||
                                           !isValidator(stringValue));
-                                });
-                          }),
+                                    });
+                                  }
+                                })
                     ),
-                    if (value != null && value)
-                      Padding(
+                    (showError) ? Padding(
                           padding: EdgeInsets.symmetric(
                               horizontal: SizeConfig().w(10)),
-                          child: Text(
-                              (!isValidator(controller.text) &&
-                                      errorText != null)
-                                  ? errorText!
+                          child:
+                          FittedBox(
+                              fit: BoxFit.fitWidth,
+                              child: Text(
+                              (!isValidator(widget.controller.text) &&
+                                      widget.errorText != null)
+                                  ? widget.errorText!
                                   : translate("messages.passContain7Char"),
-                              style: errorStyle())),
+                              style: errorStyle()))
+
+                    ) : Container(),
                   ]));
-            });
   }
 
   bool isValidator(String value) {
-    if(validator == null) return true;
-    return validator!(value);
+    if(widget.validator == null) return true;
+    return widget.validator!(value);
   }
 }

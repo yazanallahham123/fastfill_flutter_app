@@ -16,7 +16,6 @@ import 'package:fastfill/common_widgets/custom_text_field_widgets/textfield_pass
 import 'package:fastfill/helper/app_colors.dart';
 import 'package:fastfill/helper/const_sizes.dart';
 import 'package:fastfill/helper/const_styles.dart';
-import 'package:fastfill/helper/firebase_helper.dart';
 import 'package:fastfill/helper/font_styles.dart';
 import 'package:fastfill/helper/size_config.dart';
 import 'package:fastfill/helper/toast.dart';
@@ -33,16 +32,18 @@ import 'package:fastfill/ui/home/home_page.dart';
 import 'package:fastfill/ui/profile/top_up_page.dart';
 import 'package:fastfill/utils/local_data.dart';
 import 'package:fastfill/utils/misc.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_translate/flutter_translate.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:keyboard_actions/keyboard_actions_config.dart';
 import 'package:crypto/crypto.dart';
+
+import '../../model/otp/otp_code_verification_body.dart';
+import '../../model/otp/otp_verification_phone_body.dart';
+import '../../model/syberPay/top_up_param.dart';
 
 class ProfilePage extends StatefulWidget {
   static const route = "/profile_page";
@@ -54,6 +55,7 @@ class ProfilePage extends StatefulWidget {
 String profilePhotoURL = "";
 bool phoneIsChanged = false;
 String name = "";
+bool removeAccount = false;
 
 class _ProfilePageState extends State<ProfilePage> {
   @override
@@ -68,6 +70,68 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return BlocListener<UserBloc, UserState>(
         listener: (context, state) async {
+          if (state is SuccessfulUserOTPVerificationState)
+            {
+              if ((state.removeAccount??false) == true)
+                bloc.add(RemoveAccountEvent());
+              else
+                bloc.add(UpdateProfileEvent(state.updateProfileBody!));
+            }
+          if (state is VerifiedOTPCode)
+            {
+              if (state.result) {
+                bloc.add(SuccessfulUserOTPVerificationEvent(
+                    state.signupBody,
+                    state.resetPasswordBody,
+                    state.updateProfileBody,state.removeAccount));
+              }
+              else
+              {
+                bloc.add(ErrorUserOTPVerificationEvent(translate("messages.otpCodeIsIncorrect")));
+              }
+            }
+          else
+          if (state is CalledOTPScreenState)
+            {
+              OTPVerificationPhoneBody otpVerificationPhoneBody = OTPVerificationPhoneBody(registerId: state.registerId, phoneNumber: state.mobileNumber);
+              OTPCodeVerificationBody? otpCodeVerification = await Navigator.pushNamed(
+                  context, OTPValidationPage.route,
+                  arguments: otpVerificationPhoneBody) as OTPCodeVerificationBody?;
+
+              if (otpCodeVerification != null)
+              {
+                if (otpCodeVerification.code != null)
+                {
+                  if (otpCodeVerification.code.isNotEmpty)
+                  {
+                    if (!bloc.isClosed) {
+                      bloc.add(VerifyOTPEvent(
+                          otpCodeVerification.registerId,
+                          otpCodeVerification.code,
+                          state.signupBody,
+                          state.mobileNumber,
+                          state.updateProfileBody,
+                          state.resetPasswordBody,
+                          state.removeAccount
+                      ));
+                    }
+                  }
+                }
+              }
+            }
+            else
+          if (state is RemovedAccountState)
+            {
+              if (state.result)
+                {
+                  hideKeyboard(context);
+                  UserModel.User usr = UserModel.User(lastName: null, firstName: null, disabled: null, id: null, mobileNumber: null, roleId: null, username: null);
+                  await setCurrentUserValue(usr);
+                  Navigator.pop(context);
+                  Navigator.pushNamedAndRemoveUntil(context, LoginPage.route, (Route<dynamic> route) => false);
+                }
+            }
+          else
           if (state is ErrorUserState)
             pushToast(state.error);
           else if (state is UploadedProfilePhotoState)
@@ -85,8 +149,13 @@ class _ProfilePageState extends State<ProfilePage> {
               {
                 if (state.syberPayGetUrlResponseBody.responseCode == 1)
                   {
+
+                    TopUpParam topUpParam = new TopUpParam(paymentUrl:state.syberPayGetUrlResponseBody.paymentUrl,
+                    transactionId: state.syberPayGetUrlResponseBody.transactionId
+                    );
+
                     bool result = await Navigator.pushNamed(
-                        context, TopUpPage.route, arguments: state.syberPayGetUrlResponseBody.paymentUrl!) as bool;
+                        context, TopUpPage.route, arguments: topUpParam) as bool;
                     if (result)
                       {
 
@@ -156,13 +225,13 @@ class _ProfilePageState extends State<ProfilePage> {
           else if (state is UserProfileUpdated) {
             if (phoneIsChanged) {
               UserModel.User user = UserModel.User(lastName: null, firstName: null, disabled: null, id: null, mobileNumber: null, roleId: null, username: null);
-              await LocalData().setCurrentUserValue(user);
+              await setCurrentUserValue(user);
               Navigator.pushNamedAndRemoveUntil(
                   context, LoginPage.route, (Route<dynamic> route) => false);
             }
             else
               {
-                UserModel.User u = await LocalData().getCurrentUserValue();
+                UserModel.User u = await getCurrentUserValue();
                 updateProfileStreamController.sink.add(u);
                 Navigator.pop(context);
               }
@@ -192,13 +261,12 @@ class _BuildUIState extends State<_BuildUI> {
   final nameNode = FocusNode();
   final phoneController = TextEditingController();
   final nameController = TextEditingController();
-  XFile? imageFile = null;
 
   @override
   void initState() {
     super.initState();
 
-    LocalData().getCurrentUserValue().then((user) {
+    getCurrentUserValue().then((user) {
       phoneController.text = user.mobileNumber??"";
       nameController.text = user.firstName??"";
       profilePhotoURL = user.imageURL??"";
@@ -229,8 +297,23 @@ class _BuildUIState extends State<_BuildUI> {
             Column(
               children: [
 
+                Align(
+                  child: Padding(
+                      child: Text(
+                        translate("labels.profile"),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            color: buttonColor1),
+                      ),
+                      padding: EdgeInsetsDirectional.only(
+                        start: SizeConfig().w(25),
+                        end: SizeConfig().w(25),
+                      )),
+                  alignment: AlignmentDirectional.topStart,
+                ),
 
-                Align(child:
+                /*Align(child:
 
                 InkWell(child: (profilePhotoURL != "") ? Image.network(
                   profilePhotoURL, width: 100, height: 100,
@@ -258,13 +341,14 @@ class _BuildUIState extends State<_BuildUI> {
                 },
                 ),
 
-                  alignment: AlignmentDirectional.topCenter,),
+                  alignment: AlignmentDirectional.topCenter,),*/
 
                 Padding(
                   padding: EdgeInsetsDirectional.only(top: SizeConfig().h(40)),
                   child: CustomTextFieldWidget(
                       controller: nameController,
                       focusNode: nameNode,
+                      errorText: translate("messages.thisFieldMustBeFilledIn"),
                       validator: validateName,
                       hintText: translate("labels.name"),
                       textInputType: TextInputType.text,
@@ -277,6 +361,7 @@ class _BuildUIState extends State<_BuildUI> {
                   padding: EdgeInsetsDirectional.only(top: SizeConfig().h(0)),
                   child: CustomTextFieldWidget(
                       controller: phoneController,
+                      errorText: translate("messages.phoneNumberValidation"),
                       focusNode: phoneNode,
                       validator: validateMobile,
                       hintText: translate("labels.phoneNumber"),
@@ -303,6 +388,19 @@ class _BuildUIState extends State<_BuildUI> {
                               _updateProfile();
 
                             })),
+                (widget.state is LoadingUserState) ? Container() :
+                Padding(
+                    padding: EdgeInsetsDirectional.only(top: SizeConfig().h(10)),
+                    child: CustomButton(
+                        backColor: buttonColor1,
+                        titleColor: Colors.white,
+                        borderColor: buttonColor1,
+                        title: translate("buttons.removeAccount"),
+                        onTap: () {
+
+                          _removeAccount();
+
+                        })),
 
 
               ],
@@ -312,28 +410,43 @@ class _BuildUIState extends State<_BuildUI> {
         )));
   }
 
-  _topUp()
-  {
-    calcHashAndGetSyberPayUrl();
-  }
-  calcHashAndGetSyberPayUrl()
-  {
-    String key = "3L0ez5y7";
-    String salt = "Ko9f3r0b4";
-    String applicationId = "0000000361";
-    String serviceId = "009001000454";
-    String amount = "1.0";
-    String currency = "SDG";
-    String customerRef = "yazan";
-    String all = key+"|"+applicationId+"|"+serviceId+"|"+amount+"|"+currency+"|"+customerRef+"|"+salt;
-    var AllInBytes = utf8.encode(all);
-    String value = sha256.convert(AllInBytes).toString();
 
-    SyberPayGetUrlBody spgub = SyberPayGetUrlBody(applicationId: applicationId, serviceId: serviceId,
-        amount: 1.0, currency: currency, customerRef: customerRef, hash: value);
+  _removeAccount() async {
 
-    widget.bloc.add(GetSyberPayUrlEvent(spgub));
+    String pn = "";
+    if (phoneController.text != null) {
+      if ((phoneController.text.length == 9) ||
+          (phoneController.text.length == 10)) {
+        if ((phoneController.text.length == 10) &&
+            (phoneController.text.substring(0, 1) == "0")) {
+          pn = phoneController.text
+              .substring(1, phoneController.text.length);
+        } else {
+          if (phoneController.text.length == 9) {
+            pn = phoneController.text;
+          }
+        }
+      }
+    }
+
+    String fullNumber = countryCode+pn;
+
+    if (!widget.bloc.isClosed)
+      widget.bloc.add(CallOTPScreenEvent(fullNumber, null, null, null, true));
   }
+
+  String convertArabicToEnglishNumbers(String input)
+  {
+    const english = ['0','1','2','3','4','5','6','7','8','9'];
+    const arabic = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+
+    for (int i = 0; i < arabic.length; i++) {
+      input = input.replaceAll(arabic[i], english[i]);
+    }
+    return input;
+  }
+
+
   _updateProfile() async {
     if ((phoneController.text.isNotEmpty) && (nameController.text.isNotEmpty)){
       if (!validateMobile(phoneController.text))
@@ -343,19 +456,19 @@ class _BuildUIState extends State<_BuildUI> {
 
       hideKeyboard(context);
 
-      UserModel.User u = await LocalData().getCurrentUserValue();
+      UserModel.User u = await getCurrentUserValue();
 
       UserModel.User newUser = new UserModel.User(id: u.id,
         firstName: nameController.text,
         lastName: nameController.text,
         username: nameController.text,
-        mobileNumber: u.mobileNumber,
+        mobileNumber: convertArabicToEnglishNumbers(u.mobileNumber!),
         roleId: u.roleId,
         imageURL: profilePhotoURL,
         disabled: u.disabled
       );
 
-      await LocalData().setCurrentUserValue(newUser);
+      await setCurrentUserValue(newUser);
 
       String pn = "";
       if (phoneController.text != null) {
@@ -373,13 +486,25 @@ class _BuildUIState extends State<_BuildUI> {
         }
       }
 
+      pn = convertArabicToEnglishNumbers(pn);
+
       if (u != null) {
         if (u.id != null) {
           if (u.mobileNumber != pn)
             {
               phoneIsChanged = true;
 
-              widget.bloc.add(CallOTPScreenEvent());
+
+
+              if (!widget.bloc.isClosed) {
+                String fullNumber = countryCode + pn;
+                UpdateProfileBody updateProfileBody = UpdateProfileBody(name: nameController.text, mobileNumber: pn, imageURL: profilePhotoURL);
+                widget.bloc.add(CallOTPScreenEvent(fullNumber, null, updateProfileBody, null, false));
+              }
+
+
+
+              /*
               await auth.verifyPhoneNumber(
                   phoneNumber: countryCode + pn,
                   timeout: const Duration(seconds: 5),
@@ -388,47 +513,76 @@ class _BuildUIState extends State<_BuildUI> {
                   },
                   verificationFailed: await (FirebaseAuthException e) {},
                   codeSent: await (String verificationId, int? resendToken) async {
+                    String verId = verificationId;
+                    String smsCode = "";
+
                     if (Platform.isIOS) {
-                      String? smsCode = await Navigator.pushNamed(
+
+                      OTPVerificationPhoneBody otpVerificationPhoneBody = OTPVerificationPhoneBody(verificationId: verId, phoneNumber: fullNumber);
+
+                      OTPCodeVerificationBody? otpCodeVerification = await Navigator.pushNamed(
                           context, OTPValidationPage.route,
-                          arguments: verificationId) as String?;
-                      if (smsCode == null)
-                        smsCode = "";
+                          arguments: otpVerificationPhoneBody) as OTPCodeVerificationBody?;
+
+                      if (otpCodeVerification != null) {
+                        smsCode = otpCodeVerification.code;
+                        verId = otpCodeVerification.verificationId;
+                      }
                       if (smsCode.isNotEmpty) {
                         PhoneAuthCredential credential = PhoneAuthProvider.credential(
-                            verificationId: verificationId, smsCode: smsCode);
+                            verificationId: verId, smsCode: smsCode);
                         auth.signInWithCredential(credential).then((value) {
-                          widget.bloc.add(UpdateProfileEvent(UpdateProfileBody(name: nameController.text, mobileNumber: pn, imageURL: profilePhotoURL)));
+                          if (!widget.bloc.isClosed)
+                            widget.bloc.add(UpdateProfileEvent(UpdateProfileBody(name: nameController.text, mobileNumber: pn, imageURL: profilePhotoURL)));
+                          print(value);
                         }).catchError((e) {
-                          widget.bloc.add(ErrorUserOTPVerificationEvent(
+                          if (!widget.bloc.isClosed)
+                            widget.bloc.add(ErrorUserOTPVerificationEvent(
                               (e.message != null) ? e.message! : e.code));
                         });
                       }
+                      else
+                      if (!widget.bloc.isClosed)
+                        widget.bloc.add(ErrorUserOTPVerificationEvent(
+                            translate("messages.emptyCode")));
+
                     }
                   },
                   codeAutoRetrievalTimeout: await (String verificationId) async {
-                    String? smsCode = await Navigator.pushNamed(
+
+                    String verId = verificationId;
+                    String smsCode = "";
+
+                    OTPVerificationPhoneBody otpVerificationPhoneBody = OTPVerificationPhoneBody(verificationId: verId, phoneNumber: fullNumber);
+
+                    OTPCodeVerificationBody? otpCodeVerification = await Navigator.pushNamed(
                         context, OTPValidationPage.route,
-                        arguments: verificationId) as String?;
-                    if (smsCode == null)
-                      smsCode = "";
+                        arguments: otpVerificationPhoneBody) as OTPCodeVerificationBody?;
+
+                    if (otpCodeVerification != null) {
+                      smsCode = otpCodeVerification.code;
+                      verId = otpCodeVerification.verificationId;
+                    }
                     if (smsCode.isNotEmpty) {
 
                       PhoneAuthCredential credential = PhoneAuthProvider.credential(
-                          verificationId: verificationId, smsCode: smsCode);
+                          verificationId: verId, smsCode: smsCode);
                       auth.signInWithCredential(credential).then((value) {
-                        widget.bloc.add(UpdateProfileEvent(UpdateProfileBody(name: nameController.text, mobileNumber: pn, imageURL: profilePhotoURL)));
+                        if (!widget.bloc.isClosed)
+                          widget.bloc.add(UpdateProfileEvent(UpdateProfileBody(name: nameController.text, mobileNumber: pn, imageURL: profilePhotoURL)));
                       }).catchError((e) {
-                        widget.bloc.add(ErrorUserOTPVerificationEvent(
+                        if (!widget.bloc.isClosed)
+                          widget.bloc.add(ErrorUserOTPVerificationEvent(
                             (e.message != null) ? e.message! : e.code));
                       });
                     }
-                  });
+                  }); */
             }
           else
             {
               phoneIsChanged = false;
-              widget.bloc.add(UpdateProfileEvent(UpdateProfileBody(name: nameController.text, mobileNumber: pn, imageURL: profilePhotoURL)));
+              if (!widget.bloc.isClosed)
+                widget.bloc.add(UpdateProfileEvent(UpdateProfileBody(name: nameController.text, mobileNumber: pn, imageURL: profilePhotoURL)));
             }
         }
       }

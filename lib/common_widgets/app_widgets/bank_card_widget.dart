@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
 import 'package:fastfill/common_widgets/app_widgets/custom_loading.dart';
+import 'package:fastfill/common_widgets/custom_app_bar/home_appbar_widget.dart';
 import 'package:fastfill/helper/app_colors.dart';
 import 'package:fastfill/helper/methods.dart';
 import 'package:fastfill/helper/size_config.dart';
@@ -25,7 +27,9 @@ import 'favorite_button.dart';
 class BankCardWidget extends StatefulWidget{
 
   final BankCard bankCard;
-  const BankCardWidget({required this.bankCard});
+  final void Function(BankCard bankCard)? onEdit;
+  final void Function(BankCard bankCard)? onDelete;
+  const BankCardWidget({required this.bankCard, required this.onEdit, required this.onDelete});
 
   @override
   State<BankCardWidget> createState() => _BankCardWidgetState();
@@ -49,10 +53,11 @@ class _BankCardWidgetState extends State<BankCardWidget> {
     padding: EdgeInsets.all(8),
     child:
       Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-          Text(widget.bankCard.cardNumber!, style: TextStyle(fontSize: 12, color: Colors.black),),
-          Icon(Icons.copy, size: 15,),
+          Expanded(child: Text(widget.bankCard.cardNumber!, style: TextStyle(fontSize: 14, color: Colors.black),)),
+          Padding(child: Text("|"), padding: EdgeInsetsDirectional.fromSTEB(10, 0, 10, 0),),
+          Padding(child: Text(widget.bankCard.expiryDate!, style: TextStyle(fontSize: 14, color: Colors.black),), padding: EdgeInsetsDirectional.fromSTEB(0, 0, 10, 0),),
+          Icon(Icons.copy, size: 25,),
     ],)))]),
         onTap: () {
           Clipboard.setData(ClipboardData(text: widget.bankCard.cardNumber)).then((value) {
@@ -60,8 +65,24 @@ class _BankCardWidgetState extends State<BankCardWidget> {
             Navigator.pop(context);
           });
         },
-        )
-      ],)
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Padding(child:
+        InkWell(child: Icon(Icons.edit, size: 25, color: buttonColor1,),
+          onTap: () {
+            widget.onEdit!(widget.bankCard);
+          },
+        ),padding: EdgeInsetsDirectional.fromSTEB(5, 10, 5, 0),),
+
+
+    Padding(child:InkWell(child: Icon(Icons.delete, size: 25, color: Colors.red),
+          onTap: () {
+            widget.onDelete!(widget.bankCard);
+
+          },), padding: EdgeInsetsDirectional.fromSTEB(5, 10, 5, 0),),
+      ],)],)
         , padding: EdgeInsetsDirectional.fromSTEB(10, 1, 10, 1),);
   }
 }

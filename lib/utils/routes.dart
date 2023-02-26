@@ -1,3 +1,4 @@
+import 'package:fastfill/model/otp/otp_verification_phone_body.dart';
 import 'package:fastfill/model/payment/payment_result_body.dart';
 import 'package:fastfill/model/user/reset_password_body.dart';
 import 'package:fastfill/ui/auth/login_page.dart';
@@ -17,6 +18,7 @@ import 'package:fastfill/ui/terms/terms_page.dart';
 import 'package:flutter/material.dart';
 
 import '../model/station/station.dart';
+import '../model/syberPay/top_up_param.dart';
 import '../ui/profile/top_up_page.dart';
 
 class AppRouter {
@@ -161,7 +163,7 @@ class AppRouter {
         );
 
       case TopUpPage.route:
-        return PageRouteBuilder( pageBuilder: (context, animation, secondaryAnimation) => TopUpPage(paymentUrl: settings.arguments as String,),
+        return PageRouteBuilder( pageBuilder: (context, animation, secondaryAnimation) => TopUpPage(topUpParam: settings.arguments as TopUpParam,),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             const begin = Offset(0.0, 1.0);
             const end = Offset.zero;
@@ -203,7 +205,7 @@ class AppRouter {
         );
 
       case OTPValidationPage.route:
-        return PageRouteBuilder( pageBuilder: (context, animation, secondaryAnimation) => OTPValidationPage(verificationId: settings.arguments as String),
+        return PageRouteBuilder( pageBuilder: (context, animation, secondaryAnimation) => OTPValidationPage(otpVerificationPhoneBody: settings.arguments as OTPVerificationPhoneBody),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             const begin = Offset(0.0, 1.0);
             const end = Offset.zero;
@@ -216,7 +218,7 @@ class AppRouter {
           },
         );
       case HomePage.route:
-        return PageRouteBuilder( pageBuilder: (context, animation, secondaryAnimation) => HomePage(),
+        return PageRouteBuilder( pageBuilder: (context, animation, secondaryAnimation) => HomePage((settings.arguments == null) ? 0 : settings.arguments as int),
             transitionsBuilder: (context, animation, secondaryAnimation, child) {
               const begin = Offset(0.0, 1.0);
               const end = Offset.zero;

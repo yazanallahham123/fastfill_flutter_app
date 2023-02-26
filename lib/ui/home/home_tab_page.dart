@@ -5,6 +5,7 @@ import 'package:fastfill/api/apis.dart';
 import 'package:fastfill/bloc/station/bloc.dart';
 import 'package:fastfill/bloc/station/event.dart';
 import 'package:fastfill/bloc/station/state.dart';
+import 'package:fastfill/bloc/user/state.dart';
 import 'package:fastfill/common_widgets/app_widgets/custom_loading.dart';
 import 'package:fastfill/common_widgets/app_widgets/home_box_widget.dart';
 import 'package:fastfill/common_widgets/app_widgets/keyboard_done_widget.dart';
@@ -16,6 +17,8 @@ import 'package:fastfill/helper/methods.dart';
 import 'package:fastfill/helper/size_config.dart';
 import 'package:fastfill/helper/toast.dart';
 import 'package:fastfill/model/station/station_branch.dart';
+import 'package:fastfill/model/syberPay/syber_pay_check_status_body.dart';
+import 'package:fastfill/model/syberPay/top_up_param.dart';
 import 'package:fastfill/model/user/user.dart';
 import 'package:fastfill/model/user/user_refill_transaction_dto.dart';
 import 'package:fastfill/streams/add_remove_favorite_stream.dart';
@@ -39,6 +42,7 @@ import '../../model/syberPay/syber_pay_get_url_body.dart';
 import '../../utils/misc.dart';
 import 'package:crypto/crypto.dart';
 
+import '../../utils/notifications.dart';
 import '../profile/top_up_page.dart';
 
 class HomeTabPage extends StatefulWidget {
@@ -71,10 +75,12 @@ class _HomeTabPageState extends State<HomeTabPage> {
     return BlocListener<StationBloc, StationState>(
         listener: (context, state) async {
           if (state is InitStationState) {
-            bloc.add(GetUserBalanceInStationEvent());
-            bloc.add(FavoriteStationsEvent());
-            bloc.add(FrequentlyVisitedStationsEvent());
-            bloc.add(AllStationsEvent());
+            if (!bloc.isClosed) {
+              bloc.add(GetUserBalanceInStationEvent());
+              bloc.add(FavoriteStationsEvent());
+              bloc.add(FrequentlyVisitedStationsEvent());
+              bloc.add(AllStationsEvent());
+            }
             if (mounted) {
               setState(() {
                 searchResult = [];
@@ -125,7 +131,8 @@ class _HomeTabPageState extends State<HomeTabPage> {
                 isAddedToFavorite = true;
                 Station s = allStations
                     .firstWhere((s) => s.id == state.stationId);
-                addRemoveFavoriteStreamController.sink.add(s);
+                if (!addRemoveFavoriteStreamController.isClosed)
+                  addRemoveFavoriteStreamController.sink.add(s);
               });
             }
           } else if (state is RemovedStationFromFavorite) {
@@ -134,7 +141,8 @@ class _HomeTabPageState extends State<HomeTabPage> {
                 isAddedToFavorite = false;
                 Station s = allStations
                     .firstWhere((s) => s.id == state.stationId);
-                addRemoveFavoriteStreamController.sink.add(s);
+                if (!addRemoveFavoriteStreamController.isClosed)
+                  addRemoveFavoriteStreamController.sink.add(s);
               });
             }
           }
@@ -145,56 +153,106 @@ class _HomeTabPageState extends State<HomeTabPage> {
               });
             }
           }
+          else if (state is CheckedSyberStatusState) {
+            if (state.syberPayCheckStatusResponseBody.status == "Successful") {
+              Widget okButton = TextButton(
+                child: Text(translate("buttons.ok"),
+                  style: TextStyle(color: Colors.black),),
+                onPressed: () {
+                  if (mounted)
+                    hideKeyboard(context);
+                  Navigator.pop(context);
+                },
+              );
+
+
+              // set up the AlertDialog
+              AlertDialog alert = AlertDialog(
+                title: Text(translate("labels.refillTitle")),
+                content: Text(translate("messages.successRefillMessage")),
+                actions: [
+                  okButton,
+                ],
+              );
+
+              // show the dialog
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return alert;
+                },
+              );
+            }
+            else
+            {
+              Widget okButton = TextButton(
+                child: Text(translate("buttons.ok"), style: TextStyle(color: Colors.black),),
+                onPressed:  () {
+                  if (mounted)
+                    hideKeyboard(context);
+                  Navigator.pop(context);
+                },
+              );
+
+
+              // set up the AlertDialog
+              AlertDialog alert = AlertDialog(
+                title: Text(translate("labels.refillTitle")),
+                content: Text(translate("messages.unsuccessRefillMessage")),
+                actions: [
+                  okButton,
+                ],
+              );
+
+              // show the dialog
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return alert;
+                },
+              );
+            }
+          }
+
+
           else if (state is AddedUserRefillTransactionState)
             {
-              bool? result = false;
               if (state.syberPayGetUrlResponseBody.paymentUrl != null) {
-                result = await Navigator.pushNamed(
+
+                TopUpParam topUpParam = new TopUpParam(
+                  paymentUrl: state.syberPayGetUrlResponseBody.paymentUrl,
+                  transactionId: state.syberPayGetUrlResponseBody.transactionId
+                );
+
+                await Navigator.pushNamed(
                     context, TopUpPage.route,
-                    arguments: state.syberPayGetUrlResponseBody
-                        .paymentUrl!) as bool?;
-
-              }
-              else
-                result = false;
+                    arguments: topUpParam);
 
 
-              if ((result??false))
-              {
 
-                Widget okButton = TextButton(
-                  child: Text(translate("buttons.ok"), style: TextStyle(color: Colors.black),),
-                  onPressed:  () {
-                    hideKeyboard(context);
-                    Navigator.pop(context);
-                  },
-                );
+                String transactionId = state.syberPayGetUrlResponseBody.transactionId??"";
+                String key = r"f@$tf!llK3y";
+                String salt = r"f@$tf!ll$@lt";
+                String applicationId = r'f@$tf!llApp';
+                String all = key + "|" + applicationId + "|" + transactionId + "|" + salt;
+                var AllInBytes = utf8.encode(all);
+                String value = sha256.convert(AllInBytes).toString();
 
+                SyberPayCheckStatusBody spcsb = SyberPayCheckStatusBody(
+                    applicationId: applicationId,
+                    transactionId: transactionId,
+                    hash: value);
 
-                // set up the AlertDialog
-                AlertDialog alert = AlertDialog(
-                  title: Text(translate("labels.refillTitle")),
-                  content: Text(translate("messages.successRefillMessage")),
-                  actions: [
-                    okButton,
-                  ],
-                );
-
-                // show the dialog
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return alert;
-                  },
-                );
-
+                if (!bloc.isClosed)
+                  bloc.add(CheckSyberStatusEvent(spcsb));
               }
               else
               {
                 Widget okButton = TextButton(
                   child: Text(translate("buttons.ok"), style: TextStyle(color: Colors.black),),
                   onPressed:  () {
-                    hideKeyboard(context);
+                    if (mounted)
+                      hideKeyboard(context);
                     Navigator.pop(context);
                   },
                 );
@@ -219,13 +277,12 @@ class _HomeTabPageState extends State<HomeTabPage> {
               }
             }
           else if (state is Station_GotSyberPayUrlState){
-            //pushToast(state.syberPayGetUrlResponseBody.paymentUrl!);
 
             if (state.syberPayGetUrlResponseBody.responseCode != null)
             {
               if (state.syberPayGetUrlResponseBody.responseCode == 1)
               {
-                User user = await  LocalData().getCurrentUserValue();
+                User user = await  getCurrentUserValue();
 
                 UserRefillTransactionDto userRefillTransactionDto = UserRefillTransactionDto(
                 transactionId: state.syberPayGetUrlResponseBody.transactionId,
@@ -266,7 +323,7 @@ class _BuildUI extends StatefulWidget {
   State<_BuildUI> createState() => _BuildUIState();
 }
 
-class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
+class _BuildUIState extends State<_BuildUI>{
   OverlayEntry? overlayEntry;
 
   final searchController = TextEditingController();
@@ -275,10 +332,21 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
 
   @override
   void initState() {
-    WidgetsBinding.instance?.addObserver(this);
     super.initState();
 
-    LocalData().getCurrentUserValue().then((value) {
+    if (!notificationsController.isClosed)
+    {
+      notificationsController.stream.listen((notificationBody) {
+        if (mounted) {
+          hideKeyboard(context);
+          if (!widget.bloc.isClosed)
+            widget.bloc.add(GetUserBalanceInStationEvent());
+        }
+      });
+    }
+
+
+    getCurrentUserValue().then((value) {
       userName = value.firstName??"";
     });
 
@@ -302,68 +370,71 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
       }
     });
 
-    updateProfileStreamController.stream.listen((event) {
-      if (mounted)
-        {
+    if (!updateProfileStreamController.isClosed) {
+      updateProfileStreamController.stream.listen((event) {
+        if (mounted) {
           setState(() {
-            userName = event.firstName??"";
+            userName = event.firstName ?? "";
           });
         }
-    });
+      });
+    }
 
-    addRemoveFavoriteStreamController.stream.listen((event) {
-      if (mounted) {
-        setState(() {
-          Station s = Station(
-              id: event.id,
-              arabicName: event.arabicName,
-              englishName: event.englishName,
-              arabicAddress: event.arabicAddress,
-              englishAddress: event.englishAddress,
-              code: event.code,
-              longitude: event.longitude,
-              latitude: event.latitude,
-              isFavorite: !event.isFavorite!);
-          if (event.isFavorite != null) {
-            if (event.isFavorite!)
+    if (!addRemoveFavoriteStreamController.isClosed) {
+      addRemoveFavoriteStreamController.stream.listen((event) {
+        if (mounted) {
+          setState(() {
+            Station s = Station(
+                id: event.id,
+                arabicName: event.arabicName,
+                englishName: event.englishName,
+                arabicAddress: event.arabicAddress,
+                englishAddress: event.englishAddress,
+                code: event.code,
+                longitude: event.longitude,
+                latitude: event.latitude,
+                isFavorite: !event.isFavorite!);
+            if (event.isFavorite != null) {
+              if (event.isFavorite!)
+                favoriteStations.removeWhere((fs) => fs.id == event.id);
+              else
+                favoriteStations.add(s);
+            } else
               favoriteStations.removeWhere((fs) => fs.id == event.id);
-            else
-              favoriteStations.add(s);
-          } else
-            favoriteStations.removeWhere((fs) => fs.id == event.id);
 
-          if (frequentlyVistedStations
-                  .firstWhere((frs) => frs.id == event.id,
-                      orElse: () => Station())
-                  .id !=
-              null) {
-            int idx = frequentlyVistedStations
-                .indexWhere((frs) => frs.id == event.id);
-            frequentlyVistedStations[idx] = s;
-          }
+            if (frequentlyVistedStations
+                .firstWhere((frs) => frs.id == event.id,
+                orElse: () => Station())
+                .id !=
+                null) {
+              int idx = frequentlyVistedStations
+                  .indexWhere((frs) => frs.id == event.id);
+              frequentlyVistedStations[idx] = s;
+            }
 
-          if (allStations
-                  .firstWhere((frs) => frs.id == event.id,
-                      orElse: () => Station())
-                  .id !=
-              null) {
-            int idx3 =
-                allStations.indexWhere((frs) => frs.id == event.id);
-            allStations[idx3] = s;
-          }
+            if (allStations
+                .firstWhere((frs) => frs.id == event.id,
+                orElse: () => Station())
+                .id !=
+                null) {
+              int idx3 =
+              allStations.indexWhere((frs) => frs.id == event.id);
+              allStations[idx3] = s;
+            }
 
-          if (searchResult
-                  .firstWhere((frs) => frs.id == event.id,
-                      orElse: () => Station())
-                  .id !=
-              null) {
-            int idx2 = searchResult.indexWhere((frs) => frs.id == event.id);
-            searchResult[idx2] = s;
-          }
-        });
-      }
-      ;
-    });
+            if (searchResult
+                .firstWhere((frs) => frs.id == event.id,
+                orElse: () => Station())
+                .id !=
+                null) {
+              int idx2 = searchResult.indexWhere((frs) => frs.id == event.id);
+              searchResult[idx2] = s;
+            }
+          });
+        }
+        ;
+      });
+    }
   }
 
   @override
@@ -377,7 +448,8 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
         body:
 
         RefreshIndicator(onRefresh: () async {
-      widget.bloc.add(InitStationEvent());
+          if (!widget.bloc.isClosed)
+            widget.bloc.add(InitStationEvent());
     },
     color: Colors.white,
     backgroundColor: buttonColor1,
@@ -413,7 +485,7 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
                                 Image(image: AssetImage("assets/home_box.png")))
                         : Image(image: AssetImage("assets/home_box.png")),
                     FutureBuilder<User>(
-                        future: LocalData().getCurrentUserValue(),
+                        future: getCurrentUserValue(),
                         builder: (context, AsyncSnapshot<User> snapshot) {
                           User usr = _buildUserInstance(snapshot);
                           if (usr.id != null) {
@@ -515,7 +587,7 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
                               children: [
                                 Padding(
                                     child: CustomTextFieldWidget(
-                                      hintStyle: smallCustomGreyColor6(),
+                                      hintStyle: smallCustomBlackColor6(),
                                       style: largeMediumPrimaryColor4(),
                                       icon: Icon(Icons.search),
                                       focusNode: searchFocusNode,
@@ -525,10 +597,15 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
                                       textInputType: TextInputType.text,
                                       textInputAction: TextInputAction.search,
                                       onFieldSubmitted: (_) {
+
+                                        searchText = searchController.text;
+                                        searchText = convertArabicToEnglishNumbers(searchText);
+
                                         hideKeyboard(context);
                                         widget.bloc.add(
                                             StationByTextEvent(
-                                                searchController.text));
+                                                searchText));
+
                                       },
                                     ),
                                     padding: EdgeInsetsDirectional.only(
@@ -593,6 +670,7 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
                                               )
                                         : Container()
                                     : Container(),
+
                                 Align(
                                   child: Padding(
                                     child: Text(
@@ -608,6 +686,23 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
                                         top: SizeConfig().h(0)),
                                   ),
                                   alignment: AlignmentDirectional.topStart,
+                                ),
+
+                                Align(
+                                  child: Padding(
+                                    child: Text(
+                                      translate("labels.currently_available_stations"),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 15),
+                                    ),
+                                    padding: EdgeInsetsDirectional.only(
+                                        start: SizeConfig().w(30),
+                                        end: SizeConfig().w(30),
+                                        bottom: SizeConfig().h(0)),
+                                  ),
+                                  alignment:
+                                  AlignmentDirectional.center,
                                 ),
                                 (favoriteStations.length > 0)
                                     ? Column(
@@ -633,6 +728,22 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
                                         alignment:
                                             AlignmentDirectional.topCenter,
                                       ),
+                                Align(
+                                  child: Padding(
+                                    child: Text(
+                                      translate("labels.more_gas_stations_coming_soon"),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 15),
+                                    ),
+                                    padding: EdgeInsetsDirectional.only(
+                                        start: SizeConfig().w(30),
+                                        end: SizeConfig().w(30),
+                                        bottom: SizeConfig().h(0)),
+                                  ),
+                                  alignment:
+                                  AlignmentDirectional.center,
+                                ),
                                 /*Align(
                                   child: Padding(
                                     child: Text(
@@ -692,6 +803,17 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
     }
   }
 
+  String convertArabicToEnglishNumbers(String input)
+  {
+    const english = ['0','1','2','3','4','5','6','7','8','9'];
+    const arabic = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+
+    for (int i = 0; i < arabic.length; i++) {
+      input = input.replaceAll(arabic[i], english[i]);
+    }
+    return input;
+  }
+
 
   _topUp()
   {
@@ -701,7 +823,8 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
     Widget cancelButton = TextButton(
       child: Text(translate("buttons.cancel"), style: TextStyle(color: Colors.black),),
       onPressed:  () {
-        hideKeyboard(context);
+        if (mounted)
+          hideKeyboard(context);
         Navigator.pop(context);
       },
     );
@@ -709,7 +832,8 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
     Widget okButton = TextButton(
       child: Text(translate("buttons.ok"), style: TextStyle(color: Colors.black),),
       onPressed:  () async {
-        hideKeyboard(context);
+        if (mounted)
+          hideKeyboard(context);
         Navigator.pop(context);
         await calcHashAndGetSyberPayUrl(double.parse(amountToRefillController.text));
       },
@@ -757,10 +881,11 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
 
   }
 
+
   calcHashAndGetSyberPayUrl(double topUpAmount)
   async {
     if (topUpAmount > 0) {
-      User u = await LocalData().getCurrentUserValue();
+      User u = await getCurrentUserValue();
       String key = r"f@$tf!llK3y";
       String salt = r"f@$tf!ll$@lt";
       String applicationId = r'f@$tf!llApp';//"0000000361";
@@ -781,13 +906,13 @@ class _BuildUIState extends State<_BuildUI> with WidgetsBindingObserver{
           customerRef: customerRef,
           hash: value);
 
-      widget.bloc.add(Station_GetSyberPayUrlEvent(spgub));
+      if (!widget.bloc.isClosed)
+        widget.bloc.add(Station_GetSyberPayUrlEvent(spgub));
     }
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance?.removeObserver(this);
     super.dispose();
     searchController.dispose();
   }

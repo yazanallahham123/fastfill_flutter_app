@@ -58,7 +58,7 @@ class TransactionWidget extends StatelessWidget
         ],)
     ],), onTap: () {
       hideKeyboard(context);
-      PaymentResultBody prb = PaymentResultBody(date: DateFormat('yyyy-MM-dd - hh:mm a').format(DateTime.parse(transaction.date!)), stationName: (isArabic()) ? transaction.company!.arabicName! : transaction.company!.englishName!, fuelTypeId: transaction.fuelTypeId!, amount: transaction.amount!, value: transaction.fastfill!, status: transaction.status!, fromList: true);
+      PaymentResultBody prb = PaymentResultBody(date:  DateFormat('yyyy-MM-dd - hh:mm a').format(DateTime.parse(transaction.date!)), stationName: (isArabic()) ? transaction.company!.arabicName! : transaction.company!.englishName!, fuelTypeId: transaction.fuelTypeId!, amount: transaction.amount!, value: transaction.fastfill!, status: transaction.status!, fromList: true);
       Navigator.pushNamed(context, PaymentResultPage.route, arguments: prb);
     },)
 

@@ -7,11 +7,13 @@ part 'add_bank_card_body.g.dart';
 class AddBankCardBody extends Equatable {
   final String? bankName;
   final String? cardNumber;
+  final String? expiryDate;
 
   const AddBankCardBody(
       {
         this.bankName,
-        this.cardNumber});
+        this.cardNumber,
+        this.expiryDate});
 
   factory AddBankCardBody.fromJson(Map<String, dynamic> json) => _$AddBankCardBodyFromJson(json);
 
@@ -20,6 +22,7 @@ class AddBankCardBody extends Equatable {
   @override
   List<Object?> get props => [
     this.bankName,
-    this.cardNumber
+    this.cardNumber,
+    this.expiryDate
   ];
 }

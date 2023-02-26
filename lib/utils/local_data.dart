@@ -2,50 +2,40 @@ import 'dart:convert';
 import 'package:fastfill/model/user/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LocalData {
-  static final LocalData _localData = LocalData._internal();
-
-  factory LocalData() => _localData;
-
-  SharedPreferences? _preferences;
 
   final _tokenKey = "Token";
   final _firebaseTokenKey = "FToken";
   final _user = "User";
   final _languageKey = "Language";
   final _receiveNotifications = "ReceiveNotifications";
-
-  Future<SharedPreferences?> get _getSharedPref async {
-    if (_preferences != null)
-      return _preferences;
-    else {
-      _preferences = await SharedPreferences.getInstance();
-
-      return _preferences;
-    }
-  }
+  final _agreementStatus = "AgreementStatus";
 
   setLanguageValue(String language) async {
-    await _getSharedPref;
-    await _preferences!.setString(_languageKey, language);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_languageKey, language);
+  }
+
+  setAgreementStatus(bool agree) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_agreementStatus, agree);
   }
 
   setCurrentUserValue(User user) async {
-    await _getSharedPref;
-    await _preferences!.setString(_user, json.encode(user));
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_user, json.encode(user));
   }
 
   setReceiveNotifications(bool receiveNotifications) async {
-    await _getSharedPref;
-    await _preferences!.setBool(_receiveNotifications, receiveNotifications);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_receiveNotifications, receiveNotifications);
   }
 
   Future<User> getCurrentUserValue() async {
-    await _getSharedPref;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     User user;
-    if (_preferences!.getString(_user) != null) {
-      if (_preferences!.getString(_user) != "") {
-        String c = _preferences!.getString(_user)!;
+    if (prefs.getString(_user) != null) {
+      if (prefs.getString(_user) != "") {
+        String c = prefs.getString(_user)!;
         var companyJson = json.decode(c);
         user = User.fromJson(companyJson);
         return user;
@@ -58,43 +48,45 @@ class LocalData {
   }
 
   setFTokenValue(String newValue) async {
-    await _getSharedPref;
-    await _preferences!.setString(_firebaseTokenKey, newValue);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_firebaseTokenKey, newValue);
   }
 
   Future<String> getFTokenValue() async {
-    await _getSharedPref;
-    return _preferences!.getString(_firebaseTokenKey) ?? "";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_firebaseTokenKey) ?? "";
   }
 
   Future<bool> getReceiveNotifications() async {
-    await _getSharedPref;
-    return _preferences!.getBool(_receiveNotifications) ?? true;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_receiveNotifications) ?? true;
   }
 
+
   setTokenValue(String newValue) async {
-    await _getSharedPref;
-    await _preferences!.setString(_tokenKey, newValue);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_tokenKey, newValue);
+  }
+
+  Future<bool> getAgreementStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_agreementStatus) ?? false;
   }
 
   Future<String> getTokenValue() async {
-    await _getSharedPref;
-    return _preferences!.getString(_tokenKey) ?? "";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_tokenKey) ?? "";
   }
 
   Future<String> getLanguage() async {
-    await _getSharedPref;
-    return _preferences!.getString(_languageKey) ?? "en";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_languageKey) ?? "en";
   }
 
   Future<String?> getBearerTokenValue() async {
-    await _getSharedPref;
-    if (_preferences!.getString(_tokenKey) != null)
-      return "Bearer " + _preferences!.getString(_tokenKey)!;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.getString(_tokenKey) != null)
+      return "Bearer " + prefs.getString(_tokenKey)!;
     return null;
   }
 
-  static final LocalData pref = LocalData._internal();
-
-  LocalData._internal();
-}

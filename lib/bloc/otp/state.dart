@@ -28,38 +28,11 @@ class ErrorOTPState extends OTPState{
   List<Object?> get props => [this.error];
 }
 
-class SuccessOTPCodeSentState extends OTPState{
-  final OTPSendResponseBody otpSendResponseBody;
+class OTPResendCodeState extends OTPState{
+  final String registerId;
 
-  const SuccessOTPCodeSentState(this.otpSendResponseBody);
-
-  @override
-  List<Object?> get props => [this.otpSendResponseBody];
-}
-
-class SuccessOTPCodeResentState extends OTPState{
-  final OTPResendResponseBody otpResendResponseBody;
-
-  const SuccessOTPCodeResentState(this.otpResendResponseBody);
+  const OTPResendCodeState(this.registerId);
 
   @override
-  List<Object?> get props => [this.otpResendResponseBody];
-}
-
-class SuccessOTPCodeVerifiedState extends OTPState{
-  final OTPVerifyResponseBody otpVerifyResponseBody;
-
-  const SuccessOTPCodeVerifiedState(this.otpVerifyResponseBody);
-
-  @override
-  List<Object?> get props => [this.otpVerifyResponseBody];
-}
-
-class OTPResendCode extends OTPState{
-  final String otp_id;
-
-  const OTPResendCode(this.otp_id);
-
-  @override
-  List<Object?> get props => [this.otp_id];
+  List<Object?> get props => [this.registerId];
 }

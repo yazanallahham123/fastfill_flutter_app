@@ -49,6 +49,7 @@ class _HomeBoxWidgetState extends State<HomeBoxWidget> {
 
   @override
   void initState() {
+
     notificationsController.stream.listen((notificationBody) {
       hideKeyboard(context);
       widget.stationBloc.add(GetUserBalanceInStationEvent());
@@ -71,7 +72,7 @@ class _HomeBoxWidgetState extends State<HomeBoxWidget> {
         ),
         child:
         FutureBuilder<User>(
-            future: LocalData().getCurrentUserValue(),
+            future: getCurrentUserValue(),
             builder: (context, AsyncSnapshot<User> snapshot) {
               User usr = _buildUserInstance(snapshot);
               if (usr.id != null) {
@@ -92,7 +93,7 @@ class _HomeBoxWidgetState extends State<HomeBoxWidget> {
                             padding: EdgeInsetsDirectional.only(
                                 start: SizeConfig().w(20),
                                 end: SizeConfig().w(20),
-                                top: SizeConfig().h(30)),
+                                top: SizeConfig().h(25)),
                           ),
                           alignment: AlignmentDirectional.topStart,
                         ),
@@ -110,32 +111,47 @@ class _HomeBoxWidgetState extends State<HomeBoxWidget> {
                             padding: EdgeInsetsDirectional.only(
                                 start: SizeConfig().w(20),
                                 end: SizeConfig().w(20),
-                                top: SizeConfig().h(10)),
+                                top: SizeConfig().h(5)),
                           ),
                           alignment: AlignmentDirectional.topStart,
                         ),
 
 
-
                         Container(
-                          padding: EdgeInsetsDirectional.fromSTEB(5, 5, 5, 5),
-                          margin: EdgeInsetsDirectional.fromSTEB(5, 20, 5, 30),
+                          padding: EdgeInsetsDirectional.fromSTEB(5, 5, 5, 2),
+                          margin: EdgeInsetsDirectional.fromSTEB(5, 15, 5, 5),
                           decoration: BoxDecoration(
                             borderRadius: radiusAll10,
                             border: Border.all(color: Colors.white, width: 0.5),
                             color: Colors.white30,),
                           child:
-                          (widget.stationState is LoadingStationState) ? CustomLoading() : InkWell(child:
+                          (widget.stationState is LoadingStationState) ?
 
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Image.asset(
+                                SizedBox(
+                                    child: CustomLoading(),
+                                width: 25,
+                                  height: 25,
+                                )
+                          ],)
+                              :
+
+                          InkWell(child:
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+
+                              Icon(Icons.payment),
+                              /*Image.asset(
                                 'assets/syber_pay_icon.png',
                                 width: SizeConfig().w(40),
                                 height: SizeConfig().h(40),
-                              ),
+                              ),*/
                               Text(
                                 translate("labels.refillAccount"),
                                 style: TextStyle(
@@ -145,7 +161,26 @@ class _HomeBoxWidgetState extends State<HomeBoxWidget> {
                               ),
                             ],), onTap: (){
                             _topUp();
-                          },),)
+                          },),),
+
+                        Align(
+                          child: Padding(
+                            child: Text(
+                              translate("labels.customer_id") +
+                                  " : " +
+                                  usr.id.toString(),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                  color: backgroundColor1, fontSize: 18),
+                            ),
+                            padding: EdgeInsetsDirectional.only(
+                              top: SizeConfig().h(10),
+                              bottom: SizeConfig().h(12),),
+                          ),
+                          alignment: AlignmentDirectional.center,
+                        ) ,
+
+
                       ],
                     ));
               } else {
@@ -221,9 +256,9 @@ class _HomeBoxWidgetState extends State<HomeBoxWidget> {
   calcHashAndGetSyberPayUrl(double topUpAmount)
   async {
     if (topUpAmount > 0) {
-      User u = await LocalData().getCurrentUserValue();
-      String key = r"f@$tf!llK3y";
-      String salt = r"f@$tf!ll$@lt";
+      User u = await getCurrentUserValue();
+      String key =  r"f@$tf!llK3y";
+      String salt =  r"f@$tf!ll$@lt";
       String applicationId = r'f@$tf!llApp';//"0000000361";
       String serviceId = r"f@$tf!ll267";
       String amount = topUpAmount.toString();
@@ -242,7 +277,8 @@ class _HomeBoxWidgetState extends State<HomeBoxWidget> {
           customerRef: customerRef,
           hash: value);
 
-      widget.stationBloc.add(Station_GetSyberPayUrlEvent(spgub));
+      if (!widget.stationBloc.isClosed)
+        widget.stationBloc.add(Station_GetSyberPayUrlEvent(spgub));
     }
   }
 }

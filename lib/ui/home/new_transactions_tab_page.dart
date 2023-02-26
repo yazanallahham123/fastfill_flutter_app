@@ -38,6 +38,7 @@ class NewTransactionsTabPage extends StatefulWidget {
 List<PaymentTransactionResult> paymentTransactions = [];
 bool hasNext = false;
 int currentPage = 1;
+bool loadMore = false;
 
 class _NewTransactionsTabPageState extends State<NewTransactionsTabPage> {
   @override
@@ -55,7 +56,17 @@ class _NewTransactionsTabPageState extends State<NewTransactionsTabPage> {
           if (state is InitStationState) {
             paymentTransactions = [];
             currentPage = 1;
-            bloc.add(GetPaymentTransactionsEvent(1));
+            loadMore = false;
+            if (!bloc.isClosed)
+              bloc.add(GetPaymentTransactionsEvent(1));
+          } else
+
+          if (state is ClearedTransactionsState) {
+            paymentTransactions = [];
+            currentPage = 1;
+            loadMore = false;
+            if (!bloc.isClosed)
+              bloc.add(GetPaymentTransactionsEvent(1));
           }
           else
           if (state is ErrorStationState)
@@ -63,6 +74,7 @@ class _NewTransactionsTabPageState extends State<NewTransactionsTabPage> {
           else if (state is GotPaymentTransactionsState) {
             if (mounted) {
               setState(() {
+                loadMore = false;
                 if (state.paymentTransactionsWithPagination != null) {
                   if (state.paymentTransactionsWithPagination.paginationInfo != null)
                     hasNext = state.paymentTransactionsWithPagination.paginationInfo!.hasNext!;
@@ -117,18 +129,18 @@ class _BuildUIState extends State<_BuildUI> {
     super.initState();
     controller = ScrollController()..addListener(_scrollListener);
 
-    notificationsController.stream.listen((notificationBody) {
-      hideKeyboard(context);
-      paymentTransactions = [];
-      currentPage = 1;
-      widget.bloc.add(GetPaymentTransactionsEvent(1));
-    });
-  }
-
-  @override
-  void dispose() {
-    controller.removeListener(_scrollListener);
-    super.dispose();
+    if (!notificationsController.isClosed) {
+      notificationsController.stream.listen((notificationBody) {
+        if (mounted) {
+          hideKeyboard(context);
+          paymentTransactions = [];
+          currentPage = 1;
+          loadMore = false;
+          if (!widget.bloc.isClosed)
+            widget.bloc.add(GetPaymentTransactionsEvent(1));
+        }
+      });
+    }
   }
 
   @override
@@ -152,6 +164,57 @@ class _BuildUIState extends State<_BuildUI> {
                           fontSize: 20,
                           color: buttonColor1),
                     ),
+
+                    (paymentTransactions.length > 0) ?
+
+                    InkWell(child:
+                    Text(translate("buttons.clear"),style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: buttonColor1)), onTap: () {
+
+
+                      Widget cancelButton = TextButton(
+                        child: Text(translate("buttons.cancel"), style: TextStyle(color: Colors.black),),
+                        onPressed:  () {
+                          hideKeyboard(context);
+                          Navigator.pop(context);
+                        },
+                      );
+
+                      Widget okButton = TextButton(
+                        child: Text(translate("buttons.ok"), style: TextStyle(color: Colors.black),),
+                        onPressed:  () async {
+                          if (mounted) {
+                            hideKeyboard(context);
+                            if (!widget.bloc.isClosed)
+                              widget.bloc.add(ClearTransactionsEvent());
+                            Navigator.pop(context);
+                          }
+                        },
+                      );
+
+
+                      // set up the AlertDialog
+                      AlertDialog alert = AlertDialog(
+                        title: Text(translate("labels.clearTransactions")),
+                        content: Text(translate("messages.clearTransactions")),
+                        actions: [
+                          okButton,
+                          cancelButton
+                        ],
+                      );
+
+                      // show the dialog
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return alert;
+                        },
+                      );
+
+                    },) :
+
+                    Container()
                   ],),
                 padding: EdgeInsetsDirectional.only(
                     start: SizeConfig().w(25),
@@ -160,14 +223,18 @@ class _BuildUIState extends State<_BuildUI> {
             alignment: AlignmentDirectional.topStart,
           ),
           Expanded(child:
-          (widget.state is LoadingStationState) ? Center(child:
+          ((widget.state is InitStationState) || ((widget.state is LoadingStationState) && (!loadMore))) ? Center(child:
           CustomLoading(),) :
 
           LayoutBuilder(builder: (context, constraints) =>
               RefreshIndicator(onRefresh: () async {
-                currentPage = 1;
-                paymentTransactions = [];
-                widget.bloc.add(GetPaymentTransactionsEvent(1));
+                if (mounted) {
+                  currentPage = 1;
+                  paymentTransactions = [];
+                  loadMore = false;
+                  if (!widget.bloc.isClosed)
+                    widget.bloc.add(GetPaymentTransactionsEvent(1));
+                }
               },
                   color: Colors.white,
                   backgroundColor: buttonColor1,
@@ -192,6 +259,7 @@ class _BuildUIState extends State<_BuildUI> {
                             ],
 
                           )))) :
+                  Stack(children: [
                   ListView.builder(
                     physics: AlwaysScrollableScrollPhysics(),
                     controller: controller,
@@ -200,7 +268,13 @@ class _BuildUIState extends State<_BuildUI> {
                         return Padding(child: NewTransactionWidget(transaction: paymentTransactions[index]), padding: EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10));
                     },
                     itemCount: paymentTransactions.length,
-                  ))
+                  ),
+                    (loadMore) ?
+                    Container(
+                      color: Colors.white12,
+                      child: Align(child: CustomLoading(), alignment: AlignmentDirectional.center,),) :
+                    Container()
+                  ]))
           )
           ),
         ],)
@@ -208,14 +282,20 @@ class _BuildUIState extends State<_BuildUI> {
   }
 
   void _scrollListener() {
-    print(controller.position.extentAfter);
-    if (hasNext) {
-      if (controller.position.pixels ==
-          (controller.position.maxScrollExtent * .75)) {
-        setState(() {
-          currentPage = currentPage + 1;
-          widget.bloc.add(GetPaymentTransactionsEvent(currentPage));
-        });
+    if (mounted) {
+      print(controller.position.extentAfter);
+      if ((!(widget.state is LoadingStationState)) && (!loadMore)) {
+        if (hasNext) {
+          if (controller.position.pixels >
+              (controller.position.maxScrollExtent * .75)) {
+            setState(() {
+              loadMore = true;
+              currentPage = currentPage + 1;
+              if (!widget.bloc.isClosed)
+                widget.bloc.add(GetPaymentTransactionsEvent(currentPage));
+            });
+          }
+        }
       }
     }
   }

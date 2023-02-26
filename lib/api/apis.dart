@@ -1,7 +1,7 @@
 class Apis{
 
   //Base url
-  static const String baseURL = "http://fastfill.developitech.com/api/";
+  static const String baseURL = "http://fastfillpro.developitech.com/api/";
 
   //  LOGIN
   static const String login = "Login";
@@ -16,9 +16,8 @@ class Apis{
   static const String getPaymentTransactions = "User/GetPaymentTransactions";
   static const String uploadProfilePhoto = "User/UploadLogo";
   //  OTP
-  static const String otpSendCode = "https://d7networks.com/api/verifier/send";
-  static const String otpResendCode = "https://d7networks.com/api/verifier/resend";
-  static const String otpVerifyCode = "https://d7networks.com/api/verifier/verify";
+  static const String otpSendCode = "User/SendOTP/{mobileNumber}";
+  static const String otpVerifyCode = "User/VerifyOTP/{registerId}/{otpCode}";
 
   // Stations
   static const String station = "station";
@@ -43,15 +42,25 @@ class Apis{
   static const String addCompanyBranchToFavorite = "Company/AddBranchToFavorite";
   static const String removeCompanyBranchFromFavorite = "Company/RemoveBranchFromFavorite";
 
-  static const String syberGetUrl = "https://syberpay.sybertechnology.com/syberpay/getUrl";
-  static const String syberCheckStatus = "https://syberpay.sybertechnology.com/syberpay/payment_status";
+  static const String syberGetUrl = "https://syberpay.sybertechnology.com/syberpay/getUrl";//"https://syberpay.sybertechnology.com/syberpay/getUrl";
+  static const String syberCheckStatus = "https://syberpay.sybertechnology.com/syberpay/payment_status";//"https://syberpay.sybertechnology.com/syberpay/payment_status";
 
   static const String getBankCards = "User/GetBankCards";
   static const String addBankCard = "User/AddBankCard";
+  static const String editBankCard = "User/UpdateBankCard";
   static const String deleteBankCard = "User/DeleteBankCard/{id}";
   static const String addUserRefillTransaction = "User/addUserRefillTransaction";
 
   static const String updateUserLanguage = "User/UpdateUserLanguage";
   static const String getUserBalance = "User/GetUserBalance";
   static const String clearUserNotifications = "User/ClearNotifications";
+  static const String clearUserTransactions = "User/ClearTransactions";
+  static const String checkUserByPhone = "User/CheckByPhone/{mobileNumber}";
+  static const String removeAccount = "User/RemoveAccount";
+
+  static const String logout = "User/Logout";
+
+  static const String getFastfillFees = "User/GetFastFillFees";
+
+
 }

@@ -50,8 +50,10 @@ class _FavoritesTabPageState extends State<FavoritesTabPage> {
     return BlocListener<StationBloc, StationState>(
         listener: (context, state) async {
           if (state is InitStationState) {
-            bloc.add(FavoriteStationsEvent());
-            bloc.add(AllStationsEvent());
+            if (!bloc.isClosed) {
+              bloc.add(FavoriteStationsEvent());
+              bloc.add(AllStationsEvent());
+            }
           } else if (state is ErrorStationState)
             pushToast(state.error);
           else if (state is GotFavoriteStationsState) {
@@ -77,7 +79,8 @@ class _FavoritesTabPageState extends State<FavoritesTabPage> {
                 isAddedToFavorite = true;
                 Station s = allStations
                     .firstWhere((s) => s.id == state.stationId);
-                addRemoveFavoriteStreamController.sink.add(s);
+                if (!addRemoveFavoriteStreamController.isClosed)
+                  addRemoveFavoriteStreamController.sink.add(s);
               });
             }
           } else if (state is RemovedStationFromFavorite) {
@@ -86,6 +89,7 @@ class _FavoritesTabPageState extends State<FavoritesTabPage> {
                 isAddedToFavorite = false;
                 Station s = allStations
                     .firstWhere((s) => s.id == state.stationId);
+                if (!addRemoveFavoriteStreamController.isClosed)
                 addRemoveFavoriteStreamController.sink.add(s);
               });
             }
@@ -119,31 +123,32 @@ class _BuildUIState extends State<_BuildUI> {
   void initState() {
     super.initState();
 
-    addRemoveFavoriteStreamController.stream.listen((event) {
-      if (mounted) {
-        setState(() {
-          Station s = Station(
-              id: event.id,
-              arabicName: event.arabicName,
-              englishName: event.englishName,
-              arabicAddress: event.arabicAddress,
-              englishAddress: event.englishAddress,
-              code: event.code,
-              longitude: event.longitude,
-              latitude: event.latitude,
-              isFavorite: !event.isFavorite!);
-          if (event.isFavorite != null) {
-            if (event.isFavorite!)
+    if (!addRemoveFavoriteStreamController.isClosed) {
+      addRemoveFavoriteStreamController.stream.listen((event) {
+        if (mounted) {
+          setState(() {
+            Station s = Station(
+                id: event.id,
+                arabicName: event.arabicName,
+                englishName: event.englishName,
+                arabicAddress: event.arabicAddress,
+                englishAddress: event.englishAddress,
+                code: event.code,
+                longitude: event.longitude,
+                latitude: event.latitude,
+                isFavorite: !event.isFavorite!);
+            if (event.isFavorite != null) {
+              if (event.isFavorite!)
+                favoriteStations.removeWhere((fs) => fs.id == event.id);
+              else
+                favoriteStations.add(s);
+            } else
               favoriteStations.removeWhere((fs) => fs.id == event.id);
-            else
-              favoriteStations.add(s);
-          } else
-            favoriteStations.removeWhere((fs) => fs.id == event.id);
-
-        });
-      }
-      ;
-    });
+          });
+        }
+        ;
+      });
+    }
   }
 
   @override
@@ -157,7 +162,8 @@ class _BuildUIState extends State<_BuildUI> {
         body:
 
         RefreshIndicator(onRefresh: () async {
-        widget.bloc.add(InitStationEvent());
+          if (!widget.bloc.isClosed)
+            widget.bloc.add(InitStationEvent());
     },
     color: Colors.white,
     backgroundColor: buttonColor1,

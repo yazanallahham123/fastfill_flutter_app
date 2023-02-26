@@ -3,6 +3,7 @@ import 'package:fastfill/model/otp/otp_validation_body.dart';
 import 'package:fastfill/model/station/payment_transaction_body.dart';
 import 'package:fastfill/model/syberPay/syber_pay_get_url_body.dart';
 
+import '../../model/syberPay/syber_pay_check_status_body.dart';
 import '../../model/syberPay/syber_pay_get_url_response_body.dart';
 import '../../model/user/user_refill_transaction_dto.dart';
 
@@ -131,5 +132,20 @@ class GetUserBalanceInStationEvent extends StationEvent {
   const GetUserBalanceInStationEvent();
 }
 
+class ClearTransactionsEvent extends StationEvent {
+  const ClearTransactionsEvent();
+}
 
+
+class CheckSyberStatusEvent extends StationEvent {
+  final SyberPayCheckStatusBody syberPayCheckStatusBody;
+  const CheckSyberStatusEvent(this.syberPayCheckStatusBody);
+
+  @override
+  List<Object?> get prop => [this.syberPayCheckStatusBody];
+}
+
+class GetFastFillFeesEvent extends StationEvent{
+  const GetFastFillFeesEvent();
+}
 

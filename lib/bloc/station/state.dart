@@ -8,6 +8,7 @@ import 'package:fastfill/model/station/station_branches_with_pagination.dart';
 import '../../model/station/payment_transaction_result.dart';
 import '../../model/station/station.dart';
 import '../../model/station/stations_with_pagination.dart';
+import '../../model/syberPay/syber_pay_check_status_response_body.dart';
 import '../../model/syberPay/syber_pay_get_url_response_body.dart';
 
 abstract class StationState extends Equatable{
@@ -216,3 +217,33 @@ class GotUserBalanceInStationState extends StationState{
   @override
   List<Object?> get props => [this.balance];
 }
+
+
+class ClearedTransactionsState extends StationState {
+  final bool result;
+
+  const ClearedTransactionsState(this.result);
+
+  @override
+  List<Object?> get props => [this.result];
+}
+
+
+class CheckedSyberStatusState extends StationState{
+  final SyberPayCheckStatusResponseBody syberPayCheckStatusResponseBody;
+
+  const CheckedSyberStatusState(this.syberPayCheckStatusResponseBody);
+
+  @override
+  List<Object?> get props => [this.syberPayCheckStatusResponseBody];
+}
+
+class GotFastFillFeesState extends StationState{
+  final double fastfillFees;
+
+  const GotFastFillFeesState(this.fastfillFees);
+
+  @override
+  List<Object?> get props => [this.fastfillFees];
+}
+

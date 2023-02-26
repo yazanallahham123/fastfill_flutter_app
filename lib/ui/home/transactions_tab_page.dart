@@ -56,6 +56,7 @@ class _TransactionsTabPageState extends State<TransactionsTabPage> {
             }
           }
           else if (state is InitStationState){
+            if (!bloc.isClosed)
             bloc.add(GetPaymentTransactionsEvent(1));
           }
         },
@@ -85,7 +86,8 @@ class _BuildUI extends StatelessWidget {
         body:
 
         RefreshIndicator(onRefresh: () async {
-          bloc.add(GetPaymentTransactionsEvent(1));
+          if (!bloc.isClosed)
+            bloc.add(GetPaymentTransactionsEvent(1));
     },
     color: Colors.white,
     backgroundColor: buttonColor1,

@@ -43,8 +43,10 @@ class _NotificationsTabPageState extends State<NotificationsTabPage> {
 
     return BlocListener<UserBloc, UserState>(
         listener: (context, state) async {
-          if (state is InitUserState)
-            bloc.add(GetNotificationsEvent(1));
+          if (state is InitUserState) {
+            if (!bloc.isClosed)
+              bloc.add(GetNotificationsEvent(1));
+          }
             else
           if (state is ErrorUserState)
             pushToast(state.error);
@@ -52,7 +54,7 @@ class _NotificationsTabPageState extends State<NotificationsTabPage> {
             if (mounted) {
               setState(() {
                 if (state.notifications.notifications != null)
-                  notifications = state.notifications.notifications!;
+                  notifications = state.notifications.notifications!.where((x) => (x.content??"") != "").toList();
                 else
                   notifications = [];
               });
@@ -92,7 +94,8 @@ class _BuildUIState extends State<_BuildUI> {
         body:
         RefreshIndicator(onRefresh: () async {
           notifications.clear();
-      widget.bloc.add(GetNotificationsEvent(0));
+          if (!widget.bloc.isClosed)
+            widget.bloc.add(GetNotificationsEvent(0));
     },
     color: Colors.white,
     backgroundColor: buttonColor1,
