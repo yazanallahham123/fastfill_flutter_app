@@ -617,10 +617,10 @@ packages:
     dependency: "direct main"
     description:
       name: pinput
-      sha256: e502557efe6957145b49dd9b4f48eec230a19a8ed0c4d5014a83cf800638869e
+      sha256: "1773743c188cdd2f8d0398ea708ec72645bb41ac9311755c4f7bb03a4184bdcf"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.21"
+    version: "2.2.31"
   platform:
     dependency: transitive
     description:
@@ -890,6 +890,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.4"
+  universal_platform:
+    dependency: transitive
+    description:
+      name: universal_platform
+      sha256: d315be0f6641898b280ffa34e2ddb14f3d12b1a37882557869646e0cc363d0cc
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0+1"
   url_launcher:
     dependency: "direct main"
     description:
@@ -1044,4 +1052,4 @@ packages:
     version: "3.1.1"
 sdks:
   dart: ">=2.18.0 <3.0.0"
-  flutter: ">=3.0.0"
+  flutter: ">=3.7.0"

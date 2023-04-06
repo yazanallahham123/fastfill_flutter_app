@@ -33,14 +33,27 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SharedPreferences.getInstance();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (x)
+  {
+
+  }
 
 
+  try
+  {
   await SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp],
   );
+  } catch (x)
+  {
+
+  }
+
+
 
   NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
     alert: true,
@@ -54,36 +67,55 @@ void main() async {
 
   print('User granted permission: ${settings.authorizationStatus}');
 
+  try {
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
       alert: true,
       badge: true,
       sound: true
   );
+  } catch (x)
+  {
+
+  }
 
 
+
+  try {
   notifications.init();
+  } catch (x)
+  {
+
+  }
 
   var delegate = await LocalizationDelegate.create(
       fallbackLocale: 'en', supportedLocales: ['en', 'ar']);
 
+  try
+  {
   getCurrentUserValue().then((v) {
     if (v != null)
       if (v.id != null)
         if (v.id != 0)
           isSigned = true;
   });
+  } catch (x)
+  {
 
+  }
 
-
-
-  getLanguage().then((l) {
-    if (l != null) {
-      if (l.isNotEmpty)
-        {
+  try {
+    getLanguage().then((l) {
+      if (l != null) {
+        if (l.isNotEmpty) {
           languageCode = l;
         }
-    }
-  });
+      }
+    });
+  } catch (x)
+  {
+
+  }
+
 
   runApp(LocalizedApp(delegate, FastFillApp()));
 }
